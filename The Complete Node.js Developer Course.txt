@@ -826,7 +826,22 @@ Section 9 - Application Deployment(Weather app):
 
 		Next we need to change our fetch so that it doesn't listen to localhost.
 
+		Next we need to push the code to heroku remote.
 
+		To push:
+			git push heroku master
+
+	Global and local npm modules:
+		Usually don't use global modules for projects as they are not mentioned in the package.json file.
+		Use devDependencies instead.
+
+		npm i -D nodemon
+		npm i --save-dev nodemon
+
+	
+===========================================================
+
+Section 10 - (Weather app):
 
 		
 		
