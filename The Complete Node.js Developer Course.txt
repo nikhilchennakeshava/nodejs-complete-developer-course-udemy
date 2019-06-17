@@ -841,8 +841,46 @@ Section 9 - Application Deployment(Weather app):
 	
 ===========================================================
 
-Section 10 - (Weather app):
+Section 10 - MongoDB and Promises(Task app):
 
+	MongoDB and NoSQL Databases:
+		It is a NoSQL database - Document based.
+		Open Source database.
+
+		Structure:
+			SQL - Tables
+			NoSQL - Collections
+
+			SQL - Row/Record
+			NoSQL - Documents
+
+			SQL - Columns
+			NoSQL - Fields
+
+		SQL:
+			Databases -> Tables -> Rows/Records -> Columns 
+
+		NoSQL:
+			Databases -> Collections -> Documents -> Fields
+
+		Put the bin folder of mongo folder in the system path.
+
+		Then run:
+			mongod --dbpath=<path-to-mongodb-data>
+
+		This will run mongodb while setting up the folder where the data will stay.
+
+		Then we will get this message:
+			waiting for connections on port 27017
+
+		This command needs to be running in order for mongodb to work:
+			mongod --dbpath=<path-to-mongodb-data>
+
+		
+		
+
+
+	
 		
 		
 	
