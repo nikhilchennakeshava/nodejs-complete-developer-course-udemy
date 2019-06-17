@@ -863,6 +863,8 @@ Section 10 - MongoDB and Promises(Task app):
 		NoSQL:
 			Databases -> Collections -> Documents -> Fields
 
+	Installing MongoDB:
+		Download the zip for MongoDB.
 		Put the bin folder of mongo folder in the system path.
 
 		Then run:
@@ -877,6 +879,7 @@ Section 10 - MongoDB and Promises(Task app):
 			mongod --dbpath=<path-to-mongodb-data>
 
 	Robo 3T:
+		GUI for Robo 3T.
 		MongoDb admin tool. 
 		This is used to visualize the MongoDB database.
 
@@ -887,6 +890,98 @@ Section 10 - MongoDB and Promises(Task app):
 		Next we can connect to this.
 		We can open shell where we can issue mongo commands.
 		The commands are similar to JavaScript.
+
+		We can view the data in Table Mode, Text Mode etc.
+
+	Connecting to MongoDB:
+		We need a npm package for MongoDB for us to use in node app.
+		We will need the MongoDB drivers for node.
+
+		The npm package is mongodb.
+
+			npm i mongodb
+
+		We need some boilerplate code to connect to MongoDB.
+
+		// Imports for mongodb
+		const mongodb = require('mongodb')
+
+		// Connection config for MongoDb
+		const MongoClient = mongodb.MongoClient
+		const connectionURL = 'mongodb://127.0.0.1:27017'
+		const databaseName = 'task-manager'
+
+		MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+			if (error) {
+				return console.error('Unable to connect to database')
+			}
+			console.log('Connected to database')
+		})
+
+	Inserting documents:
+		
+		MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+			if (error) {
+				return console.error('Unable to connect to database')
+			}
+
+			const db = client.db(databaseName)
+			db.collection('users').insertOne({
+				name: 'Nikhil',
+				age: 24
+			})
+		})
+
+		Then we can use the Robo UI to see the database.
+
+		Whenever we push a Document to a Collection, ObjectId is added which is unique for that Collection.
+
+		insertOne() is actually asynchronous. So we need a callback function to see if it executed properly.
+
+		MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+			if (error) {
+				return console.error('Unable to connect to database')
+			}
+
+			const db = client.db(databaseName)
+			db.collection('users').insertOne({
+				name: 'Nikhil',
+				age: 24
+			}, (error, result) => {
+				if (error) {
+					return console.error('Unable to insert user')
+				}
+				console.log(result.ops)
+			})
+		})
+
+		InsertMany:
+			db.collection('users').insertMany([{
+					name: 'Jen',
+					age: 25
+				},
+				{
+					name: 'Rachel',
+					age: 28
+				}
+			], (error, result) => {
+				if (error) {
+					return console.error('Unable to insert users')
+				}
+				console.log(result.ops)
+			})
+
+	ObjectId:
+		Field is automatically generated.
+		These are guid. This is helpful if we have multiple mongo servers, we won't have clashing of ids.
+
+		We ourselves can generate the ObjectId.
+
+		const id = new ObjectID()
+		console.log(id)
+		console.log(id.getTimestamp())
+
+
 
 	
 
