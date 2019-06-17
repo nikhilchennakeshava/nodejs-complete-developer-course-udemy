@@ -981,7 +981,103 @@ Section 10 - MongoDB and Promises(Task app):
 		console.log(id)
 		console.log(id.getTimestamp())
 
+	Querying Documents:
+		Normal Querying.
+		
+		db.collection('users').findOne({
+			name: 'Jen'
+		}, (error, result) => {
+			if (error) {
+				return console.error('Unable to fetch')
+			}
+			console.log(result)
+		})
 
+		Using find() will not return a callback but will return a cursor using which we can go through the results.
+		Similar to SQL.
+
+		db.collection('users').find({ age: 24 }).toArray((error, result) => {
+			console.log(result)
+		})
+
+		db.collection('users').find({ age: 24 }).count((error, result) => {
+			console.log(result)
+		})
+
+	Promises:
+		Makes it easier for us to manage asynchronous code.
+		Used to solve some drawbacks of callbacks.
+
+		Promises are like wrappers on callbacks.
+
+		resolve == result
+		reject == error
+
+		Advantages over callbacks:
+			Clearer semantics
+			we need to check if error occured.
+			After asynchronous task we need to do the work ourselves.
+			The code is more correct - as we cannot both resolve and reject together.
+			Easier to not mess up.
+
+		Callback:
+
+			doWorkCallback = (callback) => {
+				setTimeout(() => {
+					callback('This is my error')
+				}, 2000)
+			}
+
+			doWorkCallback((error, result) => {
+				if (error) {
+					return console.log(error)
+				}
+				console.log(result)
+			})
+
+		Promise:
+
+			const doWorkPromise = new Promise((resolve, reject) => {
+				setTimeout(() => {
+					// resolve('Success')
+					reject('Error occured')
+				}, 2000)
+			})
+
+			doWorkPromise.then((result) => {
+				console.log(result)
+			}).catch((error) => {
+				console.log(error)
+			})
+
+	Updating Documents:
+
+		db.collection('users').updateOne({
+			_id: ObjectID('5d07e7baf9c4c0225ef4ec12')
+		}, {
+			$set: {
+				name: 'Melissa'
+			}
+		}).then(result => {
+			console.log(result)
+		}).catch((error) => {
+			console.log(error)
+		})
+
+	Deleting Documents:
+
+		db.collection('users').deleteMany({
+			age: 25
+		}).then(result => {
+			console.log(result)
+		}).catch(error => console.log(error))
+
+
+===========================================================
+
+Section 11 - REST APIs and Mongoose(Task app):
+
+	
 
 	
 
