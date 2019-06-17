@@ -876,6 +876,21 @@ Section 10 - MongoDB and Promises(Task app):
 		This command needs to be running in order for mongodb to work:
 			mongod --dbpath=<path-to-mongodb-data>
 
+	Robo 3T:
+		MongoDb admin tool. 
+		This is used to visualize the MongoDB database.
+
+		When we install the Robo tool, we need to connect to mongo.
+
+		Here set the host and port and give a name to the mongodb connection.
+
+		Next we can connect to this.
+		We can open shell where we can issue mongo commands.
+		The commands are similar to JavaScript.
+
+	
+
+
 		
 		
 
