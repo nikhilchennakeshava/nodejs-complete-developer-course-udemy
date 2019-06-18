@@ -1286,7 +1286,97 @@ Section 11 - REST APIs and Mongoose(Task app):
 		For fetching a particular resource, we can use many of the functions provided by mongoose.
 
 	Promise Chaining:
-		
+		Similar to Callback Chaining, we can chain Promises too.
+
+		We can return a new Promise in the then() callback of one promise to chain promises.
+
+		// Using Promise Chanining
+		add(1, 2).then((sum) => {
+			console.log(sum)
+			return add(sum, 3)
+		}).then((sum2) => {
+			console.log(sum2)
+		}).catch((e) => {
+			console.log(e)
+		})
+
+		In Mongoose, we can use it as:
+			User.findByIdAndUpdate('5d092e0b5092f94970666af9', { age: 1 })
+				.then((user) => {
+					console.log(user)
+					return User.countDocuments({ age: 1 })
+				}).then((result) => {
+					console.log(result)
+				}).catch((e) => {
+					console.log(e)
+				})
+
+		To get rid of deprecation warnings:
+			const mongoose = require('mongoose')
+
+			mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
+				useNewUrlParser: true,
+				useCreateIndex: true,
+				useFindAndModify: false
+			})
+
+
+	Async/Await:
+		Set of tools which makes it easier to work with promises.
+		Makes it easier to work with asynchronous code.
+
+		async functions always returns a promise.
+		That promise is fulfilled with the value which we return from the function.
+
+		const doWork = async() => {
+			return 'nikhil'
+		}
+
+		doWork().then((result) => {
+			console.log(result)
+		}).catch((e) => {
+			console.log(e)
+		})
+
+		await operators can only be used with async functions.
+
+		await is useful whenever we work with any functions that returns a promise.
+
+		In Async/Await we can have all individual results in the same scope.
+
+		In mongoose,
+			const updateAgeAndCount = async(id, age) => {
+				const user = await User.findByIdAndUpdate(id, { age })
+				const count = await User.countDocuments({ age })
+				return count
+			}
+
+			updateAgeAndCount('5d092e0b5092f94970666af9', 2).then((count) => {
+				console.log(count)
+			}).catch((e) => {
+				console.log(e)
+			})
+
+	Integrating Async/Await:
+		We can turn our callbacks in express to async by denoting them as async.
+
+		// Get a specific User
+		app.get('/users/:id', async(req, res) => {
+			const _id = req.params.id
+
+			try {
+				const user = await User.findById(_id)
+				if (!user) {
+					return res.status(404).send()
+				}
+				res.send(user)
+			} catch (error) {
+				res.status(500).send(error)
+			}
+		})
+
+	
+
 
 
 
