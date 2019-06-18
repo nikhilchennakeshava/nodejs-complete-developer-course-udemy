@@ -1221,6 +1221,76 @@ Section 11 - REST APIs and Mongoose(Task app):
 	Postman:
 		Used to make HTTP requests.
 
+	Resource Creation Endpoints:
+		We can send data via Postman using Body of the request and selecting raw data with application/json.
+		We can create start scripts. and run them via:
+			npm run <scriptname>
+
+		Put each mongoose model into separate files.
+		Then use it in index.js.
+		When we require() a file then that js file is actually executed.
+		So we can use require() to connect to database.
+
+		// Telling express to parse incoming requests as JSON.
+		app.use(express.json())
+
+		// Create User
+		app.post('/users', (req, res) => {
+			const user = new User(req.body)
+
+			user.save().then((result) => {
+				res.status(201).send(result)
+			}).catch((e) => {
+				res.status(400).send(e)
+					// res.send(e)
+			})
+		})
+
+	Resource Reading Endpoints:
+		For reading, mongoose has some builtin methods.
+
+		// Get all Users
+		app.get('/users', (req, res) => {
+			User.find({}).then((users) => {
+				res.send(users)
+			}).catch((e) => {
+				res.status(500).send()
+			})
+		})
+
+		Express provides us route parameters which we can use to fetch a particular resource.
+
+		// Get all Tasks
+		app.get('/tasks', (req, res) => {
+			Task.find({}).then((tasks) => {
+				res.send(tasks)
+			}).catch((e) => {
+				res.status(500).send()
+			})
+		})
+
+		// Get a specific Task
+		app.get('/tasks/:id', (req, res) => {
+			const _id = req.params.id
+
+			Task.findById(_id).then((task) => {
+				if (!task) {
+					return res.status(404).send()
+				}
+				res.send(task)
+			}).catch((e) => {
+				res.status(500).send()
+			})
+		})
+
+		For fetching a particular resource, we can use many of the functions provided by mongoose.
+
+	Promise Chaining:
+		
+
+
+
+
 		
 		
 
