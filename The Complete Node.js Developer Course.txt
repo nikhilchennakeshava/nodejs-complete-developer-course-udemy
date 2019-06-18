@@ -1116,7 +1116,113 @@ Section 11 - REST APIs and Mongoose(Task app):
 			console.log('Error:', error)
 		})
 
-	
+	Data Validation and Sanitization:
+		Validating means checking if the data is of proper syntax and as such.
+		Sanitization refers to cleaning/altering of data before using.
+
+		Mongoose doesn't have many good built-in validators.
+		So we can build custom validator.
+
+		But it's best to use a npm package for validation.
+
+		validator is the npm package for this:
+
+			npm i validator
+
+		This validator has many in-built functions.
+
+		email: {
+			type: String,
+			required: true,
+			validate(value) {
+				if (!validator.isEmail(value)) {
+					throw new Error('Email is invalid')
+				}
+			}
+		},
+
+		We can set a default value for any fields.
+
+		We can also sanitize.
+
+		const User = mongoose.model('User', {
+			name: {
+				type: String,
+				required: true,
+				trim: true
+			},
+			email: {
+				type: String,
+				required: true,
+				trim: true,
+				lowercase: true,
+				validate(value) {
+					if (!validator.isEmail(value)) {
+						throw new Error('Email is invalid')
+					}
+				}
+			},
+			password: {
+				type: String,
+				required: true,
+				minlength: 7,
+				trim: true,
+				validate(value) {
+					if (value.toLowerCase().includes('password')) {
+						throw new Error('Password is invalid. It cannot contain "password"')
+					}
+				}
+			},
+			age: {
+				type: Number,
+				default: 0,
+				validate(value) {
+					if (value < 0) {
+						throw new Error('Age must be a positive number')
+					}
+				}
+			}
+		})
+
+	Structuring a REST API:
+		REST - Representational State Transfer
+		API - Application Programming Interface
+
+		API are set of tools for sowtware building.
+		REST are predefined operations.
+
+		Requests are usually HTTP Requests.
+		Response are usually JSON response.
+
+		Predefined Operations are usually - CRUD - Post, Get, Patch, Delete.
+
+		Create:
+			POST: /tasks
+
+		Read:
+			GET: /tasks
+			GET: /tasks/:id
+
+		Update:
+			PATCH: /tasks/:id
+
+		Delete:
+			DELETE: /tasks/:id
+
+		HTTP Request:
+			<HTTP method> <path> <HTTP protocol>
+			Accept: <>
+			Connection: <>
+			Authorization: Bearer/basic
+
+			Body
+
+
+	Postman:
+		Used to make HTTP requests.
+
+		
+		
 
 
 		
