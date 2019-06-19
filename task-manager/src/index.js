@@ -23,20 +23,20 @@ app.listen(port, () => {
 })
 
 
-// // Testing hashing
-// const bcrypt = require('bcryptjs')
+// // Testing jwt
+// const jwt = require('jsonwebtoken')
 
 // const myFunction = async() => {
-//     const password = 'Red12345!'
-//     const hashedPassword = await bcrypt.hash(password, 8)
+//     // Generate token with expiry date
+//     const token = jwt.sign({ _id: '12345' }, 'thisismycourse', { expiresIn: '1 day' })
+//     console.log(token)
 
-//     console.log(password)
-//     console.log(hashedPassword)
-
-//     const isMatch = await bcrypt.compare(password, hashedPassword)
-//     console.log(isMatch)
+//     // Verify token using token and the secret
+//     const data = jwt.verify(token, 'thisismycourse')
+//     console.log(data)
 // }
 
+// myFunction()
 
 // // Testing hashing
 // const bcrypt = require('bcryptjs')

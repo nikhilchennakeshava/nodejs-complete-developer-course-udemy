@@ -1556,9 +1556,196 @@ Section 11 - REST APIs and Mongoose(Task app):
 
 ===========================================================
 
-Section 12 - REST APIs and Mongoose(Task app):
+Section 12 - API Authentication and Security(Task app):
+
+	Securely Storing Passwords:
+		Passwords should never be stored in plaintext.
+		Hashed passwords needs to be stored.
+
+		Hashing algorithm - bcrypt.
+
+		npm package:
+			npm i bcryptjs
+
+		Hashing algorithms are different than Encrypting algorithms.
+		In Encrypting algorithms, we can get the plaintext back. 
+		But in Hashing algorithms, we can never get the plaintext back.
+
+		const bcrypt = require('bcryptjs')
+
+		const myFunction = async() => {
+			const password = 'Red12345!'
+			const hashedPassword = await bcrypt.hash(password, 8)
+
+			console.log(password)
+			console.log(hashedPassword)
+
+			const isMatch = await bcrypt.compare(password, hashedPassword)
+			console.log(isMatch)
+		}
+
+		myFunction()
+
+		We need to use the Middleware provided by mongoose to hash user's passwords before saving.
+		We need to use the save middleware.
+		First we need to define the schema of the Mongoose model first before creating the model.
+
+		We can use the life cycle hooks:
+			userSchema.pre('save', async function(next) {
+				const user = this
+
+				console.log('just before saving')
+				next()
+			})
+
+		For updating, the current method will not work, so we need to change the methods.
+		Some of the mongoose methods will not work well with middleware. So we need to be careful.
+
+		// To make the middleware work
+        const user = await User.findById(req.params.id)
+
+        // No user to update
+        if (!user) {
+            return res.status(404).send()
+        }
+
+        // Using bracket notation as we want to use dynamically
+        updates.forEach(update => user[update] = req.body[update])
+        const updatedUser = await user.save()
+
+		Now the 'pre' hook is run on 'save' so password will get hashed.
 
 
+	Logging in Users:
+		We need to log in users by making them enter credentials. We will create a new route for this.
+
+		// User login
+		router.post('/users/login', async(req, res) => {
+			try {
+				const user = await User.findByCredentials(req.body)
+				res.send(user)
+			} catch (error) {
+				res.status(400).send(error)
+			}
+		})
+
+		We can define new custom functions on the Mongoose model.
+
+		// Validating the credentials
+		userSchema.statics.findByCredentials = async({ email, password } = {}) => {
+			const user = await User.findOne({ email })
+			if (!user) {
+				throw new Error('Incorrect Email')
+			}
+
+			const isMatch = await bcrypt.compare(password, user.password)
+			if (!isMatch) {
+				throw new Error('Incorrect Password')
+			}
+
+			return user
+		}
+
+		We need the email to be unique across all users:
+			email: {
+				type: String,
+				required: true,
+				unique: true,
+				...
+
+		We need to drop database so that proper indexing will happen.
+
+	
+	JWT - JSON Web Token:
+		Except for signup and login, all other routes will be authenticated.
+
+			npm i jsonwebtoken
+
+		// Testing jwt
+		const jwt = require('jsonwebtoken')
+
+		const myFunction = async() => {
+			const token = jwt.sign({ _id: '12345' }, 'thisismycourse')
+			console.log(token)
+		}
+
+		myFunction()
+
+		We need to pass a cryptoKey ie the secret using which user can authenticate.
+
+		Each JWT has 3 parts:
+		eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxMjM0NSIsImlhdCI6MTU2MDk3NDM1MH0.g93BsIeKuJIctfNEtgDYgST60TgmvlDsCZKS4-MvXPo
+
+		The parts are separated by periods.
+			
+			eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+			The first part is a base64 encoded JSON string - Header - conatins meta information like what kinda token and what algorithm was used.
+			
+			eyJfaWQiOiIxMjM0NSIsImlhdCI6MTU2MDk3NDM1MH0
+			The second part is a base64 encoded JSON string - Payload - conatins the data provided by user. 
+			
+			g93BsIeKuJIctfNEtgDYgST60TgmvlDsCZKS4-MvXPo
+			The last part is a base64 encoded JSON string - Signature - used to verify the token. 
+
+		// Testing jwt
+		const jwt = require('jsonwebtoken')
+
+		const myFunction = async() => {
+			// Generate token with expiry date
+			const token = jwt.sign({ _id: '12345' }, 'thisismycourse', { expiresIn: '1 day' })
+			console.log(token)
+
+			// Verify token using token and the secret
+			const data = jwt.verify(token, 'thisismycourse')
+			console.log(data)
+		}
+
+	Generating Authentication Tokens - JWT:
+		schema.stattics.foo - foo is a model method - Model methods.
+		schema.methods.foo - foo is an instance method - Instance methods.
+
+		We need normal function for this as we need to bind the this. Cannot use arrow functions.
+		This will be similar to middleware.
+
+		// Instance method
+		// Generate Auth tokens
+		userSchema.methods.generateAuthToken = async function() {
+			const user = this
+
+			// generate token
+			const token = jwt.sign({ _id: user._id.toString() }, 'thisismycourse', { expiresIn: '1 day' })
+
+			// add token to user
+			user.tokens = user.tokens.concat({ token })
+			await user.save()
+
+			return token
+		}
+
+		Next the server needs to keep track of the user so that the user can login via multiple devices.
+
+		Adding to User schema:
+			
+			....
+						age: {
+					type: Number,
+					default: 0,
+					validate(value) {
+						if (value < 0) {
+							throw new Error('Age must be a positive number')
+						}
+					}
+				},
+				tokens: [{
+					token: {
+						type: String,
+						required: true
+					}
+				}]
+			})
+		
+		Here tokens is an array of tokens.
+		In Mongo, this will be a sub-document. So each token object will have its ObjectID.
 
 
 		
