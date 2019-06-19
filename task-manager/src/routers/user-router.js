@@ -27,6 +27,16 @@ router.post('/users', async(req, res) => {
     // })
 })
 
+// User login
+router.post('/users/login', async(req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body)
+        res.send(user)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+
 // Get all Users
 router.get('/users', async(req, res) => {
     try {
@@ -79,15 +89,28 @@ router.patch('/users/:id', async(req, res) => {
     }
 
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        // To make the middleware work
+        const user = await User.findById(req.params.id)
 
         // No user to update
         if (!user) {
             return res.status(404).send()
         }
 
+        // Using bracket notation as we want to use dynamically
+        updates.forEach(update => user[update] = req.body[update])
+        const updatedUser = await user.save()
+
+        // // This won't work with middleware
+        // const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
+        // // No user to update
+        // if (!user) {
+        //     return res.status(404).send()
+        // }
+
         // Updated successfully
-        res.send(user)
+        res.send(updatedUser)
     } catch (error) {
         res.status(400).send(error)
     }

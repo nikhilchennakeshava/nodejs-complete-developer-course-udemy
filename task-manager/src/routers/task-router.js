@@ -74,15 +74,28 @@ router.patch('/tasks/:id', async(req, res) => {
     }
 
     try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        // To make the middleware work
+        const task = await Task.findById(req.params.id)
 
         // No task to update
         if (!task) {
             return res.status(404).send()
         }
 
+        // Using bracket notation as we want to use dynamically
+        updates.forEach(update => task[update] = req.body[update])
+        const updatedTask = await task.save()
+
+        // // to make middle ware work
+        // const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
+        // // No task to update
+        // if (!task) {
+        //     return res.status(404).send()
+        // }
+
         // Updated successfully
-        res.send(task)
+        res.send(updatedTask)
     } catch (error) {
         res.status(400).send(error)
     }
