@@ -8,6 +8,24 @@ const { router: taskRouter } = require('./routers/task-router')
 const app = express()
 const port = process.env.PORT || 3000
 
+// // Custom middleware - Needs to be defined before any other middleware
+// // Authentication
+// app.use((req, res, next) => {
+//     // console.log(req.method, req.path)
+//     // next()
+
+//     if (req.method === 'GET') {
+//         res.send('GET requests are disabled')
+//     } else {
+//         next()
+//     }
+// })
+
+// // Maintainence mode
+// app.use((req, res, next) => {
+//     res.status(503).send('Site is currently down for maintenance. Check back soon!')
+// })
+
 // Telling express to parse incoming requests as JSON.
 app.use(express.json())
 

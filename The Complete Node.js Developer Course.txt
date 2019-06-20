@@ -1748,7 +1748,100 @@ Section 12 - API Authentication and Security(Task app):
 		In Mongo, this will be a sub-document. So each token object will have its ObjectID.
 
 
+	Express Middleware:
+		We can use some middleware so that we can authenticate users before they can perform any actions.
+
+		To do this we need to run the custome middleware in our code. 
+		For this, we need to use app.use().
+		This needs to be at the top of the declarations before any other middleware.
+
+		We can create a new hook using express.
+
+		app.use((req, res, next) => {
+			console.log(req.method, req.path)
+			next()
+		})
+
+		We need to call the next() function so that the execution will continue.
+
+		We can use this for multiple purposes like maintenance mode ...
+
+		// Maintainence mode
+		app.use((req, res, next) => {
+			res.status(503).send('Site is currently down for maintenance. Check back soon!')
+		})
+
+	Accepting Authentication Tokens:
+		It's better to organize all middleware in a separate folder.
+
+		The middleware in index.js will be associated with every single route in our app.
+		For auth middleware, we dont want this.
+
+		We can add our middleware to a particular route by - adding the function as the second parameter while setting up the route.
+
+			// Get all Users
+			router.get('/users', auth, async(req, res) => {
+				try {
+					const users = await User.find({})
+					res.send(users)
+				} catch (error) {
+					res.status(500).send(error)
+				}
+			})
+
+		The client needs to put their Authentication jwt and send it as headers along with all their requests.
+		This way they can be authenticated.
+
+		The Headers will be of key/value pairs.
+
+		Key - Authorization
+		Value - Bearer <token>
+
+		For basic authentication:
+			Key - Authorization
+			Value - Basic <token>
 		
+		We can get the token sent by client on Authorization header. Then use it to authenticate.
+		
+		const auth = async(req, res, next) => {
+			try {
+				const token = req.header('Authorization').replace('Bearer ', '')
+				const decoded_token = jwt.verify(token, 'thisismycourse')
+
+				// check user
+				const user = await User.findOne({ _id: decoded_token._id, 'tokens.token': token })
+
+				if (!user) {
+					throw new Error()
+				}
+
+				// send the user back in request for further use
+				req.user = user
+
+				// resume execution
+				next()
+			} catch (error) {
+				return res.status(401).send({ error: 'User not authorized. Please send valid JWT' })
+			}
+		}
+
+		Now as authentication is present a user should not be able to see other users' details.
+		So /users will now be useless.
+
+		So we can repurpose it to see profile of the user.
+
+		// Will not be correct after auth 
+		// repurposing as user profile view
+		// Get own profile
+		router.get('/users/me', auth, async(req, res) => {
+			res.send(req.user)
+		})
+
+	Advanced Postman:
+		
+
+		
+
 		
 
 

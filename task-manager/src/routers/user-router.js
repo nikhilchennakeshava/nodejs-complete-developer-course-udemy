@@ -1,5 +1,6 @@
 const express = require('express')
 const { User } = require('../models/user')
+const { auth } = require('../middleware/auth')
 
 const router = new express.Router()
 
@@ -9,6 +10,7 @@ const router = new express.Router()
 // })
 
 // Create User
+// User Signup
 router.post('/users', async(req, res) => {
     const user = new User(req.body)
 
@@ -45,21 +47,30 @@ router.post('/users/login', async(req, res) => {
     }
 })
 
-// Get all Users
-router.get('/users', async(req, res) => {
-    try {
-        const users = await User.find({})
-        res.send(users)
-    } catch (error) {
-        res.status(500).send(error)
-    }
-
-    // User.find({}).then((users) => {
-    //     res.send(users)
-    // }).catch((e) => {
-    //     res.status(500).send()
-    // })
+// Will not be correct after auth 
+// repurposing as user profile view
+// Get own profile
+router.get('/users/me', auth, async(req, res) => {
+    res.send(req.user)
 })
+
+// // Will not be correct after auth 
+// // repurposing as user profile view
+// // Get all Users
+// router.get('/users', auth, async(req, res) => {
+//     try {
+//         const users = await User.find({})
+//         res.send(users)
+//     } catch (error) {
+//         res.status(500).send(error)
+//     }
+
+//     // User.find({}).then((users) => {
+//     //     res.send(users)
+//     // }).catch((e) => {
+//     //     res.status(500).send()
+//     // })
+// })
 
 // Get a specific User
 router.get('/users/:id', async(req, res) => {
