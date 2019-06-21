@@ -41,6 +41,21 @@ app.listen(port, () => {
 })
 
 
+// // Testing ref expansion and relationship
+// // virtual property setting
+// const main = async() => {
+//     // // finding user of a given task
+//     // const task = await Task.findById('5d0cc00f6929993480b9c13f')
+//     // await task.populate('owner').execPopulate()
+//     // console.log(task.owner)
+
+//     // finding all tasks of a given user
+//     const user = await User.findById('5d0cbedcb44d384ca8f20d3c')
+//     await user.populate('tasks').execPopulate()
+//     console.log(user.tasks)
+// }
+// main()
+
 // // Testing jwt
 // const jwt = require('jsonwebtoken')
 

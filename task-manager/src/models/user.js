@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { Task } = require('./task')
 
 // Creating the user schema
 const userSchema = new mongoose.Schema({
@@ -48,6 +49,13 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }]
+})
+
+// virtual property
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
 })
 
 // Instance method
@@ -105,6 +113,17 @@ userSchema.pre('save', async function(next) {
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 10)
     }
+
+    // telling the middleware we are done and to proceed with normal execution.
+    next()
+})
+
+// Hook to delete all the tasks of users when user is deleted
+userSchema.pre('remove', async function(next) {
+    const user = this
+
+    // deleting all taks for the user
+    await Task.deleteMany({ owner: user._id })
 
     // telling the middleware we are done and to proceed with normal execution.
     next()
