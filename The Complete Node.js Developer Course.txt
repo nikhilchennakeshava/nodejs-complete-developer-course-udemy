@@ -1838,7 +1838,32 @@ Section 12 - API Authentication and Security(Task app):
 		})
 
 	Advanced Postman:
+		Environments:
+			Multiple environments can be configured.
+			We can setup the environments and then use them as 
+				{{env_variable}}
+
+		Authorization:
+			We can generalize Authorization by not putting in header directly but rather putting in Authorization tab under Bearer token.
+
+			Or we can put Authorization in the Collection lever itself and then Inherit from Parent for all other requests.
+
+		Environment Variable:
+			We can use an environment variable to store the token so that it is stored and updated automatically and no manual steps are needed.
+			We can do this by writing JavaScript code under Tests tab of the request.
+
+			if(pm.response.code === 200) {
+				pm.environment.set("auth_token", pm.response.json().token);
+			}
+
+	Logging Out:
 		
+
+
+
+
+		
+
 
 		
 
