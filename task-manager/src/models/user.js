@@ -51,6 +51,23 @@ const userSchema = new mongoose.Schema({
 })
 
 // Instance method
+// Generate Public profile
+// use default method name to automate
+// userSchema.methods.getPublicProfile = async function() {
+userSchema.methods.toJSON = function() {
+    const user = this
+
+    // generate userObject
+    const userObject = user.toObject()
+
+    // deleting sensitive information
+    delete userObject.password
+    delete userObject.tokens
+
+    return userObject
+}
+
+// Instance method
 // Generate Auth tokens
 userSchema.methods.generateAuthToken = async function() {
     const user = this

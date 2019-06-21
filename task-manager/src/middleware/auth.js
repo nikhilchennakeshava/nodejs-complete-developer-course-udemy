@@ -16,6 +16,9 @@ const auth = async(req, res, next) => {
         // send the user back in request for further use
         req.user = user
 
+        // send the token back in request for further use
+        req.token = token
+
         // resume execution
         next()
     } catch (error) {
