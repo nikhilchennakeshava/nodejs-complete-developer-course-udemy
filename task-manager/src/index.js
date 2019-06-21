@@ -8,6 +8,51 @@ const { router: taskRouter } = require('./routers/task-router')
 const app = express()
 const port = process.env.PORT || 3000
 
+
+// Testing file uploads
+const multer = require('multer')
+
+const upload = multer({
+    dest: 'images',
+    limits: {
+        // filesize is in bytes
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        // With regular expressions
+        if (!file.originalname.match(/\.(doc|docx)$/)) {
+            return cb(new Error('File must be a doc file'))
+        }
+
+        // if (!file.originalname.endsWith('.pdf')) {
+        //     return cb(new Error('File must be a pdf'))
+        // }
+
+        cb(undefined, true)
+
+        // cb(new Error('File must be a pdf'))
+        // cb(undefined, true)
+        // cb(undefined, false)
+    }
+})
+
+// const expressMiddleware = (req, res, next) => {
+//     throw new Error('error from express middleware')
+// }
+
+// app.post('/upload', expressMiddleware, (req, res) => {
+//     res.send()
+// }, (error, req, res, next) => {
+//     res.status(400).send({ error: error.message })
+// })
+
+app.post('/upload', upload.single('upload'), (req, res) => {
+    res.send()
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
+
+
 // // Custom middleware - Needs to be defined before any other middleware
 // // Authentication
 // app.use((req, res, next) => {
