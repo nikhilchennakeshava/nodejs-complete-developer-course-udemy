@@ -28,8 +28,25 @@ router.post('/tasks', auth, async(req, res) => {
     // })
 })
 
+// GET /tasks?completed=true
+// GET /tasks?limit=10&skip=5
+// GET /tasks?sortBy=createdAt:asc
 // Get all Tasks
 router.get('/tasks', auth, async(req, res) => {
+    const match = {}
+    const sort = {}
+
+    if (req.query.completed) {
+        match.completed = req.query.completed === 'true'
+    }
+
+    if (req.query.sortBy) {
+        const parts = req.query.sortBy.split(':')
+
+        // setting sort option dynamically with ternary operator
+        sort[parts[0]] = parts[1] === 'dsc' ? -1 : 1
+    }
+
     try {
         // // original
         // const tasks = await Task.find({})
@@ -39,7 +56,18 @@ router.get('/tasks', auth, async(req, res) => {
         // res.send(tasks)
 
         // method 2
-        const tasks = await req.user.populate('tasks').execPopulate()
+        const tasks = await req.user.populate({
+            path: 'tasks',
+            match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip),
+                sort
+                // sort: {
+                //     createdAt: -1
+                // }
+            }
+        }).execPopulate()
         res.send(req.user.tasks)
     } catch (error) {
         res.status(500).send(error)
@@ -94,7 +122,7 @@ router.patch('/tasks/:id', auth, async(req, res) => {
         // const task = await Task.findById(req.params.id)
 
         // get task
-        const task = await Task.findByOne({ _id: req.params.id, owner: req.user._id })
+        const task = await Task.findOne({ _id: req.params.id, owner: req.user._id })
 
         // No task to update
         if (!task) {
@@ -124,7 +152,7 @@ router.patch('/tasks/:id', auth, async(req, res) => {
 router.delete('/tasks/:id', auth, async(req, res) => {
     try {
         // const task = await Task.findByIdAndDelete(req.params.id)
-        const task = await Task.findByOneAndDelete({ _id: req.params.id, owner: req.user._id })
+        const task = await Task.findOneAndDelete({ _id: req.params.id, owner: req.user._id })
 
         // No task to delete
         if (!task) {
