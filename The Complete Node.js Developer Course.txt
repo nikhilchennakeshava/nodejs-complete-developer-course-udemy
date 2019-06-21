@@ -1857,36 +1857,426 @@ Section 12 - API Authentication and Security(Task app):
 			}
 
 	Logging Out:
+		The User needs to have the ability to log out of the application. 
+		If a user has different seessions on different devices then we will only need to logout of the particular device only.
+		So proper token needs to be matched.
+
+		// User logout
+		router.post('/users/logout', auth, async(req, res) => {
+			try {
+				req.user.tokens = req.user.tokens.filter(token => token.token !== req.token)
+				await req.user.save()
+				res.send('Logged out succesfully')
+			} catch (error) {
+				res.status(500).send(error)
+			}
+		})
+
+		We can also logout of all the sessions - gmail, netflix etc.
+
+		// User logout all
+		router.post('/users/logoutAll', auth, async(req, res) => {
+			try {
+				req.user.tokens = []
+				await req.user.save()
+				res.send('Logged out succesfully in all devices')
+			} catch (error) {
+				res.status(500).send(error)
+			}
+		})
+
+	Hiding Private Data:
+		We shouldn't send tokens or password back to user.
+		It needs to be hidden from the user.
+
+		So we need to use a method to restrict the data.
+
+		// Instance method
+		// Generate Public profile
+		userSchema.methods.getPublicProfile = async function() {
+			const user = this
+
+			// generate userObject
+			const userObject = user.toObject()
+
+			// deleting sensitive information
+			delete userObject.password
+			delete userObject.tokens
+
+			return userObject
+		}
+
+		This is the manual way as we need to call the function everytime.
+		This is not feasible and needs to be automated.
+
+		To do this we need to change the method name to 'toJSON'
+		No other change will be required.
+
+		userSchema.methods.toJSON = function() {
+			const user = this
+			...
+		}
+
+		Now all user will have data modified.
+
+		toJSON:
+			We can use this to modify what the object will be.
+			This is a default method which will be called whenever JSON.stringify(obj) is called.
+
 		
+	Authenticating User Endpoints:
+		Now we know that since a user can only see his details, we don't need the fetch user by id call anymore.
+		Similarly a user can only delete his own profile.
 
+		// Delete User
+		router.delete('/users/me', auth, async(req, res) => {
+			try {
+				await req.user.remove()
+				res.send(req.user)
+			} catch (error) {
+				res.status(500).send(error)
+			}
+		})
 
+		Next our update will also need to change.
 
+		// Update User
+		router.patch('/users/me', auth, async(req, res) => {
+			// check if user tries to update non-updatable fields.
+			const allowedUpdates = ['name', 'email', 'password', 'age']
+			const updates = Object.keys(req.body)
 
+			const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+			if (!isValidOperation) {
+				res.status(400).send({ error: 'Invalid update!' })
+			}
+
+			try {
+				// Using bracket notation as we want to use dynamically
+				updates.forEach(update => req.user[update] = req.body[update])
+				await req.user.save()
+
+				// Updated successfully
+				res.send(req.user)
+			} catch (error) {
+				res.status(400).send(error)
+			}
+		})
+
+	User/Task Relationship:
+		First, the task needs to contain the id of the user who created it.
+
+		const Task = mongoose.model('Task', {
+			description: {
+				type: String,
+				required: true,
+				trim: true
+			},
+			completed: {
+				type: Boolean,
+				default: false
+			},
+			owner: {
+				type: mongoose.Schema.Types.ObjectId,
+				required: true
+			}
+		})
+
+		Then we need to update the post method
+			// Create Task
+			router.post('/tasks', auth, async(req, res) => {
+				const task = new Task({
+					...req.body,
+					owner: req.user._id
+				})
+
+				try {
+					const result = await task.save()
+					res.status(201).send(result)
+				} catch (error) {
+					res.status(400).send(error)
+				}
+			})
+
+		While creating the Task model, for the owner parameter we can create a ref to the User model so that we can connect the two more easily.
+
+		owner: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'User'
+		}
+
+		Then we can populate the ref using the actual referred object.
+
+		Now finding user of a given task:
+
+			const main = async() => {
+				const task = await Task.findById('5d0cc00f6929993480b9c13f')
+				await task.populate('owner').execPopulate()
+				console.log(task.owner)
+			}
+
+		Next finding all tasks of a given user:
+
+			For this, we need to create a virtual property. This will be the relationship between the two entities.
+			It is not actual data which is stored in a database.
+
+			// virtual property
+			userSchema.virtual('tasks', {
+				ref: 'Task',
+				localField: '_id',
+				foreignField: 'owner'
+			})
+
+		In file:
+
+			const main = async() => {
+				// // finding user of a given task
+				// const task = await Task.findById('5d0cc00f6929993480b9c13f')
+				// await task.populate('owner').execPopulate()
+				// console.log(task.owner)
+
+				// finding all tasks of a given user
+				const user = await User.findById('5d0cbedcb44d384ca8f20d3c')
+				await user.populate('tasks').execPopulate()
+				console.log(user.tasks)
+			}
+
+	Authenticating Task Enpoints:
+		We need to ensure that the auth and relationship is maintained.
+
+		For getting the task by id, we can just do:
+			const task = await Task.findOne({ _id, owner: req.user._id })
 		
+		Next for updating a task:
+			// get task
+        	const task = await Task.findByOne({ _id: req.params.id, owner: req.user._id })
+
+		For deleting:
+			const task = await Task.findByOneAndDelete({ _id: req.params.id, owner: req.user._id })
+
+	Cascade Delete Tasks:
+		If a user is deleted, then all his tasks also needs to be deleted.
+		We can again use express middleware for this. 
+		Create new hook for this.
+
+		// Hook to delete all the tasks of users when user is deleted
+		userSchema.pre('remove', async function(next) {
+			const user = this
+
+			// deleting all taks for the user
+			await Task.deleteMany({ owner: user._id })
+
+			// telling the middleware we are done and to proceed with normal execution.
+			next()
+		})
 
 
+===========================================================
+
+Section 13 - Sorting, Pagination and Filtering(Task app):
+
+	Timestamps:
+		We can have Mongoose/Mongo provide timestamps for us. We can do this by anabling Schema options.
+
+		const taskSchema = new mongoose.Schema({
+			...
+			owner: {
+				type: mongoose.Schema.Types.ObjectId,
+				required: true,
+				ref: 'User'
+			}
+		}, {
+			timestamps: true
+		})
+
+	Filtering Data:
+		We use the querystring for this.
+		We can set up a qs param so that user can filter out the tasks which are completed only.
+
+		We can enable new options in populate() function.
+
+		// GET /tasks?completed=true
+		// Get all Tasks
+		router.get('/tasks', auth, async(req, res) => {
+			const match = {}
+			if (req.query.completed) {
+				match.completed = req.query.completed === 'true'
+			}
+			try {
+				const tasks = await req.user.populate({
+					path: 'tasks',
+					match
+				}).execPopulate()
+				res.send(req.user.tasks)
+			} catch (error) {
+				res.status(500).send(error)
+			}
+		})
+
+	Pagination:
+		3 ways to implement:
+			Using Page numbers.
+			Using Load more option.
+			Infinite scroll.
 		
+		We can use limit and skip to manage pagination.
+		Here we need new options in populate().
 
-		
+		const tasks = await req.user.populate({
+            path: 'tasks',
+            match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip)
+            }
+        }).execPopulate()
 
+	Sorting:
+		Similar to pagination we need to add options in populate().
 
-		
-		
+		router.get('/tasks', auth, async(req, res) => {
+			const match = {}
+			const sort = {}
 
+			if (req.query.completed) {
+				match.completed = req.query.completed === 'true'
+			}
+
+			if (req.query.sortBy) {
+				const parts = req.query.sortBy.split(':')
+
+				// setting sort option dynamically with ternary operator
+				sort[parts[0]] = parts[1] === 'dsc' ? -1 : 1
+			}
+
+			try {
+				const tasks = await req.user.populate({
+					path: 'tasks',
+					match,
+					options: {
+						limit: parseInt(req.query.limit),
+						skip: parseInt(req.query.skip),
+						sort
+					}
+				}).execPopulate()
+				res.send(req.user.tasks)
+			} catch (error) {
+				res.status(500).send(error)
+			}
+		})
 
 	
+===========================================================
+
+Section 14 - File Uploads(Task app):
+
+	Adding Support for File Uploads:
+		Express by default does not support file uploads. We can use a npm package for this.
+
+		npm i multer
+
+		We can use multer to use any kinda of file upload be it images or pdfs.
+
+		multer comes with its own middleware which we need to use.
+			multer.single()
+
+		// Testing file uploads
+		const multer = require('multer')
+
+		const upload = multer({
+			dest: 'images'
+		})
+
+		app.post('/upload', upload.single('upload'), (req, res) => {
+			res.send()
+		})
+
+		We need to send this data as form-data in Postman.
+		The key in Postman needs to match with the single() function we defined. And select type as file.
+
+		Initially the file will be in binary format. Later we will learn on how to get the correct file type.
+
+	Validating File Uploads:
+		We can add validations for file size and also file type.
 		
+		We can configure fileSize in the multer object limits section.
+
+		// set file upload directory
+		const upload = multer({
+			dest: 'avatars',
+			limits: {
+				// filesize is in bytes
+				fileSize: 1000000
+			}
+		})
+
+		For the file type restrictions we need to add one more object in the multer definitions.
+
+		const upload = multer({
+			dest: 'images',
+			limits: {
+				// filesize is in bytes
+				fileSize: 1000000
+			},
+			fileFilter(req, file, cb) {
+				if (!file.originalname.endsWith('.pdf')) {
+					return cb(new Error('File must be a pdf'))
+				}
+				cb(undefined, true)
+			}
+		})
+
+		We can use match() with regular expressions so that we can have better restrictions.
+
+		const upload = multer({
+			dest: 'images',
+			limits: {
+				// filesize is in bytes
+				fileSize: 1000000
+			},
+			fileFilter(req, file, cb) {
+				if (!file.originalname.match(/\.(doc|docx)$/)) {
+					return cb(new Error('File must be a word document'))
+				}
+				cb(undefined, true)
+			}
+		})
+
+	Handling Express errors:
+		We need to display the error in a json format.
+		For this, we need to define a callback in the method.
+
+		app.post('/upload', upload.single('upload'), (req, res) => {
+			res.send()
+		}, (error, req, res, next) => {
+			res.status(400).send({ error: error.message })
+		})
+
 		
-	
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+
+
+
+
+
+
+===========================================================
+
+Section 14 - Wrapping Up:
+
+	New Feature Ideas:
+		Weather App:
+			Allow user to use geolocation API to get weather for their location instead of tyoing in the address.
+
+		Todo App:
+			Allow users to upload images for individual todos.
+
+		Chat App:
+			Let users pick from list of active rooms or type in custom room name instead of typing the name.
+
+	What to do next?:
+		GraphQL
+		React
+
+===========================================================
+===========================================================		
