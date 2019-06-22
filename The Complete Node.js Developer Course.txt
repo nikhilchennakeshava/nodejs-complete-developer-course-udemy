@@ -2365,10 +2365,49 @@ Section 15 - Sending Emails(Task App):
 
 		dev.env for development.
 
+		We need to store key-value pairs in that.
+
 		We can use npm package to help with this:
 			npm i env-cmd -D
 
+		To run we need to add this in the package.json scripts.
 		
+		"scripts": {
+			"start": "node src/index.js",
+			"dev": "env-cmd ./config/dev.env nodemon src/index.js"
+		},
+
+	Creating a Production MongoDB Database:
+		In production deployment, we need a MongoDB hosting service which will host our database.
+		So that heroku can connect to that.
+
+		We can use MongoDB Atlas for this.
+		We need to build our first cluster.
+		A cluster is a collection of servers for our db.
+
+		First we need to customize.
+		
+		We need MongoDB compass to be installed in our local machine.
+
+		Do configurations as shown in video.
+
+	Deploy to heroku:
+		Create a new heroku app:
+			heroku create <appname>
+
+		To view config variables in heroku,
+			heroku config
+
+		To set config variables in heroku,
+			heroku config:set <key>=<value>
+
+		Then push our code to heroku github:
+			git push heroku master
+
+
+===========================================================
+
+Section 16 - Testing Node.js(Task App):
 
 
 
