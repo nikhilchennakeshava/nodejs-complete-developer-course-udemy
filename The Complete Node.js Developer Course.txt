@@ -2253,7 +2253,80 @@ Section 14 - File Uploads(Task app):
 			res.status(400).send({ error: error.message })
 		})
 
+	Adding images to user profiles:
+		We first need to put the image upload url behind authentication.
+
+		Usually in all huge productin apps the profile pic is not stored in a separate folder in the filesytem but in the form of binary data 
+		as part of the user prfile.
+
+		The type will be Buffer.
+
+		avatar: {
+			type: Buffer
+		}
+
+		// Upload profile pic
+		router.post('/users/me/avatar', auth, upload.single('avatar'), async(req, res) => {
+			req.user.avatar = req.file.buffer
+			await req.user.save()
+			res.send()
+		}, (error, req, res, next) => {
+			res.status(400).send({ error: error.message })
+		})
+
+		We can see our binary data in the web by using:
+
+			<img src="data:image/jpg;base64,binary_data"/>
+
+	Serving up files:
+		We can send back the profile pics using,
+
+		// Serving profile pic
+		router.get('/users/:id/avatar', async(req, res) => {
+			try {
+				const user = await User.findById(req.params.id)
+
+				if (!user || !user.avatar) {
+					throw new Error()
+				}
+
+				// setting the response header
+				res.set('Content-Type', 'image/jpg').send(user.avatar)
+			} catch (error) {
+				res.status(404).send()
+			}
+		})
+
+	Auto-cropping and Image formatting:
+		We can use a npm module for this.
+		We no longer need to send profile pic back every time, so we can hide them like we did for password.
+
+			npm i sharp
+
+		// Upload profile pic
+		router.post('/users/me/avatar', auth, upload.single('avatar'), async(req, res) => {
+			//req.user.avatar = req.file.buffer
+
+			const buffer = await sharp(req.file.buffer)
+				.resize({
+					width: 250,
+					height: 250
+				}).png().toBuffer()
+
+			req.user.avatar = buffer
+			await req.user.save()
+			res.send()
+		}, (error, req, res, next) => {
+			res.status(400).send({ error: error.message })
+		})
+
+	
+===========================================================
+
+Section 15 - Sending Emails(Task App):
 		
+	SendGrid:
+		It is a npm module using which we can send emails.
 
 
 
@@ -2262,7 +2335,7 @@ Section 14 - File Uploads(Task app):
 
 ===========================================================
 
-Section 14 - Wrapping Up:
+Section 18 - Wrapping Up:
 
 	New Feature Ideas:
 		Weather App:
