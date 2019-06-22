@@ -2328,6 +2328,49 @@ Section 15 - Sending Emails(Task App):
 	SendGrid:
 		It is a npm module using which we can send emails.
 
+		It is not working for me.
+
+		const sgMail = require('@sendgrid/mail')
+
+		const sendGridAPIKey = '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'
+
+		sgMail.setApiKey(sendGridAPIKey)
+
+		sgMail.send({
+			to: 'b1499547@urhen.com',
+			from: 'andrew@mead.io',
+			subject: 'first mail',
+			text: 'first one'
+		})
+
+	Sending Welcome and cancellation emails:
+
+		const sendWelcomeEmail = ({ email, name } = {}) => {
+			sgMail.send({
+				to: email,
+				from: 'andrew@mead.io',
+				subject: 'Welcome to The Company',
+				text: `Welcome to the company ${name}. Hope you enjoy!`
+			})
+		}
+
+	Environment Variables:
+		Typically environment Variables should never be present in production code.
+		We need to use configuration for these.
+
+		For Security and Customizability we need Environment Variables.
+
+		We can keep all our configurations in a separate folder called config.
+		There we can keep one .env for each situation.
+
+		dev.env for development.
+
+		We can use npm package to help with this:
+			npm i env-cmd -D
+
+		
+
+
 
 
 

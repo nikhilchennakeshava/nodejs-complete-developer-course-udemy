@@ -87,7 +87,7 @@ userSchema.methods.generateAuthToken = async function() {
     const user = this
 
     // generate token
-    const token = jwt.sign({ _id: user._id.toString() }, 'thisismycourse', { expiresIn: '1 day' })
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '1 day' })
 
     // add token to user
     user.tokens = user.tokens.concat({ token })

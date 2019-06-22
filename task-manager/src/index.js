@@ -6,7 +6,11 @@ const { router: userRouter } = require('./routers/user-router')
 const { router: taskRouter } = require('./routers/task-router')
 
 const app = express()
-const port = process.env.PORT || 3000
+
+// Because of environment variables
+const port = process.env.PORT
+
+// const port = process.env.PORT || 3000
 
 
 // Telling express to parse incoming requests as JSON.
