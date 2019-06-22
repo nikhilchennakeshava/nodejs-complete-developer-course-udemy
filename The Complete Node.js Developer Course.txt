@@ -2409,6 +2409,46 @@ Section 15 - Sending Emails(Task App):
 
 Section 16 - Testing Node.js(Task App):
 
+	Jest Testing Framework:
+		For any production app, there should be automated testing.
+
+		Popular frameworks are jest and Mocha.
+
+		All testing dependencies should be development dependencies.
+
+		npm i jest -D
+
+		Jest is a zero configuration testing framework.
+
+		We need a new script in our scripts.
+			"test": "jest"
+
+		Then we can run:
+			npm test
+
+		We need a new dir for our test scripts.
+		And create a new test file using .test.js extension.
+		
+		Next, we need to create a test case.
+
+		test('Init testing framework - Jest', () => {
+
+		})
+
+		Test cases are assumed to be success unless specified otherwise.
+
+		Why Tests are important:
+			Saves time
+			Generates reliable software
+			Gives flexibility to developers
+				Refactoring
+				Collabarating
+				Profiling
+			Peace of mind
+
+	Writing Tests and Assertions:
+		
+
 
 
 
