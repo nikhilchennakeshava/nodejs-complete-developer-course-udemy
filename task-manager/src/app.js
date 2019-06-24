@@ -1,44 +1,37 @@
-const app = require('./app')
+const express = require('express')
+require('./db/mongoose')
+const { User } = require('./models/user')
+const { Task } = require('./models/task')
+const { router: userRouter } = require('./routers/user-router')
+const { router: taskRouter } = require('./routers/task-router')
+
+const app = express()
 
 // Because of environment variables
 const port = process.env.PORT
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Listening on port ${port}`)
-})
-
-// const express = require('express')
-// require('./db/mongoose')
-// const { User } = require('./models/user')
-// const { Task } = require('./models/task')
-// const { router: userRouter } = require('./routers/user-router')
-// const { router: taskRouter } = require('./routers/task-router')
-
-// const app = express()
-
-// // Because of environment variables
-// const port = process.env.PORT
-
-// // const port = process.env.PORT || 3000
+// const port = process.env.PORT || 3000
 
 
-// // Telling express to parse incoming requests as JSON.
-// app.use(express.json())
+// Telling express to parse incoming requests as JSON.
+app.use(express.json())
 
-// // Register user router
-// app.use(userRouter)
+// Register user router
+app.use(userRouter)
 
-// // Register task router
-// app.use(taskRouter)
+// Register task router
+app.use(taskRouter)
+
+
+module.exports = {
+    app
+}
 
 // // Start the server
 // app.listen(port, () => {
 //     console.log(`Listening on port ${port}`)
 // })
 
-
-// -----------------------------------------------------------
 
 // // Testing file uploads
 // const multer = require('multer')

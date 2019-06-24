@@ -2526,7 +2526,49 @@ Section 16 - Testing Node.js(Task App):
 			expect(await add(2, 3)).toBe(5)
 		})
 
-	
+	Testing an Express Application:
+		For testing, similar to dev environment we need a test environment.
+		Also we need a test database where we can make the calls for our API.
+
+		Now similar to our dev script we need to use env-cmd for our test script too.
+
+		"scripts": {
+			"start": "node src/index.js",
+			"dev": "env-cmd ./config/dev.env nodemon src/index.js",
+			"test": "env-cmd ./config/test.env jest --watch"
+		},
+
+		One more configuration needed is the jest configuration. Here we need to specify the jest test environment.
+
+		"jest": {
+			"testEnvironment": "node"
+		},
+
+		For testing the express routes, we can a module called supertest.
+			npm i supertest
+
+		We will need slight restructuring for this to function properly as test cases need access to our express app before we start it.
+
+
+		const request = require('supertest')
+		const { app } = require('../src/app')
+
+		test('Should sign up new user', async() => {
+			await request(app).post('/users').send({
+				name: 'Nikhil',
+				email: 'nikhil@admin.com',
+				password: 'mypass099'
+			}).expect(201)
+		})
+
+		Now we will need to wipe out the database before running each test so that we can get proper results.
+
+		
+
+
+
+
+
 		
 
 
