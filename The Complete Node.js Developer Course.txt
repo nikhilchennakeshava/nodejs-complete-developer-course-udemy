@@ -2563,7 +2563,87 @@ Section 16 - Testing Node.js(Task App):
 
 		Now we will need to wipe out the database before running each test so that we can get proper results.
 
-		
+	Jest setup and teardown:
+		We can use jest lifecycle methods to configure jest.
+
+		// before each
+		beforeEach(async() => {
+			await User.deleteMany()
+		})
+
+		The above code will run before each test case.
+
+		const request = require('supertest')
+		const { app } = require('../src/app')
+		const { User } = require('../src/models/user')
+
+		const userOne = {
+			name: 'User 1',
+			email: 'user1@admin.com',
+			password: 'user199'
+		}
+
+		// before each
+		beforeEach(async() => {
+			await User.deleteMany()
+			await new User(userOne).save()
+		})
+
+		test('Should sign up new user', async() => {
+			await request(app).post('/users').send({
+				name: 'Nikhil',
+				email: 'nikhil@admin.com',
+				password: 'mypass099'
+			}).expect(201)
+		})
+
+		test('Should login user', async() => {
+			await request(app).post('/users/login').send({
+				email: userOne.email,
+				password: userOne.password
+			}).expect(200)
+		})
+
+		test('Should not login non existant user', async() => {
+			await request(app).post('/users/login').send({
+				email: userOne.email,
+				password: 'badpassword!!2'
+			}).expect(400)
+		})
+
+	Testing with Authentication:
+		If we want to test with authentication, then we need to mock the jwt and the data.
+
+		const userOneId = new mongoose.Types.ObjectId()
+		const userOne = {
+			_id: userOneId,
+			name: 'User 1',
+			email: 'user1@admin.com',
+			password: 'user199',
+			tokens: [{
+				token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
+			}]
+		}
+
+		// before each
+		beforeEach(async() => {
+			await User.deleteMany()
+			await new User(userOne).save()
+		})
+
+		test('Should get user profile', async() => {
+			await request(app)
+				.get('/users/me')
+				.set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+				.send()
+				.expect(200)
+		})
+
+	Advanced Assertions:
+		We can do complex assertions in our app and not just http status code.
+		We might need to check the response body.
+
+
 
 
 
