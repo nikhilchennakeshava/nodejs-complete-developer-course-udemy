@@ -2447,8 +2447,87 @@ Section 16 - Testing Node.js(Task App):
 			Peace of mind
 
 	Writing Tests and Assertions:
-		
 
+		const total = calculateTip(10, .3)
+
+		if (total !== 13) {
+			throw new Error(`Total tip should be 13. Got ${total}`)
+		}
+
+		The above is basic way of doing this. We can change this by using assert statements.
+
+		test('Should calculate total with tip', () => {
+			expect(calculateTip(10, .3)).toBe(13)
+		})
+
+		There are various ways of using expect which can be seen in the docs.
+
+	Testing Asynchronous Code:
+		To run jest whenever we change any tests:
+			In package.json:
+				"scripts": {
+					"start": "node src/index.js",
+					"dev": "env-cmd ./config/dev.env nodemon src/index.js",
+					"test": "jest --watch"
+				},
+
+		We can check more Jest cli options in docs.
+
+		We need to be careful here.
+
+		test('Async test demo', () => {
+			setTimeout(() => {
+				expect(1).toBe(2)
+			}, 2000)
+
+			// expect(1).toBe(2)
+		})
+
+		The above code will fail instead of passing.
+		So to fix this we need to tell jest that we are testing async code.
+
+		test('Async test demo', (done) => {
+			setTimeout(() => {
+				expect(1).toBe(2)
+				done()
+			}, 2000)
+
+			// expect(1).toBe(2)
+		})
+
+		The above code will make sure test is not completed until we call done.
+
+		For Promises and Async/Await there are better ways to do this.
+
+		// Callback way of testing
+		test('Async test demo', (done) => {
+			setTimeout(() => {
+				expect(2).toBe(2)
+				done()
+			}, 2000)
+
+			// expect(1).toBe(2)
+		})
+
+		// Promises way of testing
+		test('Async Promises Add 2 numbers', (done) => {
+			add(2, 3).then(sum => {
+				expect(sum).toBe(5)
+				done()
+			})
+		})
+
+		// Async/await way of testing
+		test('Async Async/await Add 2 numbers', async() => {
+			// const sum = await add(2, 3)
+			// expect(sum).toBe(5)
+
+			// const sum = await add(2, 3)
+			expect(await add(2, 3)).toBe(5)
+		})
+
+	
+		
 
 
 
