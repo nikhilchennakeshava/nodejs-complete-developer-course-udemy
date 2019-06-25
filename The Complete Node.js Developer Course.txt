@@ -2643,6 +2643,50 @@ Section 16 - Testing Node.js(Task App):
 		We can do complex assertions in our app and not just http status code.
 		We might need to check the response body.
 
+		Never go overboard with the test cases. Test only for possible scenarios.
+
+		test('Should sign up new user', async() => {
+			const response = await request(app).post('/users').send({
+				name: 'Nikhil',
+				email: 'nikhil@admin.com',
+				password: 'mypass099'
+			}).expect(201)
+
+			// Assert that the database was changed correctly
+			const user = await User.findById(response.body.result._id)
+			expect(user).not.toBeNull()
+
+			// Assertions about the response
+			expect(response.body).toMatchObject({
+				result: {
+					name: 'Nikhil',
+					email: 'nikhil@admin.com',
+				},
+				token: user.tokens[0].token
+			})
+
+			// Assert about password stored in database
+			expect(user.password).not.toBe('mypass099')
+		})
+
+	Mocking Libraries:
+		We might need to mock npm modules. The modules might be custom or global.
+		Ex- SendGrid
+
+		We create a new directory for creating our mocks.
+			__mocks__
+
+		Next for each module we need to mock, we need a js file for that.
+
+		module.exports = {
+			send() {},
+			setApiKey() {}
+		}
+
+		More info can be found in docs.
+
+
+
 
 
 
