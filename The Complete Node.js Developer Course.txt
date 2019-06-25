@@ -2685,6 +2685,42 @@ Section 16 - Testing Node.js(Task App):
 
 		More info can be found in docs.
 
+	Wrapping up User tests:
+		To test with static content we can use Fixtures.
+
+		And this directory is gonna be called fixtures in the testing world a fixture or fixtures plural are things that allow you to set up the environment your tests are going to run in.
+
+		toBe() uses === operator.
+
+		To compare objects, we need to use toEqual()
+
+		For images
+
+		test('Should upload profile pic of user', async() => {
+			await request(app)
+				.post('/users/me/avatar')
+				.set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+				.attach('avatar', 'tests/fixtures/profile-pic.jpg')
+				.expect(200)
+
+			const user = await User.findById(userOneId)
+			expect(user.avatar).toEqual(expect.any(Buffer))
+		})
+
+		test('Should update valid user fields', async() => {
+			await request(app)
+				.patch('/users/me')
+				.set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+				.send({
+					name: 'Mike'
+				})
+				.expect(200)
+
+			const user = await User.findById(userOneId)
+			expect(user.name).toEqual('Mike')
+		})
+
+	
 
 
 
