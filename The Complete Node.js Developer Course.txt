@@ -591,8 +591,6 @@ Section 7 - Web Servers(Weather app):
 			}
 
 
-
-
 		To add icons in tab:
 			<link rel="icon" href="/img/weather.png">
 
@@ -2778,6 +2776,9 @@ Section 16 - Testing Node.js(Task App):
 Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 
 	Creating the Chat App project:
+		Setting up the dependencies, project structure with express.
+
+	WebSockets:
 		
 
 
