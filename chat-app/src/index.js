@@ -1,9 +1,15 @@
 const path = require('path')
 const express = require('express')
 const hbs = require('hbs')
+
+// for sockets
 const http = require('http')
 const socketio = require('socket.io')
 
+// bad-words filter
+const BadWordsFilter = require('bad-words')
+
+// express
 const app = express()
 
 // config socket.io
@@ -30,8 +36,6 @@ app.get('', (req, res) => {
     res.render('index')
 })
 
-// let count = 0
-
 // server socket connection function
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')
@@ -42,29 +46,51 @@ io.on('connection', (socket) => {
     // broadcast message
     socket.broadcast.emit('message', 'A new user has joined!')
 
-    socket.on('sendMessage', (message) => {
+    // listen to message
+    socket.on('sendMessage', (message, callback) => {
+        const filter = new BadWordsFilter()
+
+        if (filter.isProfane(message)) {
+            return callback('Profanity is not allowed!')
+        }
+
         io.emit('message', message)
+        callback()
+    })
+
+    // listen to location and send link to google maps
+    socket.on('sendLocation', (coords, callback) => {
+        io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        callback()
     })
 
     // when client disconnects
     socket.on('disconnect', () => {
         io.emit('message', 'A user has left!')
     })
-
-    // // count example
-    // // send messaage to client via event
-    // socket.emit('countUpdated', count)
-
-    // socket.on('increment', () => {
-    //     count++
-
-    //     // // will emit to particular connection
-    //     // socket.emit('countUpdated', count)
-
-    //     // will emit to all connections
-    //     io.emit('countUpdated', count)
-    // })
 })
+
+// Count expample
+
+// let count = 0
+// server socket connection function
+// io.on('connection', (socket) => {
+//     console.log('New WebSocket connection')
+
+// // count example
+// // send messaage to client via event
+// socket.emit('countUpdated', count)
+
+// socket.on('increment', () => {
+//     count++
+
+//     // // will emit to particular connection
+//     // socket.emit('countUpdated', count)
+
+//     // will emit to all connections
+//     io.emit('countUpdated', count)
+// })
+// })
 
 // Start the server using refactored http
 server.listen(port, () => {

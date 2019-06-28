@@ -9,7 +9,31 @@ $(document).ready(function() {
         e.preventDefault()
         const message = $('#message').val()
 
-        socket.emit('sendMessage', message)
+        socket.emit('sendMessage', message, (error) => {
+            if (error) {
+                return console.log('Error', error)
+            }
+            console.log('Message Delivered')
+        })
+    })
+
+    // Browser based Geolocation
+    $('#send-location').click(function() {
+        if (!navigator.geolocation) {
+            return alert('Geolocation is not supported by your browser!')
+        }
+
+        navigator.geolocation.getCurrentPosition((position) => {
+            console.log(position)
+
+            // sending location from client to server
+            socket.emit('sendLocation', {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            }, () => {
+                console.log('Location shared!')
+            })
+        })
     })
 
     // // count example

@@ -2937,8 +2937,128 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 		})
 
 	Sharing your location:
-		
+		We can use Browser Geolocation API to get user location.
 
+		// Browser based Geolocation
+		$('#send-location').click(function() {
+			if (!navigator.geolocation) {
+				return alert('Geolocation is not supported by your browser!')
+			}
+
+			navigator.geolocation.getCurrentPosition((position) => {
+				console.log(position)
+			})
+		})
+
+		server:
+
+		// server socket connection function
+		io.on('connection', (socket) => {
+			console.log('New WebSocket connection')
+
+			// welcome message
+			socket.emit('message', 'Welcome!')
+
+			// broadcast message
+			socket.broadcast.emit('message', 'A new user has joined!')
+
+			// listen to message
+			socket.on('sendMessage', (message) => {
+				io.emit('message', message)
+			})
+
+			// listen to location
+			socket.on('sendLocation', (coords) => {
+				io.emit('message', `Location: ${coords.latitude}, ${coords.longitude}`)
+			})
+
+			// when client disconnects
+			socket.on('disconnect', () => {
+				io.emit('message', 'A user has left!')
+			})
+		})
+
+		client:
+
+		// Browser based Geolocation
+		$('#send-location').click(function() {
+			if (!navigator.geolocation) {
+				return alert('Geolocation is not supported by your browser!')
+			}
+
+			navigator.geolocation.getCurrentPosition((position) => {
+				console.log(position)
+
+				// sending location from client to server
+				socket.emit('sendLocation', {
+					latitude: position.coords.latitude,
+					longitude: position.coords.longitude
+				})
+			})
+		})
+
+		Sending google maps link:
+
+		// listen to location and send link to google maps
+		socket.on('sendLocation', (coords) => {
+			io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+		})
+
+	Event Acknowledgements:
+		Allows the receiver of the event to acknowledge that it has received the event and message.
+
+		Event acknowledgements will be the last paramater to the emit function. It is usually a callback function.
+
+		client:
+
+		$('#message-form').submit(function(e) {
+			e.preventDefault()
+			const message = $('#message').val()
+
+			socket.emit('sendMessage', message, (message) => {
+				console.log('The message was delivered', message)
+			})
+		})
+
+		server:
+
+		// listen to message
+		socket.on('sendMessage', (message, callback) => {
+			io.emit('message', message)
+			callback('Delivered!')
+		})
+
+		We can use a npm package to filter bad words.
+
+		npm i bad-words
+
+		$('#message-form').submit(function(e) {
+			e.preventDefault()
+			const message = $('#message').val()
+
+			socket.emit('sendMessage', message, (error) => {
+				if (error) {
+					return console.log('Error', error)
+				}
+				console.log('Message Delivered')
+			})
+		})
+
+		// listen to message
+		socket.on('sendMessage', (message, callback) => {
+			const filter = new BadWordsFilter()
+
+			if (filter.isProfane(message)) {
+				return callback('Profanity is not allowed!')
+			}
+
+			io.emit('message', message)
+			callback()
+		})
+
+	
+	Form and Button States:
+		
 
 
 
