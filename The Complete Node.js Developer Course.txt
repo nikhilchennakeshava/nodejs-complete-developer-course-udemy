@@ -2779,10 +2779,151 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 		Setting up the dependencies, project structure with express.
 
 	WebSockets:
+		Used to create real time apps.
+		WebSocket Protocol.
+		This protocol can allow full-duplex communication.
+		Many clients can connect to the server.
+
+		But in this case we'll be using web sockets with no JSA to create our real time chat application.
+		So what I want to do in this video is just talk about exactly what web sockets are and how they're going to help us achieve our goal the goal of a real time application.
+		Now like with the HTTP protocol of the web socket protocol is going to allow us to set up communication.
+
+		THere is a persistent connection between client and server.
+
+		WebSocket protocol is different from HTTP protocol.
+
+		Either client or server can initiate communication.
+
+
+	Socket.io:
+		npm package for WebSockets.
+
+		npm i socket.io
+
+		For this we need to configure express in a different way. We need to refactor the express definition.
+		We need to set up the http server and then pass the server to socket function.
+
+		const http = require('http')
+		const socketio = require('socket.io')
+
+		const app = express()
+
+		// config socket.io
+		const server = http.createServer(app)
+		const io = socketio(server)
+
+		Then we need to define what to do on connection.
+
+		// socket function
+		io.on('connection', () => {
+			console.log('new web socket connection')
+		})
+
+		// Start the server using refactored http
+		server.listen(port, () => {
+			console.log(`Listening on port ${port}`)
+		})
+
+		The above code is the server side of socket.io. Next we need to configure the client side.
+
+		The client side version of the socket library.
+
+		<script src="/socket.io/socket.io.js"></script>
+
+		In public folder, create a new js file which is client side js.
+
+		<script src="/socket.io/socket.io.js"></script>
+    	<script src="/js/chat.js"></script>
+
+		Because we have loaded the client side version of the library, we can use the functions in our client side js file.
+
+	Socket.io Events:
+		We can use a dummy counter example to figure out to send messages between client and server.
+		Each method has socket object has a parameter which contains information about that connection. We can use that to send the messages.
+
+		The messages are sent via events.
+
+		// server socket function
+		io.on('connection', (socket) => {
+			console.log('new web socket connection')
+
+			// send messaage to client via event
+			socket.emit('countUpdated')
+		})
+
+		At client:
+
+		const socket = io()
+
+		// client socket function
+		socket.on('countUpdated', (count) => {
+			console.log('count has been updated', count)
+		})
+
+		// server socket connection function
+		io.on('connection', (socket) => {
+			console.log('new web socket connection')
+
+			// send messaage to client via event
+			socket.emit('countUpdated', count)
+
+			socket.on('increment', () => {
+				count++
+				socket.emit('countUpdated', count)
+			})
+		})
+
+		For client:
+		
+		$(document).ready(function() {
+			const socket = io()
+
+			// client socket function
+			socket.on('countUpdated', (count) => {
+				console.log('count has been updated', count)
+				$('#count').text(count)
+			})
+
+			$('#increment').click(function() {
+				// alert('clicked')
+				socket.emit('increment')
+			})
+		})
+
+		To emit to all connections:
+
+		// will emit to all connections
+        io.emit('countUpdated', count)
+
+	Implementing Sockets:
+
+		socket.on('message', (message) => {
+			console.log(message)
+		})
+
+		$('#message-form').submit(function(e) {
+			e.preventDefault()
+			const message = $('#message').val()
+
+			socket.emit('sendMessage', message)
+		})
+
+		server:
+
+		// welcome message
+		socket.emit('message', 'Welcome!')
+
+		socket.on('sendMessage', (message) => {
+			io.emit('message', message)
+		})
+
+	Broadcasting Events:
 		
 
 
 
+
+		
 
 
 ===========================================================

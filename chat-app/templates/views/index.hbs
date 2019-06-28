@@ -3,8 +3,23 @@
 <head>
     <title>Chat App</title>
     <link rel="icon" href="/img/chaticon.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
-    Chat App
+    <div class="container">
+        <h1>Chat App</h1>
+        <br><br>
+
+        <form id="message-form">
+            <input id="message" type="text" placeholder="Message">
+            <button type="submit">Send</button>
+        </form>
+        {{!-- <span>
+            Count: <span id="count"></span> <span><button type="button" class="btn btn-primary" id="increment">+1</button></span>
+        </span> --}}
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/chat.js"></script>
 </body>
 </html>
