@@ -2918,6 +2918,25 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 		})
 
 	Broadcasting Events:
+		Useful when we want to broadcast some messages.
+
+		Broadcasted events are emitted to all other connections except the source connection.
+
+		// broadcast message
+    	socket.broadcast.emit('message', 'A new user has joined!')
+
+		socket.emit - emit to that particular connection
+		socket.broadcast.emit - emit to all other connections except the source connection
+		io.emit - emit to all connections.
+
+		When a client disconnects, we use socket.on()
+
+		// when client disconnects
+		socket.on('disconnect', () => {
+			io.emit('message', 'A user has left!')
+		})
+
+	Sharing your location:
 		
 
 

@@ -39,8 +39,16 @@ io.on('connection', (socket) => {
     // welcome message
     socket.emit('message', 'Welcome!')
 
+    // broadcast message
+    socket.broadcast.emit('message', 'A new user has joined!')
+
     socket.on('sendMessage', (message) => {
         io.emit('message', message)
+    })
+
+    // when client disconnects
+    socket.on('disconnect', () => {
+        io.emit('message', 'A user has left!')
     })
 
     // // count example
