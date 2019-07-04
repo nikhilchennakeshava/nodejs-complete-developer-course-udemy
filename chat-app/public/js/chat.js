@@ -1,19 +1,36 @@
 $(document).ready(function() {
     const socket = io()
+    const messageTemplate = '<div><p>{{message}}</p></div>'
 
     socket.on('message', (message) => {
         console.log(message)
+
+        // displaying messages using mustache template
+        // console.log($('#message-template').html())
+        // const messageHtml = Mustache.to_html($('#message-template').html(), {
+        //     message
+        // })
+        const messageHtml = Mustache.to_html(messageTemplate, { message })
+        $('#messages').append(messageHtml)
     })
 
     $('#message-form').submit(function(e) {
         e.preventDefault()
         const message = $('#message').val()
 
+        // disable form while sending a message
+        $('#send-btn').attr('disabled', 'disabled')
+
         socket.emit('sendMessage', message, (error) => {
             if (error) {
                 return console.log('Error', error)
             }
             console.log('Message Delivered')
+
+            // enable form after message sent
+            $('#send-btn').removeAttr('disabled')
+            $('#message').val('')
+            $('#message').focus()
         })
     })
 
@@ -22,6 +39,9 @@ $(document).ready(function() {
         if (!navigator.geolocation) {
             return alert('Geolocation is not supported by your browser!')
         }
+
+        // disable button
+        $(this).attr('disabled', 'disabled')
 
         navigator.geolocation.getCurrentPosition((position) => {
             console.log(position)
@@ -32,6 +52,9 @@ $(document).ready(function() {
                 longitude: position.coords.longitude
             }, () => {
                 console.log('Location shared!')
+
+                // enable button
+                $(this).removeAttr('disabled')
             })
         })
     })

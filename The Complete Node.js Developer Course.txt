@@ -3058,6 +3058,53 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 
 	
 	Form and Button States:
+		We can change the form so that when an action is being performed we don't allow other stuff.
+
+		$('#message-form').submit(function(e) {
+			e.preventDefault()
+			const message = $('#message').val()
+
+			// disable form while sending a message
+			$('#send-btn').attr('disabled', 'disabled')
+
+			socket.emit('sendMessage', message, (error) => {
+				if (error) {
+					return console.log('Error', error)
+				}
+				console.log('Message Delivered')
+
+				// enable form after message sent
+				$('#send-btn').removeAttr('disabled')
+				$('#message').val('')
+				$('#message').focus()
+			})
+		})
+
+	Rendering Messages:
+		Using mustache to render to browser.
+		moment.js to work with time.
+
+		We need to use mustache templating to render our messages in our ui.
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
+
+		const messageTemplate = '<div><p>{{message}}</p></div>'
+
+		socket.on('message', (message) => {
+			console.log(message)
+
+			// displaying messages using mustache template
+			// console.log($('#message-template').html())
+			// const messageHtml = Mustache.to_html($('#message-template').html(), {
+			//     message
+			// })
+			const messageHtml = Mustache.to_html(messageTemplate, { message })
+			$('#messages').append(messageHtml)
+		})
+
+	Rendering Location Messages:
 		
 
 
