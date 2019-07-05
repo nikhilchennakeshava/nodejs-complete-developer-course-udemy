@@ -39,6 +39,10 @@ app.get('', (req, res) => {
     res.render('index')
 })
 
+app.get('/chat', (req, res) => {
+    res.render('chat')
+})
+
 // server socket connection function
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')

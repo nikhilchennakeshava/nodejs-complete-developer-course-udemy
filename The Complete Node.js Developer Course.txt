@@ -3148,7 +3148,22 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 		Use the style sheet to customize the application.
 
 	Join Page:
-		
+		We can add ajoi page.
+
+		<div class="centered-form">
+			<div class="centered-form__box">
+				<h1>Join</h1>
+				<form action="/chat">
+					<label>Display Name</label>
+					<input type="text" name="username" placeholder="Display Name" required>
+					<label>Room</label>
+					<input type="text" name="room" placeholder="Room" required>
+					<button>Join</button>
+				</form>
+			</div>
+		</div>
+
+	
 		
 
 
