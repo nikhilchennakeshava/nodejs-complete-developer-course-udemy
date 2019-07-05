@@ -3145,6 +3145,9 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
         })
 
 	Styling the Chat App:
+		Use the style sheet to customize the application.
+
+	Join Page:
 		
 		
 

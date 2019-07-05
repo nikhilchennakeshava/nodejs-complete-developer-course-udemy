@@ -1,7 +1,7 @@
 $(document).ready(function() {
     const socket = io()
-    const messageTemplate = '<div><p>{{createdAt}} - {{message}}</p></div>'
-    const locationMessageTemplate = '<div><p>{{createdAt}} - <a href="{{url}}" target="_blank" class="btn-link">Current location</a></p></div>'
+    const messageTemplate = '<div class="message"><p><span class="message__name">User name</span><span class="message__meta">{{createdAt}}</span></p><p>{{message}}</p></div>'
+    const locationMessageTemplate = '<div class="message"><p><span class="message__name">User name</span><span class="message__meta">{{createdAt}}</span></p><p><a href="{{url}}" target="_blank" class="btn-link">Current location</a></p></div>'
 
     socket.on('message', (message) => {
         console.log(message)
