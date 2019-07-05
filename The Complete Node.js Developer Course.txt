@@ -3105,10 +3105,47 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 		})
 
 	Rendering Location Messages:
+		We can make it such that we can render locations separately.
 		
+		socket.on('locationMessage', (url) => {
+			console.log(url)
+			const locationMessageHtml = Mustache.to_html(locationMessageTemplate, { url })
+			$('#messages').append(locationMessageHtml)
+		})
 
+	Timestamps:
+		We can use momentjs for this.
+		Usually getTime() returns the number of seconds passed since Jan 1, 1970. This date is the Unix epoch.
 
+		To get the timestamps its better to send objects back and forth between servers and clients.
 
+		// utils
+		const generateMessage = (text) => {
+			return {
+				text,
+				createdAt: new Date().getTime()
+			}
+		}
+
+		// server
+		// using functions and objects
+    	socket.emit('message', generateMessage('Welcome!'))
+
+		// client
+		const messageHtml = Mustache.to_html(messageTemplate, {
+            message: message.text
+        })
+        $('#messages').append(messageHtml)
+
+		// momentjs
+		const messageHtml = Mustache.to_html(messageTemplate, {
+            message: message.text,
+            // createdAt: message.createdAt
+            createdAt: moment(message.createdAt).format('h:mm A')
+        })
+
+	Styling the Chat App:
+		
 		
 
 

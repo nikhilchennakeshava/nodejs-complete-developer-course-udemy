@@ -9,6 +9,9 @@ const socketio = require('socket.io')
 // bad-words filter
 const BadWordsFilter = require('bad-words')
 
+// custom utils
+const { generateMessage, generateLocationMessage } = require('./utils/messages')
+
 // express
 const app = express()
 
@@ -40,11 +43,14 @@ app.get('', (req, res) => {
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')
 
-    // welcome message
-    socket.emit('message', 'Welcome!')
+    // // welcome message
+    // socket.emit('message', 'Welcome!')
+
+    // using functions and objects
+    socket.emit('message', generateMessage('Welcome!'))
 
     // broadcast message
-    socket.broadcast.emit('message', 'A new user has joined!')
+    socket.broadcast.emit('message', generateMessage('A new user has joined!'))
 
     // listen to message
     socket.on('sendMessage', (message, callback) => {
@@ -54,19 +60,19 @@ io.on('connection', (socket) => {
             return callback('Profanity is not allowed!')
         }
 
-        io.emit('message', message)
+        io.emit('message', generateMessage(message))
         callback()
     })
 
     // listen to location and send link to google maps
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        io.emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
     })
 
     // when client disconnects
     socket.on('disconnect', () => {
-        io.emit('message', 'A user has left!')
+        io.emit('message', generateMessage('A user has left!'))
     })
 })
 

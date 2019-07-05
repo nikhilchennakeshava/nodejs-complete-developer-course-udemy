@@ -1,6 +1,7 @@
 $(document).ready(function() {
     const socket = io()
-    const messageTemplate = '<div><p>{{message}}</p></div>'
+    const messageTemplate = '<div><p>{{createdAt}} - {{message}}</p></div>'
+    const locationMessageTemplate = '<div><p>{{createdAt}} - <a href="{{url}}" target="_blank" class="btn-link">Current location</a></p></div>'
 
     socket.on('message', (message) => {
         console.log(message)
@@ -10,8 +11,24 @@ $(document).ready(function() {
         // const messageHtml = Mustache.to_html($('#message-template').html(), {
         //     message
         // })
-        const messageHtml = Mustache.to_html(messageTemplate, { message })
+
+        // const messageHtml = Mustache.to_html(messageTemplate, { message })
+
+        const messageHtml = Mustache.to_html(messageTemplate, {
+            message: message.text,
+            // createdAt: message.createdAt
+            createdAt: moment(message.createdAt).format('h:mm A')
+        })
         $('#messages').append(messageHtml)
+    })
+
+    socket.on('locationMessage', (message) => {
+        console.log(message)
+        const locationMessageHtml = Mustache.to_html(locationMessageTemplate, {
+            url: message.url,
+            createdAt: moment(message.createdAt).format('h:mm A')
+        })
+        $('#messages').append(locationMessageHtml)
     })
 
     $('#message-form').submit(function(e) {
