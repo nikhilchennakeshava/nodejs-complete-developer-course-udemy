@@ -50,11 +50,26 @@ io.on('connection', (socket) => {
     // // welcome message
     // socket.emit('message', 'Welcome!')
 
-    // using functions and objects
-    socket.emit('message', generateMessage('Welcome!'))
+    // // using functions and objects
+    // socket.emit('message', generateMessage('Welcome!'))
 
-    // broadcast message
-    socket.broadcast.emit('message', generateMessage('A new user has joined!'))
+    // // broadcast message
+    // socket.broadcast.emit('message', generateMessage('A new user has joined!'))
+
+    // join
+    socket.on('join', ({ username, room }) => {
+        // join the room
+        socket.join(room)
+
+        // using functions and objects
+        socket.emit('message', generateMessage('Welcome!'))
+
+        // broadcast message
+        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
+
+        // // broadcast message
+        // socket.broadcast.to(room).emit('message', generateMessage('A new user has joined!'))
+    })
 
     // listen to message
     socket.on('sendMessage', (message, callback) => {

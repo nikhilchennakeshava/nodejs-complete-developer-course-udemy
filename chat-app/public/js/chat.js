@@ -1,7 +1,12 @@
 $(document).ready(function() {
     const socket = io()
+
+    // templates
     const messageTemplate = '<div class="message"><p><span class="message__name">User name</span><span class="message__meta">{{createdAt}}</span></p><p>{{message}}</p></div>'
     const locationMessageTemplate = '<div class="message"><p><span class="message__name">User name</span><span class="message__meta">{{createdAt}}</span></p><p><a href="{{url}}" target="_blank" class="btn-link">Current location</a></p></div>'
+
+    // Options in query
+    const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
 
     socket.on('message', (message) => {
         console.log(message)
@@ -75,6 +80,9 @@ $(document).ready(function() {
             })
         })
     })
+
+    // joining room
+    socket.emit('join', { username, room })
 
     // // count example
 

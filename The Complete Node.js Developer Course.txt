@@ -3163,9 +3163,43 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 			</div>
 		</div>
 
-	
-		
+	Socket.io Rooms:
+		We can use the qs library for working with querystrings.
 
+		// Options in query
+    	const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
+
+		Then we can set up a new event which emits for joining.
+
+		// joining room
+    	socket.emit('join', { username, room })
+		
+		Socket has some room specific features.
+
+		// join
+		socket.on('join', ({ username, room }) => {
+			socket.join(room)
+		})
+
+		io.to.emit -> emits event to everybody in a room 
+		socket.broadcast.to.emit -> emit to everyone except the sender in a room
+
+		// join
+		socket.on('join', ({ username, room }) => {
+			// join the room
+			socket.join(room)
+
+			// using functions and objects
+			socket.emit('message', generateMessage('Welcome!'))
+
+			// broadcast message
+			socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
+
+			// // broadcast message
+			// socket.broadcast.to(room).emit('message', generateMessage('A new user has joined!'))
+		})
+
+		
 
 ===========================================================
 
