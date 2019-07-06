@@ -11,6 +11,7 @@ const BadWordsFilter = require('bad-words')
 
 // custom utils
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
+const { addUser, removeUser, getUser, getUsersInroom } = require('./utils/users')
 
 // express
 const app = express()
@@ -57,15 +58,31 @@ io.on('connection', (socket) => {
     // socket.broadcast.emit('message', generateMessage('A new user has joined!'))
 
     // join
-    socket.on('join', ({ username, room }) => {
+    // using destructuring
+    // socket.on('join', ({ username, room }, callback) => {
+    //     // add user
+    //     const { user, error } = addUser({ id: socket.id, username, room })
+
+    socket.on('join', (options, callback) => {
+        // add user
+        // const { user, error } = addUser({ id: socket.id, username, room })
+        const { user, error } = addUser({ id: socket.id, ...options })
+
+        // error display if any
+        if (error) {
+            return callback(error)
+        }
+
         // join the room
-        socket.join(room)
+        socket.join(user.room)
 
         // using functions and objects
         socket.emit('message', generateMessage('Welcome!'))
 
         // broadcast message
-        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
+        socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!`))
+
+        callback()
 
         // // broadcast message
         // socket.broadcast.to(room).emit('message', generateMessage('A new user has joined!'))
@@ -91,7 +108,13 @@ io.on('connection', (socket) => {
 
     // when client disconnects
     socket.on('disconnect', () => {
-        io.emit('message', generateMessage('A user has left!'))
+        // remove user
+        const user = removeUser(socket.id)
+
+        if (user) {
+            io.to(user.room).emit('message', generateMessage(`${user.username} has left!`))
+        }
+
     })
 })
 
