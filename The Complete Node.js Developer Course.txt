@@ -3375,6 +3375,12 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
         }
     }
 
+	// working solution
+	$('#messages').animate({
+		scrollTop: parseInt($('#messages').prop('scrollHeight'))
+	}, 500)
+
+
 ===========================================================
 
 Section 18 - Wrapping Up:
@@ -3392,6 +3398,7 @@ Section 18 - Wrapping Up:
 	What to do next?:
 		GraphQL
 		React
-
+		
+		
 ===========================================================
 ===========================================================		
