@@ -56,7 +56,7 @@ const getUsersInroom = (room) => {
 
 // get all rooms
 const getAllRooms = () => {
-    return [...new Set(users.filter(user => user.room!=='lobby'))]
+    return [...new Set(users.filter(user => user.room !== 'lobby'))]
 }
 
 module.exports = {
