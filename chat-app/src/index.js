@@ -11,7 +11,7 @@ const BadWordsFilter = require('bad-words')
 
 // custom utils
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
-const { addUser, removeUser, getUser, getUsersInroom } = require('./utils/users')
+const { addUser, removeUser, getUser, getUsersInroom, getAllRooms } = require('./utils/users')
 
 // express
 const app = express()
@@ -37,7 +37,9 @@ hbs.registerPartials(partialsPath) // setting the partials directory
 const port = process.env.PORT
 
 app.get('', (req, res) => {
-    res.render('index')
+    res.render('index', {
+        rooms: getAllRooms()
+    })
 })
 
 app.get('/chat', (req, res) => {

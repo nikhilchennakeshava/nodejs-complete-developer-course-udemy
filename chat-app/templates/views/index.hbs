@@ -14,7 +14,20 @@
                 <label>Display Name</label>
                 <input type="text" name="username" placeholder="Display Name" required>
                 <label>Room</label>
-                <input type="text" name="room" placeholder="Room" required>
+                <input type="text" name="room" placeholder="Room" list="room-list" required autocomplete="off">
+                <datalist id="room-list">
+                    <option value="Lobby" selected="selected">Lobby</option>
+                    {{#each rooms}}
+                        <option value="{{room}}">{{room}}</option>
+                    {{/each}}
+                </datalist>
+                {{!-- <select>
+                    <option value="Lobby" selected="selected">Lobby</option>
+                    {{#each rooms}}
+                        <option value="{{room}}">{{room}}</option>
+                    {{/each}}
+                </select>
+                <input type="text" name="room" placeholder="Room" required> --}}
                 <button>Join</button>
             </form>
         </div>

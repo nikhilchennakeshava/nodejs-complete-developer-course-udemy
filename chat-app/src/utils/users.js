@@ -54,9 +54,15 @@ const getUsersInroom = (room) => {
     return users.filter(user => user.room === room)
 }
 
+// get all rooms
+const getAllRooms = () => {
+    return [...new Set(users.filter(user => user.room))]
+}
+
 module.exports = {
     addUser,
     removeUser,
     getUser,
-    getUsersInroom
+    getUsersInroom,
+    getAllRooms
 }
