@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <div class="chat">
-            <div class="chat__sidebar">
+            <div id="sidebar" class="chat__sidebar">
 
             </div>
             <div class="chat__main">
@@ -17,7 +17,7 @@
 
                 <div class="compose">
                     <form id="message-form">
-                        <input id="message" type="text" placeholder="Message">
+                        <input id="message" type="text" placeholder="Message" required autocomplete="off">
                         <button id="send-btn" type="submit" class="btn btn-primary">Send</button>
                     </form>
                     <button type="submit" class="btn btn-primary" id="send-location">Send Location</button>

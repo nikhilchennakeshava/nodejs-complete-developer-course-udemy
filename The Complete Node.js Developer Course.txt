@@ -3312,7 +3312,68 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 		})
 
 	Sending Messages to Rooms:
-		
+		We can make autocomlete off by
+			<input id="message" type="text" placeholder="Message" required autocomplete="off">
+
+		// listen to message
+		socket.on('sendMessage', (message, callback) => {
+			// fetch user data
+			const user = getUser(socket.id)
+
+			const filter = new BadWordsFilter()
+
+			if (filter.isProfane(message)) {
+				return callback('Profanity is not allowed!')
+			}
+
+			io.to(user.room).emit('message', generateMessage(user.username, message))
+			callback()
+		})
+
+	Rendering User List:
+
+		// send list of users in room
+		io.to(user.room).emit('roomData', {
+			room: user.room,
+			users: getUsersInroom(user.room)
+		})
+
+		socket.on('roomData', ({ users, room }) => {
+			const sidebarHtml = Mustache.to_html(sidebarTemplate, {
+				users,
+				room
+			})
+			$('#sidebar').html(sidebarHtml)
+		})
+
+
+		const sidebarTemplate = '<h2 class="room-title">{{room}}</h2><h3 class="list-title">Users</h3><ul class="users">{{#users}}<li>{{username}}</li>{{/users}}</ul>'
+
+	Autoscrolling:
+		// autoscroll
+    const autoscroll = () => {
+        // new message
+        const $newMessage = $('#messages:last-child')
+
+        // height of new message
+        const newMessageMargin = parseInt($newMessage.css('marginBottom'))
+        const newMessageHeight = $newMessage.outerheight() + newMessageMargin
+
+        // visible height
+        const visibleHeight = $('#messages').outerheight()
+
+        // height of messages container
+        const containerHeight = $('#messages').prop('scrollHeight')
+
+        // how far have i scrolled
+        const scrollOffset = $('#messages').scrollTop() + visibleHeight
+
+        if (containerHeight - newMessageHeight <= scrollOffset) {
+            $('#messages').animate({
+                scrollTop: containerHeight
+            }, 1000)
+        }
+    }
 
 ===========================================================
 

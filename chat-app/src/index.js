@@ -77,10 +77,16 @@ io.on('connection', (socket) => {
         socket.join(user.room)
 
         // using functions and objects
-        socket.emit('message', generateMessage('Welcome!'))
+        socket.emit('message', generateMessage('Admin', 'Welcome!'))
 
         // broadcast message
-        socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!`))
+        socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`))
+
+        // send list of users in room
+        io.to(user.room).emit('roomData', {
+            room: user.room,
+            users: getUsersInroom(user.room)
+        })
 
         callback()
 
@@ -90,19 +96,25 @@ io.on('connection', (socket) => {
 
     // listen to message
     socket.on('sendMessage', (message, callback) => {
+        // fetch user data
+        const user = getUser(socket.id)
+
         const filter = new BadWordsFilter()
 
         if (filter.isProfane(message)) {
             return callback('Profanity is not allowed!')
         }
 
-        io.emit('message', generateMessage(message))
+        io.to(user.room).emit('message', generateMessage(user.username, message))
         callback()
     })
 
     // listen to location and send link to google maps
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+        // fetch user data
+        const user = getUser(socket.id)
+
+        io.to(user.room).emit('locationMessage', generateLocationMessage(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
     })
 
@@ -112,9 +124,14 @@ io.on('connection', (socket) => {
         const user = removeUser(socket.id)
 
         if (user) {
-            io.to(user.room).emit('message', generateMessage(`${user.username} has left!`))
-        }
+            io.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left!`))
 
+            // send list of users in room
+            io.to(user.room).emit('roomData', {
+                room: user.room,
+                users: getUsersInroom(user.room)
+            })
+        }
     })
 })
 
