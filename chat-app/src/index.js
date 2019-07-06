@@ -104,6 +104,8 @@ io.on('connection', (socket) => {
         const filter = new BadWordsFilter()
 
         if (filter.isProfane(message)) {
+            // emit error message
+            socket.emit('message', generateMessage('Admin', 'Profanity is not allowed!'))
             return callback('Profanity is not allowed!')
         }
 

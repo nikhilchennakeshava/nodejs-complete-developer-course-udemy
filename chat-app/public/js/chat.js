@@ -39,7 +39,7 @@ $(document).ready(function() {
     }
 
     socket.on('message', (message) => {
-        console.log(message)
+        // console.log(message)
 
         // displaying messages using mustache template
         // console.log($('#message-template').html())
@@ -60,7 +60,7 @@ $(document).ready(function() {
     })
 
     socket.on('locationMessage', (message) => {
-        console.log(message)
+        // console.log(message)
         const locationMessageHtml = Mustache.to_html(locationMessageTemplate, {
             username: message.username,
             url: message.url,
@@ -86,10 +86,11 @@ $(document).ready(function() {
         $('#send-btn').attr('disabled', 'disabled')
 
         socket.emit('sendMessage', message, (error) => {
-            if (error) {
-                return console.log('Error', error)
-            }
-            console.log('Message Delivered')
+            // if (error) {
+            //     return
+            //     // return console.log('Error', error)
+            // }
+            // console.log('Message Delivered')
 
             // enable form after message sent
             $('#send-btn').removeAttr('disabled')
@@ -108,14 +109,14 @@ $(document).ready(function() {
         $(this).attr('disabled', 'disabled')
 
         navigator.geolocation.getCurrentPosition((position) => {
-            console.log(position)
+            // console.log(position)
 
             // sending location from client to server
             socket.emit('sendLocation', {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
             }, () => {
-                console.log('Location shared!')
+                // console.log('Location shared!')
 
                 // enable button
                 $(this).removeAttr('disabled')
