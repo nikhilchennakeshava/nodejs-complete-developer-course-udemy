@@ -2359,254 +2359,289 @@ userSchema.pre('remove', async function(next) {
 
 ## Section 13 - Sorting, Pagination and Filtering(Task app):
 
-	Timestamps:
-		We can have Mongoose/Mongo provide timestamps for us. We can do this by anabling Schema options.
+### Timestamps:
 
-		const taskSchema = new mongoose.Schema({
-			...
-			owner: {
-				type: mongoose.Schema.Types.ObjectId,
-				required: true,
-				ref: 'User'
-			}
-		}, {
-			timestamps: true
-		})
+We can have Mongoose/Mongo provide timestamps for us. We can do this by anabling Schema options.
 
-	Filtering Data:
-		We use the querystring for this.
-		We can set up a qs param so that user can filter out the tasks which are completed only.
+```
+const taskSchema = new mongoose.Schema({
+    ...
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    }
+}, {
+    timestamps: true
+})
+```
 
-		We can enable new options in populate() function.
+### Filtering Data:
 
-		// GET /tasks?completed=true
-		// Get all Tasks
-		router.get('/tasks', auth, async(req, res) => {
-			const match = {}
-			if (req.query.completed) {
-				match.completed = req.query.completed === 'true'
-			}
-			try {
-				const tasks = await req.user.populate({
-					path: 'tasks',
-					match
-				}).execPopulate()
-				res.send(req.user.tasks)
-			} catch (error) {
-				res.status(500).send(error)
-			}
-		})
+We use the querystring for this.
+We can set up a qs param so that user can filter out the tasks which are completed only.
 
-	Pagination:
-		3 ways to implement:
-			Using Page numbers.
-			Using Load more option.
-			Infinite scroll.
-		
-		We can use limit and skip to manage pagination.
-		Here we need new options in populate().
+>We can enable new options in populate() function.
 
-		const tasks = await req.user.populate({
+```
+// GET /tasks?completed=true
+// Get all Tasks
+router.get('/tasks', auth, async(req, res) => {
+    const match = {}
+    if (req.query.completed) {
+        match.completed = req.query.completed === 'true'
+    }
+    try {
+        const tasks = await req.user.populate({
+            path: 'tasks',
+            match
+        }).execPopulate()
+        res.send(req.user.tasks)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+```
+
+### Pagination:
+
+#### 3 ways to implement:
+* Using Page numbers.
+* Using Load more option.
+* Infinite scroll.
+
+> We can use limit and skip to manage pagination.
+
+Here we need new options in populate().
+
+```
+const tasks = await req.user.populate({
+    path: 'tasks',
+    match,
+    options: {
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip)
+    }
+}).execPopulate()
+```
+
+### Sorting:
+
+Similar to pagination we need to add options in populate().
+
+```
+router.get('/tasks', auth, async(req, res) => {
+    const match = {}
+    const sort = {}
+
+    if (req.query.completed) {
+        match.completed = req.query.completed === 'true'
+    }
+
+    if (req.query.sortBy) {
+        const parts = req.query.sortBy.split(':')
+
+        // setting sort option dynamically with ternary operator
+        sort[parts[0]] = parts[1] === 'dsc' ? -1 : 1
+    }
+
+    try {
+        const tasks = await req.user.populate({
             path: 'tasks',
             match,
             options: {
                 limit: parseInt(req.query.limit),
-                skip: parseInt(req.query.skip)
+                skip: parseInt(req.query.skip),
+                sort
             }
         }).execPopulate()
+        res.send(req.user.tasks)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+```
 
-	Sorting:
-		Similar to pagination we need to add options in populate().
-
-		router.get('/tasks', auth, async(req, res) => {
-			const match = {}
-			const sort = {}
-
-			if (req.query.completed) {
-				match.completed = req.query.completed === 'true'
-			}
-
-			if (req.query.sortBy) {
-				const parts = req.query.sortBy.split(':')
-
-				// setting sort option dynamically with ternary operator
-				sort[parts[0]] = parts[1] === 'dsc' ? -1 : 1
-			}
-
-			try {
-				const tasks = await req.user.populate({
-					path: 'tasks',
-					match,
-					options: {
-						limit: parseInt(req.query.limit),
-						skip: parseInt(req.query.skip),
-						sort
-					}
-				}).execPopulate()
-				res.send(req.user.tasks)
-			} catch (error) {
-				res.status(500).send(error)
-			}
-		})
-
-	
 ---
 
-Section 14 - File Uploads(Task app):
+## Section 14 - File Uploads(Task app):
 
-	Adding Support for File Uploads:
-		Express by default does not support file uploads. We can use a npm package for this.
+### Adding Support for File Uploads:
 
-		npm i multer
+Express by default does not support file uploads. We can use a npm package for this.
 
-		We can use multer to use any kinda of file upload be it images or pdfs.
+>npm i multer
 
-		multer comes with its own middleware which we need to use.
-			multer.single()
+>We can use multer to use any kinda of file upload be it images or pdfs.
 
-		// Testing file uploads
-		const multer = require('multer')
+multer comes with its own middleware which we need to use.
 
-		const upload = multer({
-			dest: 'images'
-		})
+>multer.single()
 
-		app.post('/upload', upload.single('upload'), (req, res) => {
-			res.send()
-		})
+```
+// Testing file uploads
+const multer = require('multer')
 
-		We need to send this data as form-data in Postman.
-		The key in Postman needs to match with the single() function we defined. And select type as file.
+const upload = multer({
+    dest: 'images'
+})
 
-		Initially the file will be in binary format. Later we will learn on how to get the correct file type.
+app.post('/upload', upload.single('upload'), (req, res) => {
+    res.send()
+})
+```
 
-	Validating File Uploads:
-		We can add validations for file size and also file type.
+>We need to send this data as form-data in Postman.
+
+The key in Postman needs to match with the single() function we defined. And select type as file.
+
+Initially the file will be in binary format. Later we will learn on how to get the correct file type.
+
+### Validating File Uploads:
+
+We can add validations for file size and also file type.
+
+We can configure fileSize in the multer object limits section.
+
+```
+// set file upload directory
+const upload = multer({
+    dest: 'avatars',
+    limits: {
+        // filesize is in bytes
+        fileSize: 1000000
+    }
+})
+```
+
+For the file type restrictions we need to add one more object in the multer definitions.
+
+```
+const upload = multer({
+    dest: 'images',
+    limits: {
+        // filesize is in bytes
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.endsWith('.pdf')) {
+            return cb(new Error('File must be a pdf'))
+        }
+        cb(undefined, true)
+    }
+})
+```
+
+We can use match() with regular expressions so that we can have better restrictions.
+
+```
+const upload = multer({
+    dest: 'images',
+    limits: {
+        // filesize is in bytes
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(doc|docx)$/)) {
+            return cb(new Error('File must be a word document'))
+        }
+        cb(undefined, true)
+    }
+})
+```
+
+### Handling Express errors:
+
+We need to display the error in a json format.
+For this, we need to define a callback in the method.
+
+```
+app.post('/upload', upload.single('upload'), (req, res) => {
+    res.send()
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
+```
+
+### Adding images to user profiles:
 		
-		We can configure fileSize in the multer object limits section.
+We first need to put the image upload url behind authentication.
 
-		// set file upload directory
-		const upload = multer({
-			dest: 'avatars',
-			limits: {
-				// filesize is in bytes
-				fileSize: 1000000
-			}
-		})
+Usually in all huge productin apps the profile pic is not stored in a separate folder in the filesytem but in the form of binary data 
+as part of the user prfile.
 
-		For the file type restrictions we need to add one more object in the multer definitions.
+>The type will be Buffer.
 
-		const upload = multer({
-			dest: 'images',
-			limits: {
-				// filesize is in bytes
-				fileSize: 1000000
-			},
-			fileFilter(req, file, cb) {
-				if (!file.originalname.endsWith('.pdf')) {
-					return cb(new Error('File must be a pdf'))
-				}
-				cb(undefined, true)
-			}
-		})
+```
+avatar: {
+    type: Buffer
+}
 
-		We can use match() with regular expressions so that we can have better restrictions.
+// Upload profile pic
+router.post('/users/me/avatar', auth, upload.single('avatar'), async(req, res) => {
+    req.user.avatar = req.file.buffer
+    await req.user.save()
+    res.send()
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
+```
 
-		const upload = multer({
-			dest: 'images',
-			limits: {
-				// filesize is in bytes
-				fileSize: 1000000
-			},
-			fileFilter(req, file, cb) {
-				if (!file.originalname.match(/\.(doc|docx)$/)) {
-					return cb(new Error('File must be a word document'))
-				}
-				cb(undefined, true)
-			}
-		})
+We can see our binary data in the web by using:
 
-	Handling Express errors:
-		We need to display the error in a json format.
-		For this, we need to define a callback in the method.
+> <img src="data:image/jpg;base64,binary_data"/>
 
-		app.post('/upload', upload.single('upload'), (req, res) => {
-			res.send()
-		}, (error, req, res, next) => {
-			res.status(400).send({ error: error.message })
-		})
+### Serving up files:
 
-	Adding images to user profiles:
-		We first need to put the image upload url behind authentication.
+We can send back the profile pics using,
 
-		Usually in all huge productin apps the profile pic is not stored in a separate folder in the filesytem but in the form of binary data 
-		as part of the user prfile.
+```
+// Serving profile pic
+router.get('/users/:id/avatar', async(req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
 
-		The type will be Buffer.
+        if (!user || !user.avatar) {
+            throw new Error()
+        }
 
-		avatar: {
-			type: Buffer
-		}
+        // setting the response header
+        res.set('Content-Type', 'image/jpg').send(user.avatar)
+    } catch (error) {
+        res.status(404).send()
+    }
+})
+```
 
-		// Upload profile pic
-		router.post('/users/me/avatar', auth, upload.single('avatar'), async(req, res) => {
-			req.user.avatar = req.file.buffer
-			await req.user.save()
-			res.send()
-		}, (error, req, res, next) => {
-			res.status(400).send({ error: error.message })
-		})
+### Auto-cropping and Image formatting:
 
-		We can see our binary data in the web by using:
+We can use a npm module for this.
+We no longer need to send profile pic back every time, so we can hide them like we did for password.
 
-			<img src="data:image/jpg;base64,binary_data"/>
+>npm i sharp
 
-	Serving up files:
-		We can send back the profile pics using,
+```
+// Upload profile pic
+router.post('/users/me/avatar', auth, upload.single('avatar'), async(req, res) => {
+    //req.user.avatar = req.file.buffer
 
-		// Serving profile pic
-		router.get('/users/:id/avatar', async(req, res) => {
-			try {
-				const user = await User.findById(req.params.id)
+    const buffer = await sharp(req.file.buffer)
+        .resize({
+            width: 250,
+            height: 250
+        }).png().toBuffer()
 
-				if (!user || !user.avatar) {
-					throw new Error()
-				}
+    req.user.avatar = buffer
+    await req.user.save()
+    res.send()
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
+```
 
-				// setting the response header
-				res.set('Content-Type', 'image/jpg').send(user.avatar)
-			} catch (error) {
-				res.status(404).send()
-			}
-		})
-
-	Auto-cropping and Image formatting:
-		We can use a npm module for this.
-		We no longer need to send profile pic back every time, so we can hide them like we did for password.
-
-			npm i sharp
-
-		// Upload profile pic
-		router.post('/users/me/avatar', auth, upload.single('avatar'), async(req, res) => {
-			//req.user.avatar = req.file.buffer
-
-			const buffer = await sharp(req.file.buffer)
-				.resize({
-					width: 250,
-					height: 250
-				}).png().toBuffer()
-
-			req.user.avatar = buffer
-			await req.user.save()
-			res.send()
-		}, (error, req, res, next) => {
-			res.status(400).send({ error: error.message })
-		})
-
-	
 ---
 
-Section 15 - Sending Emails(Task App):
+## Section 15 - Sending Emails(Task App):
 		
 	SendGrid:
 		It is a npm module using which we can send emails.
