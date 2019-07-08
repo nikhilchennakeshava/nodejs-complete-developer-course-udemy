@@ -1,498 +1,538 @@
-==========================================The Complete Node.js Developer Course (3rd Edition)==================================
-======================================================Andrew Mead and Rob Percival=============================================
+# The Complete Node.js Developer Course (3rd Edition)
+## Andrew Mead and Rob Percival
 
-Apps:
-	Notes app
-	Weather app
-	Task manager app
-	Chat app
-	
+---
 
-===========================================================
+## Apps:
+* Notes app
+* Weather app
+* Task manager app
+* Chat app
 
-Section 2 - Node.js: 
+---
 
-	Node is a way to run javascript outside of the browser.
-	Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js' package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
-	
-	JavaScript engine converts javascript code to machine code. V8 engine is written in C++.
-	Node is also written in C++.
-	
-	Nodejs is just a runtime, its not a language.
-	
-	REPL - Read evaluate Print Loop
-	
-	In browser - 'window' object, 'document' object
-	In node - 'global' object, 'process' object
-	
-	
-	'window' of browser == 'global' of node.
-	'document' of browser == 'process' of node.
-	
-	
-	non-blocking I/O - asynchronous - so that browser is not frozen. Similarly in node we can do other stuff while we are waiting.
-	
-	Asynchronous is best for server side development.
-	
-	npm - Nodejs' package ecosystem.
-	
-	
-===========================================================
+## Section 2 - Node.js:
 
-Section 3 - Node.js module system:
+Node is a way to run javascript outside of the browser.
 
-	Node modules:
-		Libraries of node.
-		
-	Some functions needs a module to be loaded first to be usable.
-	
-	Node.js doesn't need semicolon at the end of every line.
-	
-	We use require() function to import modules.
-		const fs = require('fs')
-		
-	This is the same for custom modules too.
-	
-	To export a function or variable we need to use module.exports:
-		module.exports = name
-		
-	Exporting multiple objects:
-		Always export as object.
-		
-		const name = 'Nikhil C'
+>Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js' package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
 
-		add = (a, b) => a + b;
+JavaScript engine converts javascript code to machine code. V8 engine is written in C++.
+Node is also written in C++.
 
-		// module.exports = name
-		module.exports = {
-			add,
-			name
-	
-	To initialize an npm project:
-		npm init or
-		npm init -y 
-		
-	This generates an package.json file which is used for keeping config data.
-	
-	To install a dependency globally:
-		npm i -g <dependency>
-		
-	To install it for the project:
-		npm i --save <dependency>
-		
-	This creates a node-modules directory which is where the dependency code is present.
-	
-	const validator = require('validator') -> npm module
-	const notes = require('./notes') -> custom module
-	
-	validator module is used for all kinds of validations.
-	lodash module is used for many operations on arrays etc
-	chalk module is used for formatting text.
-	
-	console.log(chalk.blue.inverse.bold('hello from chalk'))
-	
-	Nodemon:
-		Tool which automatically runs our nodejs files. live server for nodejs.
-		npm i -g nodemon
-		
-		Then we can specify which file we want to watch.
-		
-		nodemon app.js
-	
-	
-===========================================================
+Nodejs is just a runtime, its not a language.
 
-Section 4 - File System and Command Line args:
+REPL - Read evaluate Print Loop
 
-	Getting Input from users:
-		arguments to node are stored in process global object.
-		process.argv
-		
-		argv[0] = path to node
-		argv[1] = path to file
-		
-		These 2 are default args
-		
-	Passing arguments using Yargs:
-		We can pass arguments easily and parse it using yargs.
-		
-		node .\app.js add --tile="yoyo"
-		
-		{ _: [ 'add' ], tile: 'yoyo', '$0': 'app.js' }
-		
-		We can create our own yargs commands.
-		
-			yargs.command({ // Add command
-				command: 'add',
-				describe: 'Adds a new note',
-				aliases: ['insert', 'a', 'i'],
-				builder: {
-					title: {
-						describe: 'Note title',
-						demandOption: true,
-						type: 'string'
-					},
-					body: {
-						describe: 'Note body',
-						demandOption: true,
-						type: 'string'
-					}
-				},
-				handler: argv => {
-					console.log('Title: ', argv.title)
-					console.log('Body: ', argv.body)
-				}
-			})
-			.command({ // Remove command
-				command: 'remove',
-				describe: 'Removes a note',
-				aliases: ['delete', 'd', 'r'],
-				handler: function() {
-					console.log('Removing the note!')
-				}
-			})
-			.command({ // Read command
-				command: 'read',
-				describe: 'Reads the note',
-				handler: function() {
-					console.log('Reading the note!')
-				}
-			})
-			.command({ // List command
-				command: 'list',
-				describe: 'Lists all notes',
-				handler: function() {
-					console.log('Listing the notes!')
-				}
-			})
-			.demandCommand()
-			.help()
-			.parse()
-			
-			
-			We need to parse() the yargs to get the result.
-			
-			node .\app.js add --title hello --body world
-			or 
-			node .\app.js add --title=hello --body=world
-			
-		
-		To store data as Json:
-			We can use JSON.stringify() to convert object to Json string.
-			
-			const book = {
-				title: 'Cut it short',
-				author: 'Nikhil'
-			}
+>In browser - 'window' object, 'document' object
+In node - 'global' object, 'process' object
 
-			const bookJsonString = JSON.stringify(book)
-			console.log(bookJsonString)
+>'window' of browser == 'global' of node.
+'document' of browser == 'process' of node.
 
-			const bookJson = JSON.parse(bookJsonString)
-			console.log(bookJson)
-			
-		Arrow functions:
-			They don't bind their own this reference. The old reference is maintained.
-			
-		find() of array is better than filter() when we just want to see if a value exists or not in array.
+non-blocking I/O - asynchronous - so that browser is not frozen. Similarly in node we can do other stuff while we are waiting.
 
-		
-===========================================================
+Asynchronous is best for server side development.
 
-Section 5 - Debugging Node.js:
-		
-	console.log() is easiest to debug. First tool.
-	
-	To run in a debugger mode:
-		Add debugger wherever we need it.
-		Then run the code using:
-			node inspect app.js
-		Then we can open chrome:
-			chrome://inspect
-			
-		This will work as both chrome and node are build on V8 JavaScript engine.
-		
-		Then we can use the chrome debugger to debug the code.
-		
-		We can run restart if we want to debug after closing.
-		
-	In a stacktrace, the top contains the most useful info whereas the bottom will contain the references to the internal files.
-		
-	
-===========================================================
+>npm - Nodejs' package ecosystem.
 
-Section 6 - Asynchronous Node.js(Weather app):
+---
 
-	Call Stack, Callback Queue, Event Loop, Node API:
-		
-		Call Stack:
-			The Call Stack is a simple data structure provided by the V8 JavaScript engine. The job of the call stack is to track the execution of our program and it does that by keeping track of all of the functions that are currently running.
-			
-			Each node program has a main function which is an anonymous function which provides require, process etc arguments which we use in our programs.
-	
-			setTimeout() is not a JavaScript function and there is no implementation of it in V8. It is a nod function which is implemented in C++.
-	
-			The code for Node.js is single threaded but it used other threads in C++ behind the scenes to work asynchronously.
-			
-			All functions are added to the Call Stack for execution.
-			
-		Node API:
-			Whenever the Call Stack encounters asynchronous code, the code is moved to Node API where it will wait till it can be executed.
-			
-		Callback Queue:
-			When the asynchronous code is ready for execution it will enter the Callback Queue.
-			It is a normal queue.
-			
-		Event Loop:
-			It is program which fetches code from the Callback Queue to the Call Stack to be executed. This runs only when the Call Stack is empty with no code to run.
-			The event loop needs to wait for the call stack to be empty.
-			So this will fetch code from the Callback Queue only after the main() is executed.
-			
-		Usually (in small programs), Callbacks are run after the main(in case of timeout example). 
-			
-	HTTP Requests:
-		darksky.net API for weather data.
-		mapbox for getting geocoding data.
-		
-		JSON is usually the way in which data is transferred and received in HTTP calls.
-		
-		In error handling we know that at any point of time, only one of error or response has a value.
-		
-		we can use npm package 'request' for http calls.
-		
-		npm init -y for default npm project initialization.
-		
-		const request = require('request')
+## Section 3 - Node.js module system:
 
-		const secretKey = '4018ffab752ef35a8d760801f6632186'
-		const url = 'https://api.darksky.net/forecast/4018ffab752ef35a8d760801f6632186/37.8267,-122.4233'
+### Node modules:
 
-		const qs = {
-			units: 'si'
-		}
+Libraries of node.
 
-		const options = {
-			url: url,
-			json: true, // will make the response as a json so that we don't have to parse the resonse everytime
-			qs: qs
-		}
+Some functions needs a module to be loaded first to be usable.
 
-		request(options, (error, response) => {
-			if (error)
-				console.error('Error while fetching data')
-			else {
-				// console.log('Response:', response)
-				// const data = JSON.parse(response.body)
-				// console.log(data)
-				// console.log(data.currently)
-				// console.log(response)
-				console.log(response.body.currently)
-			}
-		})
-		
-	
-	Callback Functions:
-		So this is a callback function a callback function is nothing more than a function we provide as an argument to another function with the intention of having it called later on.
-		
-		const geocode = (address, callback) => {
-			setTimeout(() => {
-				const data = {
-					lat: 0,
-					long: 0
-				}
-				callback(data)
-			}, 2000)
-		}
+>Node.js doesn't need semicolon at the end of every line.
 
-		geocode('bangalore', (data) => console.log(data))
-		
-	
-	Callback Abstraction:
-		
-		const request = require('request')
+We use require() function to import modules.
 
-		const geocode = (address, callback) => {
-			const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json`
-			const key = 'pk.eyJ1IjoiYjYzODg0MSIsImEiOiJjand2MHlvcTMwNDA0M3ltaGpjNnp2OGJuIn0.KarZd85SfPnniE_ievHRUQ'
-			const qs = {
-				access_token: key,
-				limit: '3'
-			}
-			const options = {
-				url: url,
-				json: true,
-				qs: qs
-			}
-			request(mapbox_options, (error, response) => {
-				if (error)
-				// callback('Unable to connect to - Map box', undefined)
-					callback('Unable to connect to - Map box')
-				else if (!response.body.features.length) {
-					callback('Invalid request', undefined)
-				} else {
-					callback(undefined, {
-						latitude: response.body.features[0].center[1],
-						longitude: response.body.features[0].center[0],
-						location: response.body.features[0].place_name
-					})
-				}
-			})
-		}
+`const fs = require('fs')`
 
-		module.exports = {
-			geocode
-		}
-		
-	Callback Chaining:
-	
-		const geocode = require('./utils/geocode')
-		const forecast = require('./utils/forecast')
+This is the same for custom modules too.
 
-		const location = process.argv[2]
-		if (!location) {
-			console.error('Not enough arguments')
-		} else {
-			geocode.geocode(location, (error, data) => {
-				if (error) {
-					return console.error(error)
-				}
-				// console.log('Getting Forecast data for', data.location)
-				forecast.forecast(data.latitude, data.longitude, (error, forecastData) => {
-					if (error) {
-						return console.error(error)
-					}
-					console.log('Getting Forecast data for', data.location)
-					console.log(forecastData)
-				})
-			})
-		}
-		
-	Destructuring and Objcet shorthand:
-		
-		const geocode = (address, callback) => {
-			const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json`
-			const key = 'pk.eyJ1IjoiYjYzODg0MSIsImEiOiJjand2MHlvcTMwNDA0M3ltaGpjNnp2OGJuIn0.KarZd85SfPnniE_ievHRUQ'
-			const qs = {
-				access_token: key,
-				limit: '3'
-			}
-			const options = {
-				url,
-				json: true,
-				qs
-			}
-			request(options, (error, { body }) => {
-				if (error)
-				// callback('Unable to connect to - Map box', undefined)
-					callback('Unable to connect to - Map box')
-				else if (!body.features.length) {
-					callback('Invalid request', undefined)
-				} else {
-					callback(undefined, {
-						latitude: body.features[0].center[1],
-						longitude: body.features[0].center[0],
-						location: body.features[0].place_name
-					})
-				}
-			})
-		}
-		
-		
-		const geocode = require('./utils/geocode')
-		const forecast = require('./utils/forecast')
+To export a function or variable we need to use module.exports:
 
-		const location = process.argv[2]
-		if (!location) {
-			console.error('Not enough arguments')
-		} else {
-			geocode.geocode(location, (error, { latitude, longitude, location }) => {
-				if (error) {
-					return console.error(error)
-				}
-				// console.log('Getting Forecast data for', data.location)
-				forecast.forecast(latitude, longitude, (error, forecastData) => {
-					if (error) {
-						return console.error(error)
-					}
-					console.log('Getting Forecast data for', location)
-					console.log(forecastData)
-				})
-			})
-		}
-		
-		
-	HTTP requests using builtin node:
-	
-		const https = require('https')
+`module.exports = name`
 
-		const url = 'https://api.darksky.net/forecast/4018ffab752ef35a8d760801f6632186/37.8267,-122.4233'
+### Exporting multiple objects:
 
-		const request = https.request(url, response => {
-			let data = ''
+Always export as object.
 
-			response.on('data', chunk => {
-				data = data + chunk.toString()
-			})
+```
+const name = 'Nikhil C'
 
-			response.on('end', () => {
-				// console.log(data)
-				const body = JSON.parse(data)
-				console.log(body)
-			})
-		})
+add = (a, b) => a + b;
 
-		request.on('error', error => {
-			console.log(error)
-		})
+// module.exports = name
+module.exports = {
+    add,
+    name
+}
+```
 
-		request.end()
-		
-		
-===========================================================
+To initialize an npm project:
 
-Section 7 - Web Servers(Weather app):
-	
-	Intro: 
-		express is a npm package which provides webserver capabilities.
-		That is Express Express makes it really easy to create web servers with note these servers are going to allow us to serve up all of the assets for our web application.
-		This includes H2 UML we're going to render to the screen see SS to style our application and client side JavaScript so we can set up all sorts of awesome user interaction now using Express.
-		
-	Express:
-		It is a package for node which helps in creating web servers.
+>npm init or
+npm init -y 
 
-		npm i express
+This generates an package.json file which is used for keeping config data.
 
-		Express can send plaintext, html elements or Json back as response. 
-		If we send an object back as response, then express will automatically stringify it to a Json string.
+To install a dependency globally:
 
-		const express = require('express')
+>npm i -g <dependency>
 
-		const app = express()
+To install it for the project:
 
-		app.set('port', process.env.PORT || 3000)
+>npm i --save <dependency>
 
-		// Sending back plaintext
-		app.get('', (req, res) => {
-			res.send('Hello express!')
-		})
+This creates a node-modules directory which is where the dependency code is present.
 
-	Serving up Static Assets:
-		First create a directory which will contain the static assets.
-		Ususally convention is to name the directory as public.
-		And mention the path in express app. It has to be the absolute path.
+>const validator = require('validator') -> npm module
+const notes = require('./notes') -> custom module
 
-		const app = express()
-		const public_directory_path = path.join(__dirname, '../public')
+>validator module is used for all kinds of validations.
+lodash module is used for many operations on arrays etc
+chalk module is used for formatting text.
 
-		// Serve up Static assets
-		app.use(express.static(public_directory_path))
+`console.log(chalk.blue.inverse.bold('hello from chalk'))`
 
-		We can use path package of node to do path manipulation.
+### Nodemon:
 
-		index.html is usually the root html file which iis used to render the home page.
+Tool which automatically runs our nodejs files. live server for nodejs.
+>npm i -g nodemon
 
-	Dynamic webpages using Templating:
-		Handlebars, ejs etc.
+Then we can specify which file we want to watch.
+
+>nodemon app.js
+
+---
+
+## Section 4 - File System and Command Line args:
+
+### Getting Input from users:
+
+arguments to node are stored in process global object.
+
+>process.argv
+
+>argv[0] = path to node
+argv[1] = path to file
+
+These 2 are default args
+
+### Passing arguments using Yargs:
+We can pass arguments easily and parse it using yargs.
+
+>node .\app.js add --tile="yoyo"
+{ _: [ 'add' ], tile: 'yoyo', '$0': 'app.js' }
+
+We can create our own yargs commands.
+
+```
+yargs.command({ // Add command
+    command: 'add',
+    describe: 'Adds a new note',
+    aliases: ['insert', 'a', 'i'],
+    builder: {
+        title: {
+            describe: 'Note title',
+            demandOption: true,
+            type: 'string'
+        },
+        body: {
+            describe: 'Note body',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler: argv => {
+        console.log('Title: ', argv.title)
+        console.log('Body: ', argv.body)
+    }
+})
+.command({ // Remove command
+    command: 'remove',
+    describe: 'Removes a note',
+    aliases: ['delete', 'd', 'r'],
+    handler: function() {
+        console.log('Removing the note!')
+    }
+})
+.command({ // Read command
+    command: 'read',
+    describe: 'Reads the note',
+    handler: function() {
+        console.log('Reading the note!')
+    }
+})
+.command({ // List command
+    command: 'list',
+    describe: 'Lists all notes',
+    handler: function() {
+        console.log('Listing the notes!')
+    }
+})
+.demandCommand()
+.help()
+.parse()
+```
+
+>We need to parse() the yargs to get the result.
+
+>node .\app.js add --title hello --body world
+or
+node .\app.js add --title=hello --body=world
+
+### To store data as Json:
+
+We can use JSON.stringify() to convert object to Json string.
+
+```
+const book = {
+    title: 'Cut it short',
+    author: 'Nikhil'
+}
+
+const bookJsonString = JSON.stringify(book)
+console.log(bookJsonString)
+
+const bookJson = JSON.parse(bookJsonString)
+console.log(bookJson)
+```
+
+### Arrow functions:
+
+They don't bind their own this reference. The old reference is maintained.
+
+find() of array is better than filter() when we just want to see if a value exists or not in array.
+
+---
+
+## Section 5 - Debugging Node.js:
+
+console.log() is easiest to debug. First tool.
+
+### To run in a debugger mode:
+
+Add debugger wherever we need it.
+
+Then run the code using:
+
+>node inspect app.js
+
+Then we can open chrome:
+
+>chrome://inspect
+
+This will work as both chrome and node are build on V8 JavaScript engine.
+
+Then we can use the chrome debugger to debug the code.
+
+We can run restart if we want to debug after closing.
+
+In a stacktrace, the top contains the most useful info whereas the bottom will contain the references to the internal files.
+
+---
+
+## Section 6 - Asynchronous Node.js(Weather app):
+
+### Call Stack, Callback Queue, Event Loop, Node API:
+
+#### Call Stack:
+
+>The Call Stack is a simple data structure provided by the V8 JavaScript engine. The job of the call stack is to track the execution of our program and it does that by keeping track of all of the functions that are currently running.
+>
+>Each node program has a main function which is an anonymous function which provides require, process etc arguments which we use in our programs.
+>
+>setTimeout() is not a JavaScript function and there is no implementation of it in V8. It is a nod function which is implemented in C++.
+>
+>The code for Node.js is single threaded but it used other threads in C++ behind the scenes to work asynchronously.
+
+All functions are added to the Call Stack for execution.
+
+#### Node API:
+
+Whenever the Call Stack encounters asynchronous code, the code is moved to Node API where it will wait till it can be executed.
+
+#### Callback Queue:
+
+When the asynchronous code is ready for execution it will enter the Callback Queue.
+It is a normal queue.
+
+#### Event Loop:
+
+>It is program which fetches code from the Callback Queue to the Call Stack to be executed. This runs only when the Call Stack is empty with no code to run.
+The event loop needs to wait for the call stack to be empty.
+So this will fetch code from the Callback Queue only after the main() is executed.
+
+Usually (in small programs), Callbacks are run after the main(in case of timeout example). 
+
+### HTTP Requests:
+
+>darksky.net API for weather data.
+mapbox for getting geocoding data.
+
+JSON is usually the way in which data is transferred and received in HTTP calls.
+
+In error handling we know that at any point of time, only one of error or response has a value.
+
+we can use npm package 'request' for http calls.
+
+>npm init -y for default npm project initialization.
+
+```
+const request = require('request')
+
+const secretKey = '4018ffab752ef35a8d760801f6632186'
+const url = 'https://api.darksky.net/forecast/4018ffab752ef35a8d760801f6632186/37.8267,-122.4233'
+
+const qs = {
+    units: 'si'
+}
+
+const options = {
+    url: url,
+    json: true, // will make the response as a json so that we don't have to parse the resonse everytime
+    qs: qs
+}
+
+request(options, (error, response) => {
+    if (error)
+        console.error('Error while fetching data')
+    else {
+        // console.log('Response:', response)
+        // const data = JSON.parse(response.body)
+        // console.log(data)
+        // console.log(data.currently)
+        // console.log(response)
+        console.log(response.body.currently)
+    }
+})
+```
+
+### Callback Functions:
+
+So this is a callback function a callback function is nothing more than a function we provide as an argument to another function with the intention of having it called later on.
+
+```
+const geocode = (address, callback) => {
+    setTimeout(() => {
+        const data = {
+            lat: 0,
+            long: 0
+        }
+        callback(data)
+    }, 2000)
+}
+
+geocode('bangalore', (data) => console.log(data))
+```
+
+### Callback Abstraction:
+
+```
+const request = require('request')
+
+const geocode = (address, callback) => {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json`
+    const key = 'pk.eyJ1IjoiYjYzODg0MSIsImEiOiJjand2MHlvcTMwNDA0M3ltaGpjNnp2OGJuIn0.KarZd85SfPnniE_ievHRUQ'
+    const qs = {
+        access_token: key,
+        limit: '3'
+    }
+    const options = {
+        url: url,
+        json: true,
+        qs: qs
+    }
+    request(mapbox_options, (error, response) => {
+        if (error)
+        // callback('Unable to connect to - Map box', undefined)
+            callback('Unable to connect to - Map box')
+        else if (!response.body.features.length) {
+            callback('Invalid request', undefined)
+        } else {
+            callback(undefined, {
+                latitude: response.body.features[0].center[1],
+                longitude: response.body.features[0].center[0],
+                location: response.body.features[0].place_name
+            })
+        }
+    })
+}
+
+module.exports = {
+    geocode
+}
+```
+
+### Callback Chaining:
+
+```
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
+
+const location = process.argv[2]
+if (!location) {
+    console.error('Not enough arguments')
+} else {
+    geocode.geocode(location, (error, data) => {
+        if (error) {
+            return console.error(error)
+        }
+        // console.log('Getting Forecast data for', data.location)
+        forecast.forecast(data.latitude, data.longitude, (error, forecastData) => {
+            if (error) {
+                return console.error(error)
+            }
+            console.log('Getting Forecast data for', data.location)
+            console.log(forecastData)
+        })
+    })
+}
+```
+
+### Destructuring and Objcet shorthand:
+
+```
+const geocode = (address, callback) => {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json`
+    const key = 'pk.eyJ1IjoiYjYzODg0MSIsImEiOiJjand2MHlvcTMwNDA0M3ltaGpjNnp2OGJuIn0.KarZd85SfPnniE_ievHRUQ'
+    const qs = {
+        access_token: key,
+        limit: '3'
+    }
+    const options = {
+        url,
+        json: true,
+        qs
+    }
+    request(options, (error, { body }) => {
+        if (error)
+        // callback('Unable to connect to - Map box', undefined)
+            callback('Unable to connect to - Map box')
+        else if (!body.features.length) {
+            callback('Invalid request', undefined)
+        } else {
+            callback(undefined, {
+                latitude: body.features[0].center[1],
+                longitude: body.features[0].center[0],
+                location: body.features[0].place_name
+            })
+        }
+    })
+}
+```
+
+```
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
+
+const location = process.argv[2]
+if (!location) {
+    console.error('Not enough arguments')
+} else {
+    geocode.geocode(location, (error, { latitude, longitude, location }) => {
+        if (error) {
+            return console.error(error)
+        }
+        // console.log('Getting Forecast data for', data.location)
+        forecast.forecast(latitude, longitude, (error, forecastData) => {
+            if (error) {
+                return console.error(error)
+            }
+            console.log('Getting Forecast data for', location)
+            console.log(forecastData)
+        })
+    })
+}
+```
+
+### HTTP requests using builtin node:
+
+```
+const https = require('https')
+
+const url = 'https://api.darksky.net/forecast/4018ffab752ef35a8d760801f6632186/37.8267,-122.4233'
+
+const request = https.request(url, response => {
+    let data = ''
+
+    response.on('data', chunk => {
+        data = data + chunk.toString()
+    })
+
+    response.on('end', () => {
+        // console.log(data)
+        const body = JSON.parse(data)
+        console.log(body)
+    })
+})
+
+request.on('error', error => {
+    console.log(error)
+})
+
+request.end()
+```
+
+---
+
+## Section 7 - Web Servers(Weather app):
+
+### Intro:
+
+express is a npm package which provides webserver capabilities.
+That is Express Express makes it really easy to create web servers with note these servers are going to allow us to serve up all of the assets for our web application.
+This includes H2 UML we're going to render to the screen see SS to style our application and client side JavaScript so we can set up all sorts of awesome user interaction now using Express.
+
+### Express:
+
+It is a package for node which helps in creating web servers.
+
+>npm i express
+
+Express can send plaintext, html elements or Json back as response. 
+If we send an object back as response, then express will automatically stringify it to a Json string.
+
+```
+const express = require('express')
+
+const app = express()
+
+app.set('port', process.env.PORT || 3000)
+
+// Sending back plaintext
+app.get('', (req, res) => {
+    res.send('Hello express!')
+})
+```
+
+### Serving up Static Assets:
+
+First create a directory which will contain the static assets.
+Ususally convention is to name the directory as public.
+And mention the path in express app. It has to be the absolute path.
+
+```
+const app = express()
+const public_directory_path = path.join(__dirname, '../public')
+
+// Serve up Static assets
+app.use(express.static(public_directory_path))
+```
+
+We can use path package of node to do path manipulation.
+
+index.html is usually the root html file which iis used to render the home page.
+
+### Dynamic webpages using Templating:
+
+Handlebars, ejs etc.
 
 		handlebars - template engine.
 		hbs - Express.js view engine for handlebars.
@@ -595,7 +635,7 @@ Section 7 - Web Servers(Weather app):
 			<link rel="icon" href="/img/weather.png">
 
 
-===========================================================
+---
 
 Section 8 - Accessing API from Browser(Weather app):
 
@@ -746,7 +786,7 @@ Section 8 - Accessing API from Browser(Weather app):
 		})
 
 
-===========================================================
+---
 
 Section 9 - Application Deployment(Weather app):
 
@@ -837,7 +877,7 @@ Section 9 - Application Deployment(Weather app):
 		npm i --save-dev nodemon
 
 	
-===========================================================
+---
 
 Section 10 - MongoDB and Promises(Task app):
 
@@ -1071,7 +1111,7 @@ Section 10 - MongoDB and Promises(Task app):
 		}).catch(error => console.log(error))
 
 
-===========================================================
+---
 
 Section 11 - REST APIs and Mongoose(Task app):
 
@@ -1552,7 +1592,7 @@ Section 11 - REST APIs and Mongoose(Task app):
 		}
 
 
-===========================================================
+---
 
 Section 12 - API Authentication and Security(Task app):
 
@@ -2070,7 +2110,7 @@ Section 12 - API Authentication and Security(Task app):
 		})
 
 
-===========================================================
+---
 
 Section 13 - Sorting, Pagination and Filtering(Task app):
 
@@ -2165,7 +2205,7 @@ Section 13 - Sorting, Pagination and Filtering(Task app):
 		})
 
 	
-===========================================================
+---
 
 Section 14 - File Uploads(Task app):
 
@@ -2319,7 +2359,7 @@ Section 14 - File Uploads(Task app):
 		})
 
 	
-===========================================================
+---
 
 Section 15 - Sending Emails(Task App):
 		
@@ -2403,7 +2443,7 @@ Section 15 - Sending Emails(Task App):
 			git push heroku master
 
 
-===========================================================
+---
 
 Section 16 - Testing Node.js(Task App):
 
@@ -2771,7 +2811,7 @@ Section 16 - Testing Node.js(Task App):
 		// Should fetch page of tasks
 
 
-===========================================================		
+---		
 
 Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 
@@ -3381,7 +3421,7 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 	}, 500)
 
 
-===========================================================
+---
 
 Section 18 - Wrapping Up:
 
@@ -3400,5 +3440,5 @@ Section 18 - Wrapping Up:
 		React
 		
 		
-===========================================================
-===========================================================		
+---
+---		
