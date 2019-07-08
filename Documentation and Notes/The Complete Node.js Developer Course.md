@@ -1134,559 +1134,616 @@ db.collection('users').find({ age: 24 }).count((error, result) => {
 })
 ```
 
-	Promises:
-		Makes it easier for us to manage asynchronous code.
-		Used to solve some drawbacks of callbacks.
+### Promises:
 
-		Promises are like wrappers on callbacks.
+Makes it easier for us to manage asynchronous code.
+Used to solve some drawbacks of callbacks.
 
-		resolve == result
-		reject == error
+Promises are like wrappers on callbacks.
 
-		Advantages over callbacks:
-			Clearer semantics
-			we need to check if error occured.
-			After asynchronous task we need to do the work ourselves.
-			The code is more correct - as we cannot both resolve and reject together.
-			Easier to not mess up.
+>resolve == result
+>reject == error
 
-		Callback:
+#### Advantages over callbacks:
+* Clearer semantics
+* we need to check if error occured.
+* After asynchronous task we need to do the work ourselves.
+* The code is more correct - as we cannot both resolve and reject together.
+* Easier to not mess up.
 
-			doWorkCallback = (callback) => {
-				setTimeout(() => {
-					callback('This is my error')
-				}, 2000)
-			}
+#### Callback:
 
-			doWorkCallback((error, result) => {
-				if (error) {
-					return console.log(error)
-				}
-				console.log(result)
-			})
+```
+doWorkCallback = (callback) => {
+    setTimeout(() => {
+        callback('This is my error')
+    }, 2000)
+}
 
-		Promise:
+doWorkCallback((error, result) => {
+    if (error) {
+        return console.log(error)
+    }
+    console.log(result)
+})
+```
 
-			const doWorkPromise = new Promise((resolve, reject) => {
-				setTimeout(() => {
-					// resolve('Success')
-					reject('Error occured')
-				}, 2000)
-			})
+#### Promise:
 
-			doWorkPromise.then((result) => {
-				console.log(result)
-			}).catch((error) => {
-				console.log(error)
-			})
+```
+const doWorkPromise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        // resolve('Success')
+        reject('Error occured')
+    }, 2000)
+})
 
-	Updating Documents:
+doWorkPromise.then((result) => {
+    console.log(result)
+}).catch((error) => {
+    console.log(error)
+})
+```
 
-		db.collection('users').updateOne({
-			_id: ObjectID('5d07e7baf9c4c0225ef4ec12')
-		}, {
-			$set: {
-				name: 'Melissa'
-			}
-		}).then(result => {
-			console.log(result)
-		}).catch((error) => {
-			console.log(error)
-		})
+### Updating Documents:
 
-	Deleting Documents:
+```
+db.collection('users').updateOne({
+    _id: ObjectID('5d07e7baf9c4c0225ef4ec12')
+}, {
+    $set: {
+        name: 'Melissa'
+    }
+}).then(result => {
+    console.log(result)
+}).catch((error) => {
+    console.log(error)
+})
+```
 
-		db.collection('users').deleteMany({
-			age: 25
-		}).then(result => {
-			console.log(result)
-		}).catch(error => console.log(error))
+### Deleting Documents:
 
+```
+db.collection('users').deleteMany({
+    age: 25
+}).then(result => {
+    console.log(result)
+}).catch(error => console.log(error))
+```
 
 ---
 
-Section 11 - REST APIs and Mongoose(Task app):
-
-	Mongoose:
-		Popular npm package for MongoDB.
-		Useful for data model creation.
-		Validation of data.
-
-		It is an ODM.
-		ODM - Object Document Mapper.
-
-		npm i mongoose
-	
-		Mongoose uses mongodb behind the scenes.
-
-		const mongoose = require('mongoose')
-
-		mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
-			useNewUrlParser: true,
-			useCreateIndex: true
-		})
-
-		const User = mongoose.model('User', {
-			name: {
-				type: String
-			},
-			age: {
-				type: Number
-			}
-		})
-
-		const user = new User({
-			name: 'Nikhil',
-			age: 24
-		})
-
-		user.save().then((result) => {
-			console.log('Result:', result)
-		}).catch((error) => {
-			console.log('Error:', error)
-		})
-
-	Data Validation and Sanitization:
-		Validating means checking if the data is of proper syntax and as such.
-		Sanitization refers to cleaning/altering of data before using.
-
-		Mongoose doesn't have many good built-in validators.
-		So we can build custom validator.
-
-		But it's best to use a npm package for validation.
-
-		validator is the npm package for this:
-
-			npm i validator
-
-		This validator has many in-built functions.
-
-		email: {
-			type: String,
-			required: true,
-			validate(value) {
-				if (!validator.isEmail(value)) {
-					throw new Error('Email is invalid')
-				}
-			}
-		},
-
-		We can set a default value for any fields.
-
-		We can also sanitize.
-
-		const User = mongoose.model('User', {
-			name: {
-				type: String,
-				required: true,
-				trim: true
-			},
-			email: {
-				type: String,
-				required: true,
-				trim: true,
-				lowercase: true,
-				validate(value) {
-					if (!validator.isEmail(value)) {
-						throw new Error('Email is invalid')
-					}
-				}
-			},
-			password: {
-				type: String,
-				required: true,
-				minlength: 7,
-				trim: true,
-				validate(value) {
-					if (value.toLowerCase().includes('password')) {
-						throw new Error('Password is invalid. It cannot contain "password"')
-					}
-				}
-			},
-			age: {
-				type: Number,
-				default: 0,
-				validate(value) {
-					if (value < 0) {
-						throw new Error('Age must be a positive number')
-					}
-				}
-			}
-		})
-
-	Structuring a REST API:
-		REST - Representational State Transfer
-		API - Application Programming Interface
-
-		API are set of tools for sowtware building.
-		REST are predefined operations.
-
-		Requests are usually HTTP Requests.
-		Response are usually JSON response.
-
-		Predefined Operations are usually - CRUD - Post, Get, Patch, Delete.
-
-		Create:
-			POST: /tasks
-
-		Read:
-			GET: /tasks
-			GET: /tasks/:id
-
-		Update:
-			PATCH: /tasks/:id
-
-		Delete:
-			DELETE: /tasks/:id
-
-		HTTP Request:
-			<HTTP method> <path> <HTTP protocol>
-			Accept: <>
-			Connection: <>
-			Authorization: Bearer/basic
-
-			Body
-
-
-	Postman:
-		Used to make HTTP requests.
-
-	Resource Creation Endpoints:
-		We can send data via Postman using Body of the request and selecting raw data with application/json.
-		We can create start scripts. and run them via:
-			npm run <scriptname>
-
-		Put each mongoose model into separate files.
-		Then use it in index.js.
-		When we require() a file then that js file is actually executed.
-		So we can use require() to connect to database.
-
-		// Telling express to parse incoming requests as JSON.
-		app.use(express.json())
-
-		// Create User
-		app.post('/users', (req, res) => {
-			const user = new User(req.body)
-
-			user.save().then((result) => {
-				res.status(201).send(result)
-			}).catch((e) => {
-				res.status(400).send(e)
-					// res.send(e)
-			})
-		})
-
-	Resource Reading Endpoints:
-		For reading, mongoose has some builtin methods.
-
-		// Get all Users
-		app.get('/users', (req, res) => {
-			User.find({}).then((users) => {
-				res.send(users)
-			}).catch((e) => {
-				res.status(500).send()
-			})
-		})
-
-		Express provides us route parameters which we can use to fetch a particular resource.
-
-		// Get all Tasks
-		app.get('/tasks', (req, res) => {
-			Task.find({}).then((tasks) => {
-				res.send(tasks)
-			}).catch((e) => {
-				res.status(500).send()
-			})
-		})
-
-		// Get a specific Task
-		app.get('/tasks/:id', (req, res) => {
-			const _id = req.params.id
-
-			Task.findById(_id).then((task) => {
-				if (!task) {
-					return res.status(404).send()
-				}
-				res.send(task)
-			}).catch((e) => {
-				res.status(500).send()
-			})
-		})
-
-		For fetching a particular resource, we can use many of the functions provided by mongoose.
-
-	Promise Chaining:
-		Similar to Callback Chaining, we can chain Promises too.
-
-		We can return a new Promise in the then() callback of one promise to chain promises.
-
-		// Using Promise Chanining
-		add(1, 2).then((sum) => {
-			console.log(sum)
-			return add(sum, 3)
-		}).then((sum2) => {
-			console.log(sum2)
-		}).catch((e) => {
-			console.log(e)
-		})
-
-		In Mongoose, we can use it as:
-			User.findByIdAndUpdate('5d092e0b5092f94970666af9', { age: 1 })
-				.then((user) => {
-					console.log(user)
-					return User.countDocuments({ age: 1 })
-				}).then((result) => {
-					console.log(result)
-				}).catch((e) => {
-					console.log(e)
-				})
-
-		To get rid of deprecation warnings:
-			const mongoose = require('mongoose')
-
-			mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
-				useNewUrlParser: true,
-				useCreateIndex: true,
-				useFindAndModify: false
-			})
-
-
-	Async/Await:
-		Set of tools which makes it easier to work with promises.
-		Makes it easier to work with asynchronous code.
-
-		async functions always returns a promise.
-		That promise is fulfilled with the value which we return from the function.
-
-		const doWork = async() => {
-			return 'nikhil'
-		}
-
-		doWork().then((result) => {
-			console.log(result)
-		}).catch((e) => {
-			console.log(e)
-		})
-
-		await operators can only be used with async functions.
-
-		await is useful whenever we work with any functions that returns a promise.
-
-		In Async/Await we can have all individual results in the same scope.
-
-		In mongoose,
-			const updateAgeAndCount = async(id, age) => {
-				const user = await User.findByIdAndUpdate(id, { age })
-				const count = await User.countDocuments({ age })
-				return count
-			}
-
-			updateAgeAndCount('5d092e0b5092f94970666af9', 2).then((count) => {
-				console.log(count)
-			}).catch((e) => {
-				console.log(e)
-			})
-
-	Integrating Async/Await:
-		We can turn our callbacks in express to async by denoting them as async.
-
-		// Get a specific User
-		app.get('/users/:id', async(req, res) => {
-			const _id = req.params.id
-
-			try {
-				const user = await User.findById(_id)
-				if (!user) {
-					return res.status(404).send()
-				}
-				res.send(user)
-			} catch (error) {
-				res.status(500).send(error)
-			}
-		})
-
-	Resource Updating Endpoints:
-		PATCH HTTP method is used for updating.
-
-		We can update using the req.body as the new object and we need to runValidators: true as we need to check data before entering into database.
-
-		// Update User
-		app.patch('/users/:id', async(req, res) => {
-			// check if user tries to update non-updatable fields.
-			const allowedUpdates = ['name', 'email', 'password', 'age']
-			const updates = Object.keys(req.body)
-
-			const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-			if (!isValidOperation) {
-				res.status(400).send({ error: 'Invalid update!' })
-			}
-
-			try {
-				const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-
-				// No user to update
-				if (!user) {
-					return res.status(404).send()
-				}
-
-				// Updated successfully
-				res.send(user)
-			} catch (error) {
-				res.status(400).send(error)
-			}
-		})
-
-	Resource Deleting Endpoints:
-		// Delete Task
-		app.delete('/tasks/:id', async(req, res) => {
-			try {
-				const task = await Task.findByIdAndDelete(req.params.id)
-
-				// No task to delete
-				if (!task) {
-					return res.status(404).send()
-				}
-
-				// Deleted successfully
-				res.send(task)
-			} catch (error) {
-				res.status(500).send(error)
-			}
-		})
-
-	Separate Route files:
-		We need to create new Routers for this.
-		Then set up the routes.
-		Register the router.
-
-		// Second Router
-		const router = new express.Router()
-
-		// Set up routes
-		router.get('/test', (req, res) => {
-			console.log('From second router')
-		})
-
-		// Register the router
-		app.use(router)
-
-		----
-
-		const express = require('express')
-		const { Task } = require('../models/task')
-
-		const router = new express.Router()
-
-		// Create Task
-		router.post('/tasks', async(req, res) => {
-			const task = new Task(req.body)
-
-			try {
-				const result = await task.save()
-				res.status(201).send(result)
-			} catch (error) {
-				res.status(400).send(error)
-			}
-
-			// task.save().then((result) => {
-			//     res.status(201).send(result)
-			// }).catch((e) => {
-			//     res.status(400).send(e)
-			//         // res.send(e)
-			// })
-		})
-
-		// Get all Tasks
-		router.get('/tasks', async(req, res) => {
-			try {
-				const tasks = await Task.find({})
-				res.send(tasks)
-			} catch (error) {
-				res.status(500).send(error)
-			}
-
-			// Task.find({}).then((tasks) => {
-			//     res.send(tasks)
-			// }).catch((e) => {
-			//     res.status(500).send()
-			// })
-		})
-
-		// Get a specific Task
-		router.get('/tasks/:id', async(req, res) => {
-			const _id = req.params.id
-
-			try {
-				const task = await Task.findById(_id)
-				if (!task) {
-					return res.status(404).send()
-				}
-				res.send(task)
-			} catch (error) {
-				res.status(500).send(error)
-			}
-
-			// Task.findById(_id).then((task) => {
-			//     if (!task) {
-			//         return res.status(404).send()
-			//     }
-			//     res.send(task)
-			// }).catch((e) => {
-			//     res.status(500).send()
-			// })
-		})
-
-		// Update Task
-		router.patch('/tasks/:id', async(req, res) => {
-			// check if user tries to update non-updatable fields.
-			const allowedUpdates = ['description', 'completed']
-			const updates = Object.keys(req.body)
-
-			const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-			if (!isValidOperation) {
-				res.status(400).send({ error: 'Invalid update!' })
-			}
-
-			try {
-				const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-
-				// No task to update
-				if (!task) {
-					return res.status(404).send()
-				}
-
-				// Updated successfully
-				res.send(task)
-			} catch (error) {
-				res.status(400).send(error)
-			}
-		})
-
-		// Delete Task
-		router.delete('/tasks/:id', async(req, res) => {
-			try {
-				const task = await Task.findByIdAndDelete(req.params.id)
-
-				// No task to delete
-				if (!task) {
-					return res.status(404).send()
-				}
-
-				// Deleted successfully
-				res.send(task)
-			} catch (error) {
-				res.status(500).send(error)
-			}
-		})
-
-		module.exports = {
-			router
-		}
+## Section 11 - REST APIs and Mongoose(Task app):
+
+### Mongoose:
+
+Popular npm package for MongoDB.
+Useful for data model creation and Validation of data.
+
+It is an ODM.
+
+>ODM - Object Document Mapper.
+
+>npm i mongoose
+
+Mongoose uses mongodb behind the scenes.
+
+```
+const mongoose = require('mongoose')
+
+mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
+    useNewUrlParser: true,
+    useCreateIndex: true
+})
+
+const User = mongoose.model('User', {
+    name: {
+        type: String
+    },
+    age: {
+        type: Number
+    }
+})
+
+const user = new User({
+    name: 'Nikhil',
+    age: 24
+})
+
+user.save().then((result) => {
+    console.log('Result:', result)
+}).catch((error) => {
+    console.log('Error:', error)
+})
+```
+
+### Data Validation and Sanitization:
+
+Validating means checking if the data is of proper syntax and as such.
+
+Sanitization refers to cleaning/altering of data before using.
+
+Mongoose doesn't have many good built-in validators.
+So we can build custom validator.
+
+But it's best to use a npm package for validation.
+
+validator is the npm package for this:
+
+>npm i validator
+
+This validator has many in-built functions.
+
+```
+email: {
+    type: String,
+    required: true,
+    validate(value) {
+        if (!validator.isEmail(value)) {
+            throw new Error('Email is invalid')
+        }
+    }
+},
+```
 
+We can set a default value for any fields.
+We can also sanitize.
+
+```
+const User = mongoose.model('User', {
+    name: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    email: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
+        validate(value) {
+            if (!validator.isEmail(value)) {
+                throw new Error('Email is invalid')
+            }
+        }
+    },
+    password: {
+        type: String,
+        required: true,
+        minlength: 7,
+        trim: true,
+        validate(value) {
+            if (value.toLowerCase().includes('password')) {
+                throw new Error('Password is invalid. It cannot contain "password"')
+            }
+        }
+    },
+    age: {
+        type: Number,
+        default: 0,
+        validate(value) {
+            if (value < 0) {
+                throw new Error('Age must be a positive number')
+            }
+        }
+    }
+})
+```
+
+### Structuring a REST API:
+
+>REST - Representational State Transfer
+>API - Application Programming Interface
+
+>API are set of tools for sowtware building.
+>REST are predefined operations.
+
+>Requests are usually HTTP Requests.
+>Response are usually JSON response.
+
+Predefined Operations are usually - CRUD - Post, Get, Patch, Delete.
+
+```
+Create:
+    POST: /tasks
+
+Read:
+    GET: /tasks
+    GET: /tasks/:id
+
+Update:
+    PATCH: /tasks/:id
+
+Delete:
+    DELETE: /tasks/:id
+
+HTTP Request:
+    <HTTP method> <path> <HTTP protocol>
+    Accept: <>
+    Connection: <>
+    Authorization: Bearer/basic
+
+    Body
+```
+
+
+### Postman:
+
+Used to make HTTP requests.
+
+### Resource Creation Endpoints:
+
+We can send data via Postman using Body of the request and selecting raw data with application/json.
+
+We can create start scripts. and run them via:
+
+>npm run <scriptname>
+
+Put each mongoose model into separate files.
+Then use it in index.js.
+
+>When we require() a file then that js file is actually executed.
+So we can use require() to connect to database.
+
+```
+// Telling express to parse incoming requests as JSON.
+app.use(express.json())
+
+// Create User
+app.post('/users', (req, res) => {
+    const user = new User(req.body)
+
+    user.save().then((result) => {
+        res.status(201).send(result)
+    }).catch((e) => {
+        res.status(400).send(e)
+            // res.send(e)
+    })
+})
+```
+
+### Resource Reading Endpoints:
+
+For reading, mongoose has some builtin methods.
+
+```
+// Get all Users
+app.get('/users', (req, res) => {
+    User.find({}).then((users) => {
+        res.send(users)
+    }).catch((e) => {
+        res.status(500).send()
+    })
+})
+```
+
+Express provides us route parameters which we can use to fetch a particular resource.
+
+```
+// Get all Tasks
+app.get('/tasks', (req, res) => {
+    Task.find({}).then((tasks) => {
+        res.send(tasks)
+    }).catch((e) => {
+        res.status(500).send()
+    })
+})
+
+// Get a specific Task
+app.get('/tasks/:id', (req, res) => {
+    const _id = req.params.id
+
+    Task.findById(_id).then((task) => {
+        if (!task) {
+            return res.status(404).send()
+        }
+        res.send(task)
+    }).catch((e) => {
+        res.status(500).send()
+    })
+})
+```
+
+For fetching a particular resource, we can use many of the functions provided by mongoose.
+
+### Promise Chaining:
+
+Similar to Callback Chaining, we can chain Promises too.
+
+We can return a new Promise in the then() callback of one promise to chain promises.
+
+```
+// Using Promise Chanining
+add(1, 2).then((sum) => {
+    console.log(sum)
+    return add(sum, 3)
+}).then((sum2) => {
+    console.log(sum2)
+}).catch((e) => {
+    console.log(e)
+})
+```
+
+In Mongoose, we can use it as:
+
+```
+User.findByIdAndUpdate('5d092e0b5092f94970666af9', { age: 1 })
+    .then((user) => {
+        console.log(user)
+        return User.countDocuments({ age: 1 })
+    }).then((result) => {
+        console.log(result)
+    }).catch((e) => {
+        console.log(e)
+    })
+```
+
+To get rid of deprecation warnings:
+```
+const mongoose = require('mongoose')
+
+mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+})
+```
+
+### Async/Await:
+
+Set of tools which makes it easier to work with promises.
+Makes it easier to work with asynchronous code.
+
+>async functions always returns a promise.
+That promise is fulfilled with the value which we return from the function.
+
+```
+const doWork = async() => {
+    return 'nikhil'
+}
+
+doWork().then((result) => {
+    console.log(result)
+}).catch((e) => {
+    console.log(e)
+})
+```
+
+>await operators can only be used with async functions.
+
+await is useful whenever we work with any functions that returns a promise.
+
+>In Async/Await we can have all individual results in the same scope.
+
+In mongoose:
+
+```
+const updateAgeAndCount = async(id, age) => {
+    const user = await User.findByIdAndUpdate(id, { age })
+    const count = await User.countDocuments({ age })
+    return count
+}
+
+updateAgeAndCount('5d092e0b5092f94970666af9', 2).then((count) => {
+    console.log(count)
+}).catch((e) => {
+    console.log(e)
+})
+```
+
+### Integrating Async/Await:
+
+We can turn our callbacks in express to async by denoting them as async.
+
+```
+// Get a specific User
+app.get('/users/:id', async(req, res) => {
+    const _id = req.params.id
+
+    try {
+        const user = await User.findById(_id)
+        if (!user) {
+            return res.status(404).send()
+        }
+        res.send(user)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+```
+
+### Resource Updating Endpoints:
+
+PATCH HTTP method is used for updating.
+
+We can update using the req.body as the new object and we need to runValidators: true as we need to check data before entering into database.
+
+```
+// Update User
+app.patch('/users/:id', async(req, res) => {
+    // check if user tries to update non-updatable fields.
+    const allowedUpdates = ['name', 'email', 'password', 'age']
+    const updates = Object.keys(req.body)
+
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    if (!isValidOperation) {
+        res.status(400).send({ error: 'Invalid update!' })
+    }
+
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
+        // No user to update
+        if (!user) {
+            return res.status(404).send()
+        }
+
+        // Updated successfully
+        res.send(user)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+```
+
+### Resource Deleting Endpoints:
+
+```
+// Delete Task
+app.delete('/tasks/:id', async(req, res) => {
+    try {
+        const task = await Task.findByIdAndDelete(req.params.id)
+
+        // No task to delete
+        if (!task) {
+            return res.status(404).send()
+        }
+
+        // Deleted successfully
+        res.send(task)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+```
+
+### Separate Route files:
+
+We need to create new Routers for this.
+
+Then set up the routes.
+
+Register the router.
+
+```
+// Second Router
+const router = new express.Router()
+
+// Set up routes
+router.get('/test', (req, res) => {
+    console.log('From second router')
+})
+
+// Register the router
+app.use(router)
+```
+
+```
+const express = require('express')
+const { Task } = require('../models/task')
+
+const router = new express.Router()
+
+// Create Task
+router.post('/tasks', async(req, res) => {
+    const task = new Task(req.body)
+
+    try {
+        const result = await task.save()
+        res.status(201).send(result)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+
+    // task.save().then((result) => {
+    //     res.status(201).send(result)
+    // }).catch((e) => {
+    //     res.status(400).send(e)
+    //         // res.send(e)
+    // })
+})
+
+// Get all Tasks
+router.get('/tasks', async(req, res) => {
+    try {
+        const tasks = await Task.find({})
+        res.send(tasks)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+
+    // Task.find({}).then((tasks) => {
+    //     res.send(tasks)
+    // }).catch((e) => {
+    //     res.status(500).send()
+    // })
+})
+
+// Get a specific Task
+router.get('/tasks/:id', async(req, res) => {
+    const _id = req.params.id
+
+    try {
+        const task = await Task.findById(_id)
+        if (!task) {
+            return res.status(404).send()
+        }
+        res.send(task)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+
+    // Task.findById(_id).then((task) => {
+    //     if (!task) {
+    //         return res.status(404).send()
+    //     }
+    //     res.send(task)
+    // }).catch((e) => {
+    //     res.status(500).send()
+    // })
+})
+
+// Update Task
+router.patch('/tasks/:id', async(req, res) => {
+    // check if user tries to update non-updatable fields.
+    const allowedUpdates = ['description', 'completed']
+    const updates = Object.keys(req.body)
+
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    if (!isValidOperation) {
+        res.status(400).send({ error: 'Invalid update!' })
+    }
+
+    try {
+        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
+        // No task to update
+        if (!task) {
+            return res.status(404).send()
+        }
+
+        // Updated successfully
+        res.send(task)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+
+// Delete Task
+router.delete('/tasks/:id', async(req, res) => {
+    try {
+        const task = await Task.findByIdAndDelete(req.params.id)
+
+        // No task to delete
+        if (!task) {
+            return res.status(404).send()
+        }
+
+        // Deleted successfully
+        res.send(task)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+
+module.exports = {
+    router
+}
+```
 
 ---
 
-Section 12 - API Authentication and Security(Task app):
+## Section 12 - API Authentication and Security(Task app):
 
 	Securely Storing Passwords:
 		Passwords should never be stored in plaintext.
