@@ -316,7 +316,7 @@ These 2 are default args
 
 We can pass arguments easily and parse it using yargs.
 
->node .\app.js add --tile="yoyo"
+>node .\app.js add --tile="yoyo"  
 >{ _: [ 'add' ], tile: 'yoyo', '$0': 'app.js' }
 
 We can create our own yargs commands.
