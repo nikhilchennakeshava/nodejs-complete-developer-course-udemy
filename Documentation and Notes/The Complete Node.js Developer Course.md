@@ -2642,90 +2642,105 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async(req, res) =
 ---
 
 ## Section 15 - Sending Emails(Task App):
-		
-	SendGrid:
-		It is a npm module using which we can send emails.
 
-		It is not working for me.
+### SendGrid:
 
-		const sgMail = require('@sendgrid/mail')
+It is a npm module using which we can send emails.
 
-		const sendGridAPIKey = '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'
+It is not working for me.
 
-		sgMail.setApiKey(sendGridAPIKey)
+```
+const sgMail = require('@sendgrid/mail')
 
-		sgMail.send({
-			to: 'b1499547@urhen.com',
-			from: 'andrew@mead.io',
-			subject: 'first mail',
-			text: 'first one'
-		})
+const sendGridAPIKey = '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'
 
-	Sending Welcome and cancellation emails:
+sgMail.setApiKey(sendGridAPIKey)
 
-		const sendWelcomeEmail = ({ email, name } = {}) => {
-			sgMail.send({
-				to: email,
-				from: 'andrew@mead.io',
-				subject: 'Welcome to The Company',
-				text: `Welcome to the company ${name}. Hope you enjoy!`
-			})
-		}
+sgMail.send({
+    to: 'b1499547@urhen.com',
+    from: 'andrew@mead.io',
+    subject: 'first mail',
+    text: 'first one'
+})
+```
 
-	Environment Variables:
-		Typically environment Variables should never be present in production code.
-		We need to use configuration for these.
+### Sending Welcome and cancellation emails:
 
-		For Security and Customizability we need Environment Variables.
+```
+const sendWelcomeEmail = ({ email, name } = {}) => {
+    sgMail.send({
+        to: email,
+        from: 'andrew@mead.io',
+        subject: 'Welcome to The Company',
+        text: `Welcome to the company ${name}. Hope you enjoy!`
+    })
+}
+```
 
-		We can keep all our configurations in a separate folder called config.
-		There we can keep one .env for each situation.
+### Environment Variables:
 
-		dev.env for development.
+Typically environment Variables should never be present in production code.
+We need to use configuration for these.
 
-		We need to store key-value pairs in that.
+For Security and Customizability we need Environment Variables.
 
-		We can use npm package to help with this:
-			npm i env-cmd -D
+>We can keep all our configurations in a separate folder called config.
+There we can keep one .env for each situation.
 
-		To run we need to add this in the package.json scripts.
-		
-		"scripts": {
-			"start": "node src/index.js",
-			"dev": "env-cmd ./config/dev.env nodemon src/index.js"
-		},
+dev.env for development.
 
-	Creating a Production MongoDB Database:
-		In production deployment, we need a MongoDB hosting service which will host our database.
-		So that heroku can connect to that.
+>We need to store key-value pairs in that.
 
-		We can use MongoDB Atlas for this.
-		We need to build our first cluster.
-		A cluster is a collection of servers for our db.
+We can use npm package to help with this:
 
-		First we need to customize.
-		
-		We need MongoDB compass to be installed in our local machine.
+>npm i env-cmd -D
 
-		Do configurations as shown in video.
+To run we need to add this in the package.json scripts.
 
-	Deploy to heroku:
-		Create a new heroku app:
-			heroku create <appname>
+```
+"scripts": {
+    "start": "node src/index.js",
+    "dev": "env-cmd ./config/dev.env nodemon src/index.js"
+},
+```
 
-		To view config variables in heroku,
-			heroku config
+### Creating a Production MongoDB Database:
 
-		To set config variables in heroku,
-			heroku config:set <key>=<value>
+In production deployment, we need a MongoDB hosting service which will host our database.
+So that heroku can connect to that.
 
-		Then push our code to heroku github:
-			git push heroku master
+>We can use MongoDB Atlas for this.
 
+>We need to build our first cluster.
+A cluster is a collection of servers for our db.
+
+First we need to customize.
+
+We need MongoDB compass to be installed in our local machine.
+
+Do configurations as shown in video.
+
+### Deploy to heroku:
+
+#### Create a new heroku app:
+
+>heroku create <appname>
+
+#### To view config variables in heroku,
+
+>heroku config
+
+#### To set config variables in heroku,
+
+>heroku config:set <key>=<value>
+
+#### Then push our code to heroku github:
+
+>git push heroku master
 
 ---
 
-Section 16 - Testing Node.js(Task App):
+## Section 16 - Testing Node.js(Task App):
 
 	Jest Testing Framework:
 		For any production app, there should be automated testing.
