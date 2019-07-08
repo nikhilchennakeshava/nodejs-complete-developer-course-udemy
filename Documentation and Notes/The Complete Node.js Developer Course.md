@@ -657,7 +657,7 @@ body {
 
 ### To add icons in tab:
 
-><link rel="icon" href="/img/weather.png">
+`<link rel="icon" href="/img/weather.png">`
 
 ---
 
@@ -940,166 +940,199 @@ Use devDependencies instead.
 
 ## Section 10 - MongoDB and Promises(Task app):
 
-	MongoDB and NoSQL Databases:
-		It is a NoSQL database - Document based.
-		Open Source database.
+### MongoDB and NoSQL Databases:
 
-		Structure:
-			SQL - Tables
-			NoSQL - Collections
+It is a NoSQL database - Document based.
+Open Source database.
 
-			SQL - Row/Record
-			NoSQL - Documents
+#### Structure:
 
-			SQL - Columns
-			NoSQL - Fields
+```
+SQL - Tables
+NoSQL - Collections
 
-		SQL:
-			Databases -> Tables -> Rows/Records -> Columns 
+SQL - Row/Record
+NoSQL - Documents
 
-		NoSQL:
-			Databases -> Collections -> Documents -> Fields
+SQL - Columns
+NoSQL - Fields
+```
 
-	Installing MongoDB:
-		Download the zip for MongoDB.
-		Put the bin folder of mongo folder in the system path.
+##### SQL:
 
-		Then run:
-			mongod --dbpath=<path-to-mongodb-data>
+Databases -> Tables -> Rows/Records -> Columns 
 
-		This will run mongodb while setting up the folder where the data will stay.
+##### NoSQL:
 
-		Then we will get this message:
-			waiting for connections on port 27017
+Databases -> Collections -> Documents -> Fields
 
-		This command needs to be running in order for mongodb to work:
-			mongod --dbpath=<path-to-mongodb-data>
+### Installing MongoDB:
 
-	Robo 3T:
-		GUI for Robo 3T.
-		MongoDb admin tool. 
-		This is used to visualize the MongoDB database.
+Download the zip for MongoDB.
 
-		When we install the Robo tool, we need to connect to mongo.
+Put the bin folder of mongo folder in the system path.
 
-		Here set the host and port and give a name to the mongodb connection.
+Then run:
 
-		Next we can connect to this.
-		We can open shell where we can issue mongo commands.
-		The commands are similar to JavaScript.
+>mongod --dbpath=<path-to-mongodb-data>
 
-		We can view the data in Table Mode, Text Mode etc.
+This will run mongodb while setting up the folder where the data will stay.
 
-	Connecting to MongoDB:
-		We need a npm package for MongoDB for us to use in node app.
-		We will need the MongoDB drivers for node.
+Then we will get this message:
 
-		The npm package is mongodb.
+>waiting for connections on port 27017
 
-			npm i mongodb
+This command needs to be running in order for mongodb to work:
 
-		We need some boilerplate code to connect to MongoDB.
+>mongod --dbpath=<path-to-mongodb-data>
 
-		// Imports for mongodb
-		const mongodb = require('mongodb')
+### Robo 3T:
 
-		// Connection config for MongoDb
-		const MongoClient = mongodb.MongoClient
-		const connectionURL = 'mongodb://127.0.0.1:27017'
-		const databaseName = 'task-manager'
+GUI for Robo 3T.
+MongoDb admin tool. 
+This is used to visualize the MongoDB database.
 
-		MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
-			if (error) {
-				return console.error('Unable to connect to database')
-			}
-			console.log('Connected to database')
-		})
+When we install the Robo tool, we need to connect to mongo.
 
-	Inserting documents:
-		
-		MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
-			if (error) {
-				return console.error('Unable to connect to database')
-			}
+Here set the host and port and give a name to the mongodb connection.
 
-			const db = client.db(databaseName)
-			db.collection('users').insertOne({
-				name: 'Nikhil',
-				age: 24
-			})
-		})
+Next we can connect to this.
+We can open shell where we can issue mongo commands.
+The commands are similar to JavaScript.
 
-		Then we can use the Robo UI to see the database.
+We can view the data in Table Mode, Text Mode etc.
 
-		Whenever we push a Document to a Collection, ObjectId is added which is unique for that Collection.
+### Connecting to MongoDB:
 
-		insertOne() is actually asynchronous. So we need a callback function to see if it executed properly.
+We need a npm package for MongoDB for us to use in node app.
+We will need the MongoDB drivers for node.
 
-		MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
-			if (error) {
-				return console.error('Unable to connect to database')
-			}
+The npm package is mongodb.
 
-			const db = client.db(databaseName)
-			db.collection('users').insertOne({
-				name: 'Nikhil',
-				age: 24
-			}, (error, result) => {
-				if (error) {
-					return console.error('Unable to insert user')
-				}
-				console.log(result.ops)
-			})
-		})
+>npm i mongodb
 
-		InsertMany:
-			db.collection('users').insertMany([{
-					name: 'Jen',
-					age: 25
-				},
-				{
-					name: 'Rachel',
-					age: 28
-				}
-			], (error, result) => {
-				if (error) {
-					return console.error('Unable to insert users')
-				}
-				console.log(result.ops)
-			})
+We need some boilerplate code to connect to MongoDB.
 
-	ObjectId:
-		Field is automatically generated.
-		These are guid. This is helpful if we have multiple mongo servers, we won't have clashing of ids.
+```
+// Imports for mongodb
+const mongodb = require('mongodb')
 
-		We ourselves can generate the ObjectId.
+// Connection config for MongoDb
+const MongoClient = mongodb.MongoClient
+const connectionURL = 'mongodb://127.0.0.1:27017'
+const databaseName = 'task-manager'
 
-		const id = new ObjectID()
-		console.log(id)
-		console.log(id.getTimestamp())
+MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+    if (error) {
+        return console.error('Unable to connect to database')
+    }
+    console.log('Connected to database')
+})
+```
 
-	Querying Documents:
-		Normal Querying.
-		
-		db.collection('users').findOne({
-			name: 'Jen'
-		}, (error, result) => {
-			if (error) {
-				return console.error('Unable to fetch')
-			}
-			console.log(result)
-		})
+### Inserting documents:
 
-		Using find() will not return a callback but will return a cursor using which we can go through the results.
-		Similar to SQL.
+```
+MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+    if (error) {
+        return console.error('Unable to connect to database')
+    }
 
-		db.collection('users').find({ age: 24 }).toArray((error, result) => {
-			console.log(result)
-		})
+    const db = client.db(databaseName)
+    db.collection('users').insertOne({
+        name: 'Nikhil',
+        age: 24
+    })
+})
+```
 
-		db.collection('users').find({ age: 24 }).count((error, result) => {
-			console.log(result)
-		})
+Then we can use the Robo UI to see the database.
+
+>Whenever we push a Document to a Collection, ObjectId is added which is unique for that Collection.
+
+#### insertOne()
+
+It is actually asynchronous. So we need a callback function to see if it executed properly.
+
+```
+MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+    if (error) {
+        return console.error('Unable to connect to database')
+    }
+
+    const db = client.db(databaseName)
+    db.collection('users').insertOne({
+        name: 'Nikhil',
+        age: 24
+    }, (error, result) => {
+        if (error) {
+            return console.error('Unable to insert user')
+        }
+        console.log(result.ops)
+    })
+})
+```
+
+#### InsertMany:
+
+```
+db.collection('users').insertMany([{
+        name: 'Jen',
+        age: 25
+    },
+    {
+        name: 'Rachel',
+        age: 28
+    }
+], (error, result) => {
+    if (error) {
+        return console.error('Unable to insert users')
+    }
+    console.log(result.ops)
+})
+```
+
+### ObjectId:
+
+Field is automatically generated.
+
+These are guid. This is helpful if we have multiple mongo servers, we won't have clashing of ids.
+
+We ourselves can generate the ObjectId.
+
+```
+const id = new ObjectID()
+console.log(id)
+console.log(id.getTimestamp())
+```
+
+### Querying Documents:
+
+Normal Querying.
+
+```
+db.collection('users').findOne({
+    name: 'Jen'
+}, (error, result) => {
+    if (error) {
+        return console.error('Unable to fetch')
+    }
+    console.log(result)
+})
+```
+
+Using find() will not return a callback but will return a cursor using which we can go through the results.
+Similar to SQL.
+
+```
+db.collection('users').find({ age: 24 }).toArray((error, result) => {
+    console.log(result)
+})
+
+db.collection('users').find({ age: 24 }).count((error, result) => {
+    console.log(result)
+})
+```
 
 	Promises:
 		Makes it easier for us to manage asynchronous code.
