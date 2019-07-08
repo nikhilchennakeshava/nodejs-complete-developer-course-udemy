@@ -1,7 +1,6 @@
 # The Complete Node.js Developer Course (3rd Edition)
 ## Andrew Mead and Rob Percival
 
----
 
 ## Apps:
 * Notes app
@@ -15,7 +14,9 @@
 
 Node is a way to run javascript outside of the browser.
 
->Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js' package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
+>Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. 
+>Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.
+> Node.js' package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
 
 JavaScript engine converts javascript code to machine code. V8 engine is written in C++.
 Node is also written in C++.
@@ -25,10 +26,10 @@ Nodejs is just a runtime, its not a language.
 REPL - Read evaluate Print Loop
 
 >In browser - 'window' object, 'document' object
-In node - 'global' object, 'process' object
+>In node - 'global' object, 'process' object
 
 >'window' of browser == 'global' of node.
-'document' of browser == 'process' of node.
+>'document' of browser == 'process' of node.
 
 non-blocking I/O - asynchronous - so that browser is not frozen. Similarly in node we can do other stuff while we are waiting.
 
@@ -77,7 +78,7 @@ module.exports = {
 To initialize an npm project:
 
 >npm init or
-npm init -y 
+>npm init -y 
 
 This generates an package.json file which is used for keeping config data.
 
@@ -92,17 +93,18 @@ To install it for the project:
 This creates a node-modules directory which is where the dependency code is present.
 
 >const validator = require('validator') -> npm module
-const notes = require('./notes') -> custom module
+>const notes = require('./notes') -> custom module
 
 >validator module is used for all kinds of validations.
-lodash module is used for many operations on arrays etc
-chalk module is used for formatting text.
+>lodash module is used for many operations on arrays etc
+>chalk module is used for formatting text.
 
 `console.log(chalk.blue.inverse.bold('hello from chalk'))`
 
 ### Nodemon:
 
 Tool which automatically runs our nodejs files. live server for nodejs.
+
 >npm i -g nodemon
 
 Then we can specify which file we want to watch.
@@ -120,15 +122,16 @@ arguments to node are stored in process global object.
 >process.argv
 
 >argv[0] = path to node
-argv[1] = path to file
+>argv[1] = path to file
 
 These 2 are default args
 
 ### Passing arguments using Yargs:
+
 We can pass arguments easily and parse it using yargs.
 
 >node .\app.js add --tile="yoyo"
-{ _: [ 'add' ], tile: 'yoyo', '$0': 'app.js' }
+>{ _: [ 'add' ], tile: 'yoyo', '$0': 'app.js' }
 
 We can create our own yargs commands.
 
@@ -184,8 +187,8 @@ yargs.command({ // Add command
 >We need to parse() the yargs to get the result.
 
 >node .\app.js add --title hello --body world
-or
-node .\app.js add --title=hello --body=world
+>or
+>node .\app.js add --title=hello --body=world
 
 ### To store data as Json:
 
@@ -244,39 +247,40 @@ In a stacktrace, the top contains the most useful info whereas the bottom will c
 
 #### Call Stack:
 
->The Call Stack is a simple data structure provided by the V8 JavaScript engine. The job of the call stack is to track the execution of our program and it does that by keeping track of all of the functions that are currently running.
->
+>The Call Stack is a simple data structure provided by the V8 JavaScript engine. 
+>The job of the call stack is to track the execution of our program and it does that by keeping track of all of the functions that are currently running.
+
 >Each node program has a main function which is an anonymous function which provides require, process etc arguments which we use in our programs.
->
+
 >setTimeout() is not a JavaScript function and there is no implementation of it in V8. It is a nod function which is implemented in C++.
->
+
 >The code for Node.js is single threaded but it used other threads in C++ behind the scenes to work asynchronously.
 
 All functions are added to the Call Stack for execution.
 
 #### Node API:
 
-Whenever the Call Stack encounters asynchronous code, the code is moved to Node API where it will wait till it can be executed.
+>Whenever the Call Stack encounters asynchronous code, the code is moved to Node API where it will wait till it can be executed.
 
 #### Callback Queue:
 
-When the asynchronous code is ready for execution it will enter the Callback Queue.
-It is a normal queue.
+>When the asynchronous code is ready for execution it will enter the Callback Queue.
+>It is a normal queue.
 
 #### Event Loop:
 
 >It is program which fetches code from the Callback Queue to the Call Stack to be executed. This runs only when the Call Stack is empty with no code to run.
-The event loop needs to wait for the call stack to be empty.
-So this will fetch code from the Callback Queue only after the main() is executed.
+>The event loop needs to wait for the call stack to be empty.
+>So this will fetch code from the Callback Queue only after the main() is executed.
 
 Usually (in small programs), Callbacks are run after the main(in case of timeout example). 
 
 ### HTTP Requests:
 
 >darksky.net API for weather data.
-mapbox for getting geocoding data.
+>mapbox for getting geocoding data.
 
-JSON is usually the way in which data is transferred and received in HTTP calls.
+>JSON is usually the way in which data is transferred and received in HTTP calls.
 
 In error handling we know that at any point of time, only one of error or response has a value.
 
@@ -486,8 +490,10 @@ request.end()
 
 ### Intro:
 
-express is a npm package which provides webserver capabilities.
+>express is a npm package which provides webserver capabilities.
+
 That is Express Express makes it really easy to create web servers with note these servers are going to allow us to serve up all of the assets for our web application.
+
 This includes H2 UML we're going to render to the screen see SS to style our application and client side JavaScript so we can set up all sorts of awesome user interaction now using Express.
 
 ### Express:
@@ -496,7 +502,8 @@ It is a package for node which helps in creating web servers.
 
 >npm i express
 
-Express can send plaintext, html elements or Json back as response. 
+Express can send plaintext, html elements or Json back as response.
+
 If we send an object back as response, then express will automatically stringify it to a Json string.
 
 ```
@@ -515,8 +522,9 @@ app.get('', (req, res) => {
 ### Serving up Static Assets:
 
 First create a directory which will contain the static assets.
-Ususally convention is to name the directory as public.
-And mention the path in express app. It has to be the absolute path.
+
+>Ususally convention is to name the directory as public.
+>And mention the path in express app. It has to be the absolute path.
 
 ```
 const app = express()
@@ -528,358 +536,409 @@ app.use(express.static(public_directory_path))
 
 We can use path package of node to do path manipulation.
 
-index.html is usually the root html file which iis used to render the home page.
+>index.html is usually the root html file which iis used to render the home page.
 
 ### Dynamic webpages using Templating:
 
 Handlebars, ejs etc.
 
-		handlebars - template engine.
-		hbs - Express.js view engine for handlebars.
+>handlebars - template engine.
+>hbs - Express.js view engine for handlebars.
 
-		We need to tell Express what Templating engine we are using.
+We need to tell Express what Templating engine we are using.
 
-		// Serve up Static assets
-		app.use(express.static(public_directory_path))
+```
+// Serve up Static assets
+app.use(express.static(public_directory_path))
 
-		// Setting up hbs template engine 
-		app.set('view engine', 'hbs')
+// Setting up hbs template engine 
+app.set('view engine', 'hbs')
 
-		app.set('port', process.env.PORT || 3000)
+app.set('port', process.env.PORT || 3000)
+```
 
-		All the new views should be in a folder called views in root directory.
+>All the new views should be in a folder called views in root directory.
 
-		We can override by 
-			// Serve up Static assets
-			app.use(express.static(public_directory_path))
+We can override by
 
-			// Setting up hbs template engine
-			app.set('view engine', 'hbs')
-			app.set('views', path.join(__dirname, '../views'))
+```
+// Serve up Static assets
+app.use(express.static(public_directory_path))
 
-			app.set('port', process.env.PORT || 3000)
-		
-	Advanced Templating:
-		This can be done using partials.
-		To use partials we need to require in hbs package.
+// Setting up hbs template engine
+app.set('view engine', 'hbs')
+app.set('views', path.join(__dirname, '../views'))
 
-		Partials are not conplete web pages but just part html pages which are used to render a single element.
+app.set('port', process.env.PORT || 3000)
+```
 
-		We can use the created partilas in other pages using the syntax:
-			{{>partial_name}}
+### Advanced Templating:
 
-		Usually nodemon will only look for changes in js files. But we can change that behavior.
+This can be done using partials.
+To use partials we need to require in hbs package.
 
-			nodemon app.js -e js,hbs
+>Partials are not conplete web pages but just part html pages which are used to render a single element.
 
-		We can use partials to remove the basic html, head and body definition from the views.
+We can use the created partilas in other pages using the syntax:
+`{{>partial_name}}`
 
-		<!DOCTYPE html>
-		<html>
+Usually nodemon will only look for changes in js files. But we can change that behavior.
 
-		<head>
-			<title>{{title}}</title>
-			<link rel="stylesheet" href="/css/styles.css">
-			<script src="/js/app.js"></script>
-		</head>
+>nodemon app.js -e js,hbs
 
-		<body>
-		<h1>{{title}}</h1>
+We can use partials to remove the basic html, head and body definition from the views.
 
-		<div>
-			<a href="/">Weather</a>
-			<a href="/about">About</a>
-			<a href="/help">Help</a>
-		</div>
-		
-		Views:
+```
+<!DOCTYPE html>
+<html>
 
-		    {{>header}}
-			
-			{{>footer}}
+<head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/app.js"></script>
+</head>
 
-	404 Pages:
-		We can catch the non-existant page navigation by creating a get() at the very end of the express.
-		We put it at the end as it will be like a catch all default fallback.
-		We use the wildcard '*' as the url.
+<body>
+<h1>{{title}}</h1>
 
-	CSS:
-		We can use flex to achieve sticky footer.
+<div>
+    <a href="/">Weather</a>
+    <a href="/about">About</a>
+    <a href="/help">Help</a>
+</div>
+```
 
-			<div class="main-content">
-				{{>header}}
-				<p>Use this site to get your weather</p>
-			</div>
-			
-			{{>footer}}
+Views:
 
+```
+{{>header}}
 
-			body {
-				color: #333333;
-				font-family: Arial, Helvetica, sans-serif;
-				max-width: 1500px;
-				margin: 0 auto;
-				padding: 0 15px;
-				/* Sticky header */
-				display: flex;
-				flex-direction: column;
-				min-height: 100vh;
-			}
+{{>footer}}
+```
 
-			.main-content {
-				flex-grow: 1;
-			}
+### 404 Pages:
 
+We can catch the non-existant page navigation by creating a get() at the very end of the express.
 
-		To add icons in tab:
-			<link rel="icon" href="/img/weather.png">
+We put it at the end as it will be like a catch all default fallback.
 
+>We use the wildcard '*' as the url.
 
----
+### CSS:
 
-Section 8 - Accessing API from Browser(Weather app):
+We can use flex to achieve sticky footer.
 
-	Query String:
-		It will be part of the url which will conatain the information.
+```
+<div class="main-content">
+    {{>header}}
+    <p>Use this site to get your weather</p>
+</div>
 
-		Query string syntax:
-			url.com/<something>/users?key=value&key2=value2
+{{>footer}}
+```
 
-		The query string is available in the request object of the node server.
-			req.query
+```
+body {
+    color: #333333;
+    font-family: Arial, Helvetica, sans-serif;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 15px;
+    /* Sticky header */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
-		We cannot send two responses to the client.
-		If there is some error the we need to send only that. So use return res.send()
+.main-content {
+    flex-grow: 1;
+}
+```
 
-	JSON HTTP endpoint:
-		We can plug in our other app which makes api calls so that we can send back the value which we get back from the function.
-		
-	ES6 - Default Function Parameters:
-		If we try to destructure an undefined value, we get error.
-		So we need to provide an empty object as default value so that we do not get any errors.
-		
-		foo({bar = baz} = {}){
+### To add icons in tab:
 
-		}
-
-		We can also defaults for the destructured values.
-
-		In our project, we need to provide a default value or else the program will crash.
-
-	Browser HTTP requests with fetch:
-		Used to make HTTP request from client side javascript.
-		Once we have it inside of the client side JavaScript the rest is pretty easy now to actually make the HTTP request from client side JavaScript.
-		We'll be using the very popular fetch API that is not part of JavaScript.
-		It is a browser based API which means it's something we can use in all modern browsers but it's not accessible in node js.
-		So the code we write inside of here isn't going to be something you'll be able to use in a back end node script here.
-		
-		One of the only time we use client side javascript in this Course. Usually its server side javascript.
-
-		fetch('http://localhost:3000/weather?address=bangalore')
-			.then((response) => {
-				response.json().then((data) => {
-					if (data.error) {
-						console.log(data.error)
-					} else {
-						console.log(data.location)
-						console.log(data.forecast)
-					}
-				})
-			})
-	
-	Search form in HTML:
-		Usual convention:
-			css - keep in head
-			js - keep in last line of body
-		
-		If we keep our javascript refenence in head of html, we will get errors as it is not able to find the properties.
-		So we need to keep our js reference at the end of body tag.
-
-		To refernece a an element:
-
-			const weatherForm = document.querySelector('form')
-			const search = document.querySelector('input')
-
-			weatherForm.addEventListener('submit', (e) => {
-				e.preventDefault()
-				const location = search.value
-
-				fetch(`http://localhost:3000/weather?address=${location}`)
-					.then((response) => {
-						response.json().then((data) => {
-							if (data.error) {
-								console.log(data.error)
-							} else {
-								console.log(data.location)
-								console.log(data.forecast)
-							}
-						})
-					})
-			})
-
-		What happened is that the browser actually refreshed completely and that means that our message was cleared.
-		So the default behavior of forms is to completely reload the page and that made sense a long time ago before we had access to good client side JavaScript.
-		Now though what we're gonna do is use fetch to fetch the data and we'll dynamically add it onto the fly,
-		so we don't need to refresh the page a bunch causing a flash of content or confusing the user.
-		We'll be able to preserve everything on the page like what they've typed inside of the input.
-
-		So we need to use this function to prevent loading:
-			e.preventDefault()
-
-			This will prevent the browser from refreshing. Here we are telling the browser we will handle everything.
-
-	User Interface:
-		We can plugin our code to get data to the ui itself.
-
-		const weatherForm = document.querySelector('form')
-		const search = document.querySelector('input')
-		const msg1 = document.querySelector('.msg1')
-		const msg2 = document.querySelector('#msg2')
-			// const forecast = document.querySelector('.forecast')
-			// const error = document.querySelector('#error')
-
-
-			weatherForm.addEventListener('submit', (e) => {
-				e.preventDefault()
-
-				const location = search.value
-
-				msg1.textContent = 'Loading...'
-				msg2.textContent = ''
-
-				fetch(`http://localhost:3000/weather?address=${location}`)
-					.then((response) => {
-						response.json().then((data) => {
-							if (data.error) {
-								msg1.textContent = data.error
-							} else {
-								msg1.textContent = data.location
-								msg2.textContent = data.forecast
-							}
-						})
-					})
-			})
-
-	jQuery implementation:
-
-		$(document).ready(function() {
-			$('#locationForm').submit(function(e) {
-				e.preventDefault()
-					// const location = $('#locationForm').serialize()
-				const location = $('#location').val()
-
-				$('.msg1').text('Loading...')
-				$('#msg2').text('')
-
-				fetch(`http://localhost:3000/weather?address=${location}`)
-					.then((response) => {
-						response.json().then((data) => {
-							if (data.error) {
-								$('.msg1').text(data.error)
-							} else {
-								$('.msg1').text(data.location)
-								$('#msg2').text(data.forecast)
-							}
-						})
-					})
-			})
-		})
-
+><link rel="icon" href="/img/weather.png">
 
 ---
 
-Section 9 - Application Deployment(Weather app):
+## Section 8 - Accessing API from Browser(Weather app):
 
-	Heroku:
-		Application deployment platform.
+### Query String:
 
-	Github:
-		A repository for hosting our git projects.
-		
-	SSH keys:
-		Generating a new SSH key
+It will be part of the url which will conatain the information.
 
-		ls -al ~/.ssh -> to display all ssh keys.
-		ssh -T git@github.com -> To add our key to github.
+Query string syntax:
 
-						Open Git Bash.
+>url.com/<something>/users?key=value&key2=value2
 
-						Paste the text below, substituting in your GitHub email address.
+The query string is available in the request object of the node server.
 
-						$ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+>req.query
 
-						This creates a new ssh key, using the provided email as a label.
+We cannot send two responses to the client.
 
-						> Generating public/private rsa key pair.
+If there is some error the we need to send only that. So use return res.send()
 
-						When you're prompted to "Enter a file in which to save the key," press Enter. This accepts the default file location.
+### JSON HTTP endpoint:
 
-						> Enter a file in which to save the key (/c/Users/you/.ssh/id_rsa):[Press enter]
+We can plug in our other app which makes api calls so that we can send back the value which we get back from the function.
 
-						At the prompt, type a secure passphrase. For more information, see "Working with SSH key passphrases".
+### ES6 - Default Function Parameters:
 
-						> Enter passphrase (empty for no passphrase): [Type a passphrase]
-						> Enter same passphrase again: [Type passphrase again]
+If we try to destructure an undefined value, we get error.
+So we need to provide an empty object as default value so that we do not get any errors.
 
-					Adding your SSH key to the ssh-agent
+```
+foo({bar = baz} = {}){
 
-					Before adding a new SSH key to the ssh-agent to manage your keys, you should have checked for existing SSH keys and generated a new SSH key.
+}
+```
 
-					If you have GitHub Desktop installed, you can use it to clone repositories and not deal with SSH keys. It also comes with the Git Bash tool, which is the preferred way of running git commands on Windows.
+We can also defaults for the destructured values.
 
-						Ensure the ssh-agent is running:
-							If you are using the Git Shell that's installed with GitHub Desktop, the ssh-agent should be running.
+In our project, we need to provide a default value or else the program will crash.
 
-							If you are using another terminal prompt, such as Git for Windows, you can use the "Auto-launching the ssh-agent" instructions in "Working with SSH key passphrases", or start it manually:
+### Browser HTTP requests with fetch:
 
-							# start the ssh-agent in the background
-							$ eval $(ssh-agent -s)
-							> Agent pid 59566
+Used to make HTTP request from client side javascript.
+Once we have it inside of the client side JavaScript the rest is pretty easy now to actually make the HTTP request from client side JavaScript.
 
-						Add your SSH private key to the ssh-agent. If you created your key with a different name, or if you are adding an existing key that has a different name, replace id_rsa in the command with the name of your private key file.
+We'll be using the very popular fetch API that is not part of JavaScript.
+It is a browser based API which means it's something we can use in all modern browsers but it's not accessible in node js.
+So the code we write inside of here isn't going to be something you'll be able to use in a back end node script here.
 
-						$ ssh-add ~/.ssh/id_rsa
+>One of the only time we use client side javascript in this Course. Usually its server side javascript.
 
-	Heroku:
-		First add ssh  keys to heroku.
-			heroku add:keys
+```
+fetch('http://localhost:3000/weather?address=bangalore')
+    .then((response) => {
+        response.json().then((data) => {
+            if (data.error) {
+                console.log(data.error)
+            } else {
+                console.log(data.location)
+                console.log(data.forecast)
+            }
+        })
+    })
+```
 
-		Then we can create project using:
-			git create <appname>
+### Search form in HTML:
 
-		We need to tell heroku it needs to run. 
-		So we need to specify the script in package.json
+#### Usual convention:
 
-		"scripts": {
-			"start": "node src/app.js"
-		},
+>css - keep in head
+>js - keep in last line of body
+
+>If we keep our javascript refenence in head of html, we will get errors as it is not able to find the properties.
+So we need to keep our js reference at the end of body tag.
+
+#### To reference an element:
+
+```
+const weatherForm = document.querySelector('form')
+const search = document.querySelector('input')
+
+weatherForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const location = search.value
+
+    fetch(`http://localhost:3000/weather?address=${location}`)
+        .then((response) => {
+            response.json().then((data) => {
+                if (data.error) {
+                    console.log(data.error)
+                } else {
+                    console.log(data.location)
+                    console.log(data.forecast)
+                }
+            })
+        })
+})
+```
+
+>What happened is that the browser actually refreshed completely and that means that our message was cleared.
+So the default behavior of forms is to completely reload the page and that made sense a long time ago before we had access to good client side JavaScript.
+>Now though what we're gonna do is use fetch to fetch the data and we'll dynamically add it onto the fly,
+so we don't need to refresh the page a bunch causing a flash of content or confusing the user.
+>We'll be able to preserve everything on the page like what they've typed inside of the input.
+
+So we need to use this function to prevent loading:
+>e.preventDefault()
+
+This will prevent the browser from refreshing. Here we are telling the browser we will handle everything.
+
+### User Interface:
+
+We can plugin our code to get data to the ui itself.
+
+```
+const weatherForm = document.querySelector('form')
+const search = document.querySelector('input')
+const msg1 = document.querySelector('.msg1')
+const msg2 = document.querySelector('#msg2')
+    // const forecast = document.querySelector('.forecast')
+    // const error = document.querySelector('#error')
 
 
-		Then, we can run app using:
-			npm run start
-		
-		Now we need to assign dynamic port for our app:
-			const port = process.ar.PORT || 3000
-			app.listen(port)
+    weatherForm.addEventListener('submit', (e) => {
+        e.preventDefault()
 
-		Next we need to change our fetch so that it doesn't listen to localhost.
+        const location = search.value
 
-		Next we need to push the code to heroku remote.
+        msg1.textContent = 'Loading...'
+        msg2.textContent = ''
 
-		To push:
-			git push heroku master
+        fetch(`http://localhost:3000/weather?address=${location}`)
+            .then((response) => {
+                response.json().then((data) => {
+                    if (data.error) {
+                        msg1.textContent = data.error
+                    } else {
+                        msg1.textContent = data.location
+                        msg2.textContent = data.forecast
+                    }
+                })
+            })
+    })
+```
 
-	Global and local npm modules:
-		Usually don't use global modules for projects as they are not mentioned in the package.json file.
-		Use devDependencies instead.
+### jQuery implementation:
 
-		npm i -D nodemon
-		npm i --save-dev nodemon
+```
+$(document).ready(function() {
+    $('#locationForm').submit(function(e) {
+        e.preventDefault()
+            // const location = $('#locationForm').serialize()
+        const location = $('#location').val()
 
-	
+        $('.msg1').text('Loading...')
+        $('#msg2').text('')
+
+        fetch(`http://localhost:3000/weather?address=${location}`)
+            .then((response) => {
+                response.json().then((data) => {
+                    if (data.error) {
+                        $('.msg1').text(data.error)
+                    } else {
+                        $('.msg1').text(data.location)
+                        $('#msg2').text(data.forecast)
+                    }
+                })
+            })
+    })
+})
+```
+
 ---
 
-Section 10 - MongoDB and Promises(Task app):
+## Section 9 - Application Deployment(Weather app):
+
+### Heroku:
+
+Application deployment platform.
+
+### Github:
+
+A repository for hosting our git projects.
+
+### SSH keys:
+
+Generating a new SSH key:
+
+>ls -al ~/.ssh -> to display all ssh keys.
+
+>ssh -T git@github.com -> To add our key to github.
+
+Open Git Bash.
+
+Paste the text below, substituting in your GitHub email address.
+
+>$ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+
+This creates a new ssh key, using the provided email as a label.
+
+Generating public/private rsa key pair:
+
+When you're prompted to "Enter a file in which to save the key," press Enter. This accepts the default file location.
+
+Enter a file in which to save the key (/c/Users/you/.ssh/id_rsa):[Press enter]
+
+At the prompt, type a secure passphrase. For more information, see "Working with SSH key passphrases".
+
+> Enter passphrase (empty for no passphrase): [Type a passphrase]
+> Enter same passphrase again: [Type passphrase again]
+
+Adding your SSH key to the ssh-agent:
+
+>Before adding a new SSH key to the ssh-agent to manage your keys, you should have checked for existing SSH keys and generated a new SSH key.
+
+>If you have GitHub Desktop installed, you can use it to clone repositories and not deal with SSH keys. It also comes with the Git Bash tool, which is the preferred way of running git commands on Windows.
+
+Ensure the ssh-agent is running:
+
+>If you are using the Git Shell that's installed with GitHub Desktop, the ssh-agent should be running.
+
+>If you are using another terminal prompt, such as Git for Windows, you can use the "Auto-launching the ssh-agent" instructions in "Working with SSH key passphrases", or start it manually:
+
+>\# start the ssh-agent in the background
+>\$ eval $(ssh-agent -s)
+>Agent pid 59566
+
+>Add your SSH private key to the ssh-agent. If you created your key with a different name, or if you are adding an existing key that has a different name, replace id_rsa in the command with the name of your private key file.
+
+>$ ssh-add ~/.ssh/id_rsa
+
+### Heroku:
+
+First add ssh  keys to heroku.
+
+>heroku add:keys
+
+Then we can create project using:
+
+>git create <appname>
+
+We need to tell heroku it needs to run. 
+So we need to specify the script in package.json
+
+```
+"scripts": {
+    "start": "node src/app.js"
+},
+```
+
+Then, we can run app using:
+
+>npm run start
+
+Now we need to assign dynamic port for our app:
+
+```
+const port = process.ar.PORT || 3000
+app.listen(port)
+```
+
+Next we need to change our fetch so that it doesn't listen to localhost.
+
+Next we need to push the code to heroku remote.
+
+To push:
+
+>git push heroku master
+
+### Global and local npm modules:
+
+Usually don't use global modules for projects as they are not mentioned in the package.json file.
+
+Use devDependencies instead.
+
+>npm i -D nodemon
+>npm i --save-dev nodemon
+
+---
+
+## Section 10 - MongoDB and Promises(Task app):
 
 	MongoDB and NoSQL Databases:
 		It is a NoSQL database - Document based.
