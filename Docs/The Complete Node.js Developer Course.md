@@ -200,10 +200,8 @@
 
 Node is a way to run javascript outside of the browser.
 
->Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.
-
->Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.
-
+>Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.  
+>Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.  
 >Node.js' package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
 
 JavaScript engine converts javascript code to machine code. V8 engine is written in C++.
@@ -214,10 +212,9 @@ Nodejs is just a runtime, its not a language.
 REPL - Read evaluate Print Loop
 
 >In browser - 'window' object, 'document' object  
-In node - 'global' object, 'process' object
+>In node - 'global' object, 'process' object
 
->'window' of browser == 'global' of node.
-
+>'window' of browser == 'global' of node.  
 >'document' of browser == 'process' of node.
 
 non-blocking I/O - asynchronous - so that browser is not frozen. Similarly in node we can do other stuff while we are waiting.
@@ -266,7 +263,7 @@ module.exports = {
 
 To initialize an npm project:
 
->npm init or
+>npm init or  
 >npm init -y 
 
 This generates an package.json file which is used for keeping config data.
@@ -281,11 +278,11 @@ To install it for the project:
 
 This creates a node-modules directory which is where the dependency code is present.
 
->const validator = require('validator') -> npm module
+>const validator = require('validator') -> npm module  
 >const notes = require('./notes') -> custom module
 
->validator module is used for all kinds of validations.
->lodash module is used for many operations on arrays etc
+>validator module is used for all kinds of validations.  
+>lodash module is used for many operations on arrays etc  
 >chalk module is used for formatting text.
 
 `console.log(chalk.blue.inverse.bold('hello from chalk'))`
@@ -375,8 +372,8 @@ yargs.command({ // Add command
 
 >We need to parse() the yargs to get the result.
 
->node .\app.js add --title hello --body world
->or
+>node .\app.js add --title hello --body world  
+>or  
 >node .\app.js add --title=hello --body=world
 
 ### To store data as Json:
@@ -436,7 +433,7 @@ In a stacktrace, the top contains the most useful info whereas the bottom will c
 
 #### Call Stack:
 
->The Call Stack is a simple data structure provided by the V8 JavaScript engine. 
+>The Call Stack is a simple data structure provided by the V8 JavaScript engine.  
 >The job of the call stack is to track the execution of our program and it does that by keeping track of all of the functions that are currently running.
 
 >Each node program has a main function which is an anonymous function which provides require, process etc arguments which we use in our programs.
@@ -453,20 +450,20 @@ All functions are added to the Call Stack for execution.
 
 #### Callback Queue:
 
->When the asynchronous code is ready for execution it will enter the Callback Queue.
+>When the asynchronous code is ready for execution it will enter the Callback Queue.  
 >It is a normal queue.
 
 #### Event Loop:
 
->It is program which fetches code from the Callback Queue to the Call Stack to be executed. This runs only when the Call Stack is empty with no code to run.
->The event loop needs to wait for the call stack to be empty.
+>It is program which fetches code from the Callback Queue to the Call Stack to be executed. This runs only when the Call Stack is empty with no code to run.  
+>The event loop needs to wait for the call stack to be empty.  
 >So this will fetch code from the Callback Queue only after the main() is executed.
 
 Usually (in small programs), Callbacks are run after the main(in case of timeout example). 
 
 ### HTTP Requests:
 
->darksky.net API for weather data.
+>darksky.net API for weather data.  
 >mapbox for getting geocoding data.
 
 >JSON is usually the way in which data is transferred and received in HTTP calls.
@@ -712,7 +709,7 @@ app.get('', (req, res) => {
 
 First create a directory which will contain the static assets.
 
->Ususally convention is to name the directory as public.
+>Ususally convention is to name the directory as public.  
 >And mention the path in express app. It has to be the absolute path.
 
 ```
@@ -731,7 +728,7 @@ We can use path package of node to do path manipulation.
 
 Handlebars, ejs etc.
 
->handlebars - template engine.
+>handlebars - template engine.  
 >hbs - Express.js view engine for handlebars.
 
 We need to tell Express what Templating engine we are using.
@@ -916,7 +913,7 @@ fetch('http://localhost:3000/weather?address=bangalore')
 
 #### Usual convention:
 
->css - keep in head
+>css - keep in head  
 >js - keep in last line of body
 
 >If we keep our javascript refenence in head of html, we will get errors as it is not able to find the properties.
@@ -947,12 +944,13 @@ weatherForm.addEventListener('submit', (e) => {
 ```
 
 >What happened is that the browser actually refreshed completely and that means that our message was cleared.
-So the default behavior of forms is to completely reload the page and that made sense a long time ago before we had access to good client side JavaScript.
+So the default behavior of forms is to completely reload the page and that made sense a long time ago before we had access to good client side JavaScript.  
 >Now though what we're gonna do is use fetch to fetch the data and we'll dynamically add it onto the fly,
-so we don't need to refresh the page a bunch causing a flash of content or confusing the user.
+so we don't need to refresh the page a bunch causing a flash of content or confusing the user.  
 >We'll be able to preserve everything on the page like what they've typed inside of the input.
 
 So we need to use this function to prevent loading:
+
 >e.preventDefault()
 
 This will prevent the browser from refreshing. Here we are telling the browser we will handle everything.
@@ -1055,7 +1053,7 @@ Enter a file in which to save the key (/c/Users/you/.ssh/id_rsa):[Press enter]
 
 At the prompt, type a secure passphrase. For more information, see "Working with SSH key passphrases".
 
-> Enter passphrase (empty for no passphrase): [Type a passphrase]
+> Enter passphrase (empty for no passphrase): [Type a passphrase]  
 > Enter same passphrase again: [Type passphrase again]
 
 Adding your SSH key to the ssh-agent:
@@ -1070,8 +1068,8 @@ Ensure the ssh-agent is running:
 
 >If you are using another terminal prompt, such as Git for Windows, you can use the "-launching the ssh-agent" instructions in "Working with SSH key passphrases", or start it manually:
 
->\# start the ssh-agent in the background
->\$ eval $(ssh-agent -s)
+>\# start the ssh-agent in the background  
+>\$ eval $(ssh-agent -s)  
 >Agent pid 59566
 
 >Add your SSH private key to the ssh-agent. If you created your key with a different name, or if you are adding an existing key that has a different name, replace id_rsa in the command with the name of your private key file.
@@ -1122,7 +1120,7 @@ Usually don't use global modules for projects as they are not mentioned in the p
 
 Use devDependencies instead.
 
->npm i -D nodemon
+>npm i -D nodemon  
 >npm i --save-dev nodemon
 
 ---
@@ -1330,7 +1328,7 @@ Used to solve some drawbacks of callbacks.
 
 Promises are like wrappers on callbacks.
 
->resolve == result
+>resolve == result  
 >reject == error
 
 #### Advantages over callbacks:
@@ -1521,13 +1519,13 @@ const User = mongoose.model('User', {
 
 ### Structuring a REST API:
 
->REST - Representational State Transfer
+>REST - Representational State Transfer  
 >API - Application Programming Interface
 
->API are set of tools for sowtware building.
+>API are set of tools for sowtware building.  
 >REST are predefined operations.
 
->Requests are usually HTTP Requests.
+>Requests are usually HTTP Requests.  
 >Response are usually JSON response.
 
 Predefined Operations are usually - CRUD - Post, Get, Patch, Delete.
@@ -1948,7 +1946,7 @@ npm package:
 
 Hashing algorithms are different than Encrypting algorithms.
 
->In Encrypting algorithms, we can get the plaintext back. 
+>In Encrypting algorithms, we can get the plaintext back.  
 >But in Hashing algorithms, we can never get the plaintext back.
 
 ```
@@ -2132,8 +2130,7 @@ Next the server needs to keep track of the user so that the user can login via m
 Adding to User schema:
 
 ```
-....
-            age: {
+    age: {
         type: Number,
         default: 0,
         validate(value) {
@@ -2212,7 +2209,7 @@ This way they can be authenticated.
 
 The Headers will be of key/value pairs.
 
->Key - Authorization
+>Key - Authorization  
 >Value - Bearer <token>
 
 For basic authentication:
@@ -2264,9 +2261,9 @@ router.get('/users/me', auth, async(req, res) => {
 ### Advanced Postman:
 
 #### Environments:
-    
+
 Multiple environments can be configured.
-    
+
 We can setup the environments and then use them as 
 
 >{{env_variable}}
@@ -2514,16 +2511,18 @@ We need to ensure that the auth and relationship is maintained.
 
 For getting the task by id, we can just do:
 
->const task = await Task.findOne({ _id, owner: req.user._id })
+`const task = await Task.findOne({ _id, owner: req.user._id })`
 
 Next for updating a task:
 
->// get task
->const task = await Task.findByOne({ _id: req.params.id, owner: req.user._id })
+```
+// get task  
+const task = await Task.findByOne({ _id: req.params.id, owner: req.user._id })
+```
 
 For deleting:
 
->const task = await Task.findByOneAndDelete({ _id: req.params.id, owner: req.user._id })
+`const task = await Task.findByOneAndDelete({ _id: req.params.id, owner: req.user._id })`
 
 ### Cascade Delete Tasks:
 
@@ -2753,7 +2752,7 @@ app.post('/upload', upload.single('upload'), (req, res) => {
 ```
 
 ### Adding images to user profiles:
-		
+
 We first need to put the image upload url behind authentication.
 
 Usually in all huge productin apps the profile pic is not stored in a separate folder in the filesytem but in the form of binary data 
@@ -2951,7 +2950,7 @@ Then we can run:
 
 >npm test
 
->We need a new dir for our test scripts.
+>We need a new dir for our test scripts.  
 >And create a new test file using .test.js extension.
 
 Next, we need to create a test case.
@@ -3710,7 +3709,7 @@ $('#message-form').submit(function(e) {
 
 ### Rendering Messages:
 
->Using mustache to render to browser.
+>Using mustache to render to browser.  
 >moment.js to work with time.
 
 We need to use mustache templating to render our messages in our ui.
