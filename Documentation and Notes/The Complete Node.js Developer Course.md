@@ -2742,986 +2742,1142 @@ Do configurations as shown in video.
 
 ## Section 16 - Testing Node.js(Task App):
 
-	Jest Testing Framework:
-		For any production app, there should be automated testing.
+### Jest Testing Framework:
 
-		Popular frameworks are jest and Mocha.
+For any production app, there should be automated testing.
 
-		All testing dependencies should be development dependencies.
+>Popular frameworks are jest and Mocha.
 
-		npm i jest -D
+All testing dependencies should be development dependencies.
 
-		Jest is a zero configuration testing framework.
+>npm i jest -D
 
-		We need a new script in our scripts.
-			"test": "jest"
+Jest is a zero configuration testing framework.
 
-		Then we can run:
-			npm test
+We need a new script in our package.json scripts section.
 
-		We need a new dir for our test scripts.
-		And create a new test file using .test.js extension.
-		
-		Next, we need to create a test case.
+>"test": "jest"
 
-		test('Init testing framework - Jest', () => {
+Then we can run:
 
-		})
+>npm test
 
-		Test cases are assumed to be success unless specified otherwise.
+>We need a new dir for our test scripts.
+>And create a new test file using .test.js extension.
 
-		Why Tests are important:
-			Saves time
-			Generates reliable software
-			Gives flexibility to developers
-				Refactoring
-				Collabarating
-				Profiling
-			Peace of mind
+Next, we need to create a test case.
 
-	Writing Tests and Assertions:
+```
+test('Init testing framework - Jest', () => {
 
-		const total = calculateTip(10, .3)
+})
+```
 
-		if (total !== 13) {
-			throw new Error(`Total tip should be 13. Got ${total}`)
-		}
+>Test cases are assumed to be success unless specified otherwise.
 
-		The above is basic way of doing this. We can change this by using assert statements.
+#### Why Tests are important:
+* Saves time
+* Generates reliable software
+* Gives flexibility to developers
+    - Refactoring
+    - Collabarating
+    - Profiling
+* Peace of mind
 
-		test('Should calculate total with tip', () => {
-			expect(calculateTip(10, .3)).toBe(13)
-		})
+### Writing Tests and Assertions:
 
-		There are various ways of using expect which can be seen in the docs.
+```
+const total = calculateTip(10, .3)
 
-	Testing Asynchronous Code:
-		To run jest whenever we change any tests:
-			In package.json:
-				"scripts": {
-					"start": "node src/index.js",
-					"dev": "env-cmd ./config/dev.env nodemon src/index.js",
-					"test": "jest --watch"
-				},
+if (total !== 13) {
+    throw new Error(`Total tip should be 13. Got ${total}`)
+}
+```
 
-		We can check more Jest cli options in docs.
+The above is basic way of doing this. We can change this by using assert statements.
 
-		We need to be careful here.
+```
+test('Should calculate total with tip', () => {
+    expect(calculateTip(10, .3)).toBe(13)
+})
+```
 
-		test('Async test demo', () => {
-			setTimeout(() => {
-				expect(1).toBe(2)
-			}, 2000)
+There are various ways of using expect which can be seen in the docs.
 
-			// expect(1).toBe(2)
-		})
+### Testing Asynchronous Code:
 
-		The above code will fail instead of passing.
-		So to fix this we need to tell jest that we are testing async code.
+To run jest whenever we change any tests, make the below changes in package.json:
 
-		test('Async test demo', (done) => {
-			setTimeout(() => {
-				expect(1).toBe(2)
-				done()
-			}, 2000)
+```
+"scripts": {
+    "start": "node src/index.js",
+    "dev": "env-cmd ./config/dev.env nodemon src/index.js",
+    "test": "jest --watch"
+},
+```
 
-			// expect(1).toBe(2)
-		})
+We can check more Jest cli options in docs.
 
-		The above code will make sure test is not completed until we call done.
+We need to be careful here.
 
-		For Promises and Async/Await there are better ways to do this.
+```
+test('Async test demo', () => {
+    setTimeout(() => {
+        expect(1).toBe(2)
+    }, 2000)
 
-		// Callback way of testing
-		test('Async test demo', (done) => {
-			setTimeout(() => {
-				expect(2).toBe(2)
-				done()
-			}, 2000)
+    // expect(1).toBe(2)
+})
+```
 
-			// expect(1).toBe(2)
-		})
+>The above code will fail instead of passing.
+So to fix this we need to tell jest that we are testing async code.
 
-		// Promises way of testing
-		test('Async Promises Add 2 numbers', (done) => {
-			add(2, 3).then(sum => {
-				expect(sum).toBe(5)
-				done()
-			})
-		})
-
-		// Async/await way of testing
-		test('Async Async/await Add 2 numbers', async() => {
-			// const sum = await add(2, 3)
-			// expect(sum).toBe(5)
-
-			// const sum = await add(2, 3)
-			expect(await add(2, 3)).toBe(5)
-		})
-
-	Testing an Express Application:
-		For testing, similar to dev environment we need a test environment.
-		Also we need a test database where we can make the calls for our API.
-
-		Now similar to our dev script we need to use env-cmd for our test script too.
-
-		"scripts": {
-			"start": "node src/index.js",
-			"dev": "env-cmd ./config/dev.env nodemon src/index.js",
-			"test": "env-cmd ./config/test.env jest --watch"
-		},
-
-		One more configuration needed is the jest configuration. Here we need to specify the jest test environment.
-
-		"jest": {
-			"testEnvironment": "node"
-		},
-
-		For testing the express routes, we can a module called supertest.
-			npm i supertest
-
-		We will need slight restructuring for this to function properly as test cases need access to our express app before we start it.
-
-
-		const request = require('supertest')
-		const { app } = require('../src/app')
-
-		test('Should sign up new user', async() => {
-			await request(app).post('/users').send({
-				name: 'Nikhil',
-				email: 'nikhil@admin.com',
-				password: 'mypass099'
-			}).expect(201)
-		})
-
-		Now we will need to wipe out the database before running each test so that we can get proper results.
-
-	Jest setup and teardown:
-		We can use jest lifecycle methods to configure jest.
-
-		// before each
-		beforeEach(async() => {
-			await User.deleteMany()
-		})
-
-		The above code will run before each test case.
-
-		const request = require('supertest')
-		const { app } = require('../src/app')
-		const { User } = require('../src/models/user')
-
-		const userOne = {
-			name: 'User 1',
-			email: 'user1@admin.com',
-			password: 'user199'
-		}
-
-		// before each
-		beforeEach(async() => {
-			await User.deleteMany()
-			await new User(userOne).save()
-		})
-
-		test('Should sign up new user', async() => {
-			await request(app).post('/users').send({
-				name: 'Nikhil',
-				email: 'nikhil@admin.com',
-				password: 'mypass099'
-			}).expect(201)
-		})
-
-		test('Should login user', async() => {
-			await request(app).post('/users/login').send({
-				email: userOne.email,
-				password: userOne.password
-			}).expect(200)
-		})
-
-		test('Should not login non existant user', async() => {
-			await request(app).post('/users/login').send({
-				email: userOne.email,
-				password: 'badpassword!!2'
-			}).expect(400)
-		})
-
-	Testing with Authentication:
-		If we want to test with authentication, then we need to mock the jwt and the data.
-
-		const userOneId = new mongoose.Types.ObjectId()
-		const userOne = {
-			_id: userOneId,
-			name: 'User 1',
-			email: 'user1@admin.com',
-			password: 'user199',
-			tokens: [{
-				token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
-			}]
-		}
-
-		// before each
-		beforeEach(async() => {
-			await User.deleteMany()
-			await new User(userOne).save()
-		})
-
-		test('Should get user profile', async() => {
-			await request(app)
-				.get('/users/me')
-				.set('Authorization', `Bearer ${userOne.tokens[0].token}`)
-				.send()
-				.expect(200)
-		})
-
-	Advanced Assertions:
-		We can do complex assertions in our app and not just http status code.
-		We might need to check the response body.
-
-		Never go overboard with the test cases. Test only for possible scenarios.
-
-		test('Should sign up new user', async() => {
-			const response = await request(app).post('/users').send({
-				name: 'Nikhil',
-				email: 'nikhil@admin.com',
-				password: 'mypass099'
-			}).expect(201)
-
-			// Assert that the database was changed correctly
-			const user = await User.findById(response.body.result._id)
-			expect(user).not.toBeNull()
-
-			// Assertions about the response
-			expect(response.body).toMatchObject({
-				result: {
-					name: 'Nikhil',
-					email: 'nikhil@admin.com',
-				},
-				token: user.tokens[0].token
-			})
-
-			// Assert about password stored in database
-			expect(user.password).not.toBe('mypass099')
-		})
-
-	Mocking Libraries:
-		We might need to mock npm modules. The modules might be custom or global.
-		Ex- SendGrid
-
-		We create a new directory for creating our mocks.
-			__mocks__
-
-		Next for each module we need to mock, we need a js file for that.
-
-		module.exports = {
-			send() {},
-			setApiKey() {}
-		}
-
-		More info can be found in docs.
-
-	Wrapping up User tests:
-		To test with static content we can use Fixtures.
-
-		And this directory is gonna be called fixtures in the testing world a fixture or fixtures plural are things that allow you to set up the environment your tests are going to run in.
-
-		toBe() uses === operator.
-
-		To compare objects, we need to use toEqual()
-
-		For images
-
-		test('Should upload profile pic of user', async() => {
-			await request(app)
-				.post('/users/me/avatar')
-				.set('Authorization', `Bearer ${userOne.tokens[0].token}`)
-				.attach('avatar', 'tests/fixtures/profile-pic.jpg')
-				.expect(200)
-
-			const user = await User.findById(userOneId)
-			expect(user.avatar).toEqual(expect.any(Buffer))
-		})
-
-		test('Should update valid user fields', async() => {
-			await request(app)
-				.patch('/users/me')
-				.set('Authorization', `Bearer ${userOne.tokens[0].token}`)
-				.send({
-					name: 'Mike'
-				})
-				.expect(200)
-
-			const user = await User.findById(userOneId)
-			expect(user.name).toEqual('Mike')
-		})
-
-	Test Suites:
-		We should create a new Test Suite so that everything is neatly organized.
-
-		We can keep a db config file in fixtures so that we can access it in all test suites.
-
-		To prevent the test suites from interfering with each other, we need to add an option to run jest in series instead of asynchronously.
-
-		"scripts": {
-			"start": "node src/index.js",
-			"dev": "env-cmd -f ./config/dev.env nodemon src/index.js",
-			"test": "env-cmd -f ./config/test.env jest --runInBand --watch"
-		},
-
-		We can create some more dummy data and do testing based on that.
-
-		test('Should not delete tasks of other users', async() => {
-			const response = await request(app)
-				.delete(`/tasks/${taskOne._id}`)
-				.set('Authorization', `Bearer ${userTwo.tokens[0].token}`)
-				.send()
-				.expect(404)
-
-			const task = await Task.findById(taskOne._id)
-			expect(task).not.toBeNull()
-		})
+```
+test('Async test demo', (done) => {
+    setTimeout(() => {
+        expect(1).toBe(2)
+        done()
+    }, 2000)
 
-	Extra Test Ideas:
-
-		//
-		// User Test Ideas
-		//
-		// Should not signup user with invalid name/email/password
-		// Should not update user if unauthenticated
-		// Should not update user with invalid name/email/password
-		// Should not delete user if unauthenticated
+    // expect(1).toBe(2)
+})
+```
+
+The above code will make sure test is not completed until we call done.
 
-		//
-		// Task Test Ideas
-		//
-		// Should not create task with invalid description/completed
-		// Should not update task with invalid description/completed
-		// Should delete user task
-		// Should not delete task if unauthenticated
-		// Should not update other users task
-		// Should fetch user task by id
-		// Should not fetch user task by id if unauthenticated
-		// Should not fetch other users task by id
-		// Should fetch only completed tasks
-		// Should fetch only incomplete tasks
-		// Should sort tasks by description/completed/createdAt/updatedAt
-		// Should fetch page of tasks
-
-
----		
-
-Section 17 - Real-Time Web Applications with Socket.io (Chat App)
-
-	Creating the Chat App project:
-		Setting up the dependencies, project structure with express.
-
-	WebSockets:
-		Used to create real time apps.
-		WebSocket Protocol.
-		This protocol can allow full-duplex communication.
-		Many clients can connect to the server.
-
-		But in this case we'll be using web sockets with no JSA to create our real time chat application.
-		So what I want to do in this video is just talk about exactly what web sockets are and how they're going to help us achieve our goal the goal of a real time application.
-		Now like with the HTTP protocol of the web socket protocol is going to allow us to set up communication.
-
-		THere is a persistent connection between client and server.
-
-		WebSocket protocol is different from HTTP protocol.
-
-		Either client or server can initiate communication.
-
-
-	Socket.io:
-		npm package for WebSockets.
-
-		npm i socket.io
-
-		For this we need to configure express in a different way. We need to refactor the express definition.
-		We need to set up the http server and then pass the server to socket function.
-
-		const http = require('http')
-		const socketio = require('socket.io')
-
-		const app = express()
-
-		// config socket.io
-		const server = http.createServer(app)
-		const io = socketio(server)
-
-		Then we need to define what to do on connection.
-
-		// socket function
-		io.on('connection', () => {
-			console.log('new web socket connection')
-		})
-
-		// Start the server using refactored http
-		server.listen(port, () => {
-			console.log(`Listening on port ${port}`)
-		})
-
-		The above code is the server side of socket.io. Next we need to configure the client side.
-
-		The client side version of the socket library.
-
-		<script src="/socket.io/socket.io.js"></script>
-
-		In public folder, create a new js file which is client side js.
-
-		<script src="/socket.io/socket.io.js"></script>
-    	<script src="/js/chat.js"></script>
-
-		Because we have loaded the client side version of the library, we can use the functions in our client side js file.
-
-	Socket.io Events:
-		We can use a dummy counter example to figure out to send messages between client and server.
-		Each method has socket object has a parameter which contains information about that connection. We can use that to send the messages.
-
-		The messages are sent via events.
-
-		// server socket function
-		io.on('connection', (socket) => {
-			console.log('new web socket connection')
-
-			// send messaage to client via event
-			socket.emit('countUpdated')
-		})
-
-		At client:
-
-		const socket = io()
-
-		// client socket function
-		socket.on('countUpdated', (count) => {
-			console.log('count has been updated', count)
-		})
-
-		// server socket connection function
-		io.on('connection', (socket) => {
-			console.log('new web socket connection')
-
-			// send messaage to client via event
-			socket.emit('countUpdated', count)
-
-			socket.on('increment', () => {
-				count++
-				socket.emit('countUpdated', count)
-			})
-		})
-
-		For client:
-		
-		$(document).ready(function() {
-			const socket = io()
-
-			// client socket function
-			socket.on('countUpdated', (count) => {
-				console.log('count has been updated', count)
-				$('#count').text(count)
-			})
-
-			$('#increment').click(function() {
-				// alert('clicked')
-				socket.emit('increment')
-			})
-		})
-
-		To emit to all connections:
-
-		// will emit to all connections
-        io.emit('countUpdated', count)
-
-	Implementing Sockets:
-
-		socket.on('message', (message) => {
-			console.log(message)
-		})
-
-		$('#message-form').submit(function(e) {
-			e.preventDefault()
-			const message = $('#message').val()
-
-			socket.emit('sendMessage', message)
-		})
-
-		server:
-
-		// welcome message
-		socket.emit('message', 'Welcome!')
-
-		socket.on('sendMessage', (message) => {
-			io.emit('message', message)
-		})
-
-	Broadcasting Events:
-		Useful when we want to broadcast some messages.
-
-		Broadcasted events are emitted to all other connections except the source connection.
-
-		// broadcast message
-    	socket.broadcast.emit('message', 'A new user has joined!')
-
-		socket.emit - emit to that particular connection
-		socket.broadcast.emit - emit to all other connections except the source connection
-		io.emit - emit to all connections.
-
-		When a client disconnects, we use socket.on()
-
-		// when client disconnects
-		socket.on('disconnect', () => {
-			io.emit('message', 'A user has left!')
-		})
-
-	Sharing your location:
-		We can use Browser Geolocation API to get user location.
-
-		// Browser based Geolocation
-		$('#send-location').click(function() {
-			if (!navigator.geolocation) {
-				return alert('Geolocation is not supported by your browser!')
-			}
-
-			navigator.geolocation.getCurrentPosition((position) => {
-				console.log(position)
-			})
-		})
-
-		server:
-
-		// server socket connection function
-		io.on('connection', (socket) => {
-			console.log('New WebSocket connection')
-
-			// welcome message
-			socket.emit('message', 'Welcome!')
-
-			// broadcast message
-			socket.broadcast.emit('message', 'A new user has joined!')
-
-			// listen to message
-			socket.on('sendMessage', (message) => {
-				io.emit('message', message)
-			})
-
-			// listen to location
-			socket.on('sendLocation', (coords) => {
-				io.emit('message', `Location: ${coords.latitude}, ${coords.longitude}`)
-			})
-
-			// when client disconnects
-			socket.on('disconnect', () => {
-				io.emit('message', 'A user has left!')
-			})
-		})
-
-		client:
-
-		// Browser based Geolocation
-		$('#send-location').click(function() {
-			if (!navigator.geolocation) {
-				return alert('Geolocation is not supported by your browser!')
-			}
-
-			navigator.geolocation.getCurrentPosition((position) => {
-				console.log(position)
-
-				// sending location from client to server
-				socket.emit('sendLocation', {
-					latitude: position.coords.latitude,
-					longitude: position.coords.longitude
-				})
-			})
-		})
-
-		Sending google maps link:
-
-		// listen to location and send link to google maps
-		socket.on('sendLocation', (coords) => {
-			io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
-		})
-
-	Event Acknowledgements:
-		Allows the receiver of the event to acknowledge that it has received the event and message.
-
-		Event acknowledgements will be the last paramater to the emit function. It is usually a callback function.
-
-		client:
-
-		$('#message-form').submit(function(e) {
-			e.preventDefault()
-			const message = $('#message').val()
-
-			socket.emit('sendMessage', message, (message) => {
-				console.log('The message was delivered', message)
-			})
-		})
-
-		server:
-
-		// listen to message
-		socket.on('sendMessage', (message, callback) => {
-			io.emit('message', message)
-			callback('Delivered!')
-		})
-
-		We can use a npm package to filter bad words.
-
-		npm i bad-words
-
-		$('#message-form').submit(function(e) {
-			e.preventDefault()
-			const message = $('#message').val()
-
-			socket.emit('sendMessage', message, (error) => {
-				if (error) {
-					return console.log('Error', error)
-				}
-				console.log('Message Delivered')
-			})
-		})
-
-		// listen to message
-		socket.on('sendMessage', (message, callback) => {
-			const filter = new BadWordsFilter()
-
-			if (filter.isProfane(message)) {
-				return callback('Profanity is not allowed!')
-			}
-
-			io.emit('message', message)
-			callback()
-		})
-
-	
-	Form and Button States:
-		We can change the form so that when an action is being performed we don't allow other stuff.
-
-		$('#message-form').submit(function(e) {
-			e.preventDefault()
-			const message = $('#message').val()
-
-			// disable form while sending a message
-			$('#send-btn').attr('disabled', 'disabled')
-
-			socket.emit('sendMessage', message, (error) => {
-				if (error) {
-					return console.log('Error', error)
-				}
-				console.log('Message Delivered')
-
-				// enable form after message sent
-				$('#send-btn').removeAttr('disabled')
-				$('#message').val('')
-				$('#message').focus()
-			})
-		})
-
-	Rendering Messages:
-		Using mustache to render to browser.
-		moment.js to work with time.
-
-		We need to use mustache templating to render our messages in our ui.
-
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
-
-		const messageTemplate = '<div><p>{{message}}</p></div>'
-
-		socket.on('message', (message) => {
-			console.log(message)
-
-			// displaying messages using mustache template
-			// console.log($('#message-template').html())
-			// const messageHtml = Mustache.to_html($('#message-template').html(), {
-			//     message
-			// })
-			const messageHtml = Mustache.to_html(messageTemplate, { message })
-			$('#messages').append(messageHtml)
-		})
-
-	Rendering Location Messages:
-		We can make it such that we can render locations separately.
-		
-		socket.on('locationMessage', (url) => {
-			console.log(url)
-			const locationMessageHtml = Mustache.to_html(locationMessageTemplate, { url })
-			$('#messages').append(locationMessageHtml)
-		})
-
-	Timestamps:
-		We can use momentjs for this.
-		Usually getTime() returns the number of seconds passed since Jan 1, 1970. This date is the Unix epoch.
-
-		To get the timestamps its better to send objects back and forth between servers and clients.
-
-		// utils
-		const generateMessage = (text) => {
-			return {
-				text,
-				createdAt: new Date().getTime()
-			}
-		}
-
-		// server
-		// using functions and objects
-    	socket.emit('message', generateMessage('Welcome!'))
-
-		// client
-		const messageHtml = Mustache.to_html(messageTemplate, {
-            message: message.text
+#### For Promises and Async/Await there are better ways to do this:
+
+```
+// Callback way of testing
+test('Async test demo', (done) => {
+    setTimeout(() => {
+        expect(2).toBe(2)
+        done()
+    }, 2000)
+
+    // expect(1).toBe(2)
+})
+
+// Promises way of testing
+test('Async Promises Add 2 numbers', (done) => {
+    add(2, 3).then(sum => {
+        expect(sum).toBe(5)
+        done()
+    })
+})
+
+// Async/await way of testing
+test('Async Async/await Add 2 numbers', async() => {
+    // const sum = await add(2, 3)
+    // expect(sum).toBe(5)
+
+    // const sum = await add(2, 3)
+    expect(await add(2, 3)).toBe(5)
+})
+```
+
+### Testing an Express Application:
+
+For testing, similar to dev environment we need a test environment.
+Also we need a test database where we can make the calls for our API.
+
+Now similar to our dev script we need to use env-cmd for our test script too.
+
+```
+"scripts": {
+    "start": "node src/index.js",
+    "dev": "env-cmd ./config/dev.env nodemon src/index.js",
+    "test": "env-cmd ./config/test.env jest --watch"
+},
+```
+
+One more configuration needed is the jest configuration. Here we need to specify the jest test environment.
+
+```
+"jest": {
+    "testEnvironment": "node"
+},
+```
+
+For testing the express routes, we can a module called supertest.
+
+>npm i supertest
+
+We will need slight restructuring for this to function properly as test cases need access to our express app before we start it.
+
+```
+const request = require('supertest')
+const { app } = require('../src/app')
+
+test('Should sign up new user', async() => {
+    await request(app).post('/users').send({
+        name: 'Nikhil',
+        email: 'nikhil@admin.com',
+        password: 'mypass099'
+    }).expect(201)
+})
+```
+
+Now we will need to wipe out the database before running each test so that we can get proper results.
+
+### Jest setup and teardown:
+
+We can use jest lifecycle methods to configure jest.
+
+```
+// before each
+beforeEach(async() => {
+    await User.deleteMany()
+})
+```
+
+The above code will run before each test case.
+
+```
+const request = require('supertest')
+const { app } = require('../src/app')
+const { User } = require('../src/models/user')
+
+const userOne = {
+    name: 'User 1',
+    email: 'user1@admin.com',
+    password: 'user199'
+}
+
+// before each
+beforeEach(async() => {
+    await User.deleteMany()
+    await new User(userOne).save()
+})
+
+test('Should sign up new user', async() => {
+    await request(app).post('/users').send({
+        name: 'Nikhil',
+        email: 'nikhil@admin.com',
+        password: 'mypass099'
+    }).expect(201)
+})
+
+test('Should login user', async() => {
+    await request(app).post('/users/login').send({
+        email: userOne.email,
+        password: userOne.password
+    }).expect(200)
+})
+
+test('Should not login non existant user', async() => {
+    await request(app).post('/users/login').send({
+        email: userOne.email,
+        password: 'badpassword!!2'
+    }).expect(400)
+})
+```
+
+### Testing with Authentication:
+
+If we want to test with authentication, then we need to mock the jwt and the data.
+
+```
+const userOneId = new mongoose.Types.ObjectId()
+const userOne = {
+    _id: userOneId,
+    name: 'User 1',
+    email: 'user1@admin.com',
+    password: 'user199',
+    tokens: [{
+        token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
+    }]
+}
+
+// before each
+beforeEach(async() => {
+    await User.deleteMany()
+    await new User(userOne).save()
+})
+
+test('Should get user profile', async() => {
+    await request(app)
+        .get('/users/me')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send()
+        .expect(200)
+})
+```
+
+### Advanced Assertions:
+
+We can do complex assertions in our app and not just http status code.
+We might need to check the response body.
+
+Never go overboard with the test cases. Test only for possible scenarios.
+
+```
+test('Should sign up new user', async() => {
+    const response = await request(app).post('/users').send({
+        name: 'Nikhil',
+        email: 'nikhil@admin.com',
+        password: 'mypass099'
+    }).expect(201)
+
+    // Assert that the database was changed correctly
+    const user = await User.findById(response.body.result._id)
+    expect(user).not.toBeNull()
+
+    // Assertions about the response
+    expect(response.body).toMatchObject({
+        result: {
+            name: 'Nikhil',
+            email: 'nikhil@admin.com',
+        },
+        token: user.tokens[0].token
+    })
+
+    // Assert about password stored in database
+    expect(user.password).not.toBe('mypass099')
+})
+```
+
+### Mocking Libraries:
+
+We might need to mock npm modules. The modules might be custom or global.
+Ex- SendGrid
+
+We create a new directory for creating our mocks.
+
+>\_\_mocks__
+
+Next for each module we need to mock, we need a js file for that.
+
+```
+module.exports = {
+    send() {},
+    setApiKey() {}
+}
+```
+
+More info can be found in docs.
+
+### Wrapping up User tests:
+
+>To test with static content we can use Fixtures.
+
+>And this directory is gonna be called fixtures in the testing world a fixture or fixtures plural are things that allow you to set up the environment your tests are going to run in.
+
+>toBe() uses === operator.
+
+To compare objects, we need to use toEqual()
+
+For images
+
+```
+test('Should upload profile pic of user', async() => {
+    await request(app)
+        .post('/users/me/avatar')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .attach('avatar', 'tests/fixtures/profile-pic.jpg')
+        .expect(200)
+
+    const user = await User.findById(userOneId)
+    expect(user.avatar).toEqual(expect.any(Buffer))
+})
+
+test('Should update valid user fields', async() => {
+    await request(app)
+        .patch('/users/me')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({
+            name: 'Mike'
         })
-        $('#messages').append(messageHtml)
+        .expect(200)
 
-		// momentjs
-		const messageHtml = Mustache.to_html(messageTemplate, {
-            message: message.text,
-            // createdAt: message.createdAt
-            createdAt: moment(message.createdAt).format('h:mm A')
+    const user = await User.findById(userOneId)
+    expect(user.name).toEqual('Mike')
+})
+```
+
+### Test Suites:
+
+We should create a new Test Suite so that everything is neatly organized.
+
+We can keep a db config file in fixtures so that we can access it in all test suites.
+
+To prevent the test suites from interfering with each other, we need to add an option to run jest in series instead of asynchronously.
+
+```
+"scripts": {
+    "start": "node src/index.js",
+    "dev": "env-cmd -f ./config/dev.env nodemon src/index.js",
+    "test": "env-cmd -f ./config/test.env jest --runInBand --watch"
+},
+```
+
+We can create some more dummy data and do testing based on that.
+
+```
+test('Should not delete tasks of other users', async() => {
+    const response = await request(app)
+        .delete(`/tasks/${taskOne._id}`)
+        .set('Authorization', `Bearer ${userTwo.tokens[0].token}`)
+        .send()
+        .expect(404)
+
+    const task = await Task.findById(taskOne._id)
+    expect(task).not.toBeNull()
+})
+```
+
+### Extra Test Ideas:
+
+```
+// User Test Ideas
+//
+// Should not signup user with invalid name/email/password
+// Should not update user if unauthenticated
+// Should not update user with invalid name/email/password
+// Should not delete user if unauthenticated
+```
+
+```
+// Task Test Ideas
+//
+// Should not create task with invalid description/completed
+// Should not update task with invalid description/completed
+// Should delete user task
+// Should not delete task if unauthenticated
+// Should not update other users task
+// Should fetch user task by id
+// Should not fetch user task by id if unauthenticated
+// Should not fetch other users task by id
+// Should fetch only completed tasks
+// Should fetch only incomplete tasks
+// Should sort tasks by description/completed/createdAt/updatedAt
+// Should fetch page of tasks
+```
+
+---
+
+## Section 17 - Real-Time Web Applications with Socket.io (Chat App)
+
+### Creating the Chat App project:
+
+Setting up the dependencies, project structure with express.
+
+### WebSockets:
+
+Used to create real time apps.
+
+>WebSocket Protocol.
+
+This protocol can allow full-duplex communication.
+Many clients can connect to the server.
+
+But in this case we'll be using web sockets with no JS to create our real time chat application.
+
+So what I want to do in this video is just talk about exactly what web sockets are and how they're going to help us achieve our goal the goal of a real time application.
+Now like with the HTTP protocol of the web socket protocol is going to allow us to set up communication.
+
+There is a persistent connection between client and server.
+
+WebSocket protocol is different from HTTP protocol.
+
+>Either client or server can initiate communication.
+
+### Socket.io:
+
+npm package for WebSockets.
+
+>npm i socket.io
+
+For this we need to configure express in a different way. We need to refactor the express definition.
+We need to set up the http server and then pass the server to socket function.
+
+```
+const http = require('http')
+const socketio = require('socket.io')
+
+const app = express()
+
+// config socket.io
+const server = http.createServer(app)
+const io = socketio(server)
+```
+
+Then we need to define what to do on connection.
+
+```
+// socket function
+io.on('connection', () => {
+    console.log('new web socket connection')
+})
+
+// Start the server using refactored http
+server.listen(port, () => {
+    console.log(`Listening on port ${port}`)
+})
+```
+
+The above code is the server side of socket.io. Next we need to configure the client side.
+
+The client side version of the socket library.
+
+> <script src="/socket.io/socket.io.js"></script>
+
+In public folder, create a new js file which is client side js.
+
+```
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chat.js"></script>
+```
+
+Because we have loaded the client side version of the library, we can use the functions in our client side js file.
+
+### Socket.io Events:
+
+We can use a dummy counter example to figure out to send messages between client and server.
+
+>Each method has socket object has a parameter which contains information about that connection. We can use that to send the messages.
+
+The messages are sent via events.
+
+#### At server:
+
+```
+// server socket function
+io.on('connection', (socket) => {
+    console.log('new web socket connection')
+
+    // send messaage to client via event
+    socket.emit('countUpdated')
+})
+```
+
+#### At client:
+
+```
+const socket = io()
+
+// client socket function
+socket.on('countUpdated', (count) => {
+    console.log('count has been updated', count)
+})
+
+// server socket connection function
+io.on('connection', (socket) => {
+    console.log('new web socket connection')
+
+    // send messaage to client via event
+    socket.emit('countUpdated', count)
+
+    socket.on('increment', () => {
+        count++
+        socket.emit('countUpdated', count)
+    })
+})
+```
+
+#### For client(jQuery implementation):
+
+```
+$(document).ready(function() {
+    const socket = io()
+
+    // client socket function
+    socket.on('countUpdated', (count) => {
+        console.log('count has been updated', count)
+        $('#count').text(count)
+    })
+
+    $('#increment').click(function() {
+        // alert('clicked')
+        socket.emit('increment')
+    })
+})
+```
+
+#### To emit to all connections:
+
+```
+// will emit to all connections
+io.emit('countUpdated', count)
+```
+
+### Implementing Sockets:
+
+#### Client:
+
+```
+socket.on('message', (message) => {
+    console.log(message)
+})
+
+$('#message-form').submit(function(e) {
+    e.preventDefault()
+    const message = $('#message').val()
+
+    socket.emit('sendMessage', message)
+})
+```
+
+#### Server:
+
+```
+// welcome message
+socket.emit('message', 'Welcome!')
+
+socket.on('sendMessage', (message) => {
+    io.emit('message', message)
+})
+```
+
+### Broadcasting Events:
+
+Useful when we want to broadcast some messages.
+
+>Broadcasted events are emitted to all other connections except the source connection.
+
+```
+// broadcast message
+socket.broadcast.emit('message', 'A new user has joined!')
+```
+
+
+>socket.emit - emit to that particular connection
+>socket.broadcast.emit - emit to all other connections except the source connection
+>io.emit - emit to all connections.
+
+When a client disconnects, we use socket.on()
+
+```
+// when client disconnects
+socket.on('disconnect', () => {
+    io.emit('message', 'A user has left!')
+})
+```
+
+### Sharing your location:
+
+We can use Browser Geolocation API to get user location.
+
+#### Client:
+
+```
+// Browser based Geolocation
+$('#send-location').click(function() {
+    if (!navigator.geolocation) {
+        return alert('Geolocation is not supported by your browser!')
+    }
+
+    navigator.geolocation.getCurrentPosition((position) => {
+        console.log(position)
+    })
+})
+```
+
+#### Server:
+
+```
+// server socket connection function
+io.on('connection', (socket) => {
+    console.log('New WebSocket connection')
+
+    // welcome message
+    socket.emit('message', 'Welcome!')
+
+    // broadcast message
+    socket.broadcast.emit('message', 'A new user has joined!')
+
+    // listen to message
+    socket.on('sendMessage', (message) => {
+        io.emit('message', message)
+    })
+
+    // listen to location
+    socket.on('sendLocation', (coords) => {
+        io.emit('message', `Location: ${coords.latitude}, ${coords.longitude}`)
+    })
+
+    // when client disconnects
+    socket.on('disconnect', () => {
+        io.emit('message', 'A user has left!')
+    })
+})
+```
+
+#### Client updated:
+
+```
+// Browser based Geolocation
+$('#send-location').click(function() {
+    if (!navigator.geolocation) {
+        return alert('Geolocation is not supported by your browser!')
+    }
+
+    navigator.geolocation.getCurrentPosition((position) => {
+        console.log(position)
+
+        // sending location from client to server
+        socket.emit('sendLocation', {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
         })
+    })
+})
+```
 
-	Styling the Chat App:
-		Use the style sheet to customize the application.
+#### Sending google maps link:
 
-	Join Page:
-		We can add ajoi page.
+```
+// listen to location and send link to google maps
+socket.on('sendLocation', (coords) => {
+    io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+})
+```
 
-		<div class="centered-form">
-			<div class="centered-form__box">
-				<h1>Join</h1>
-				<form action="/chat">
-					<label>Display Name</label>
-					<input type="text" name="username" placeholder="Display Name" required>
-					<label>Room</label>
-					<input type="text" name="room" placeholder="Room" required>
-					<button>Join</button>
-				</form>
-			</div>
-		</div>
+### Event Acknowledgements:
 
-	Socket.io Rooms:
-		We can use the qs library for working with querystrings.
+Allows the receiver of the event to acknowledge that it has received the event and message.
 
-		// Options in query
-    	const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
+>Event acknowledgements will be the last paramater to the emit function. It is usually a callback function.
 
-		Then we can set up a new event which emits for joining.
+#### Client:
 
-		// joining room
-    	socket.emit('join', { username, room })
-		
-		Socket has some room specific features.
+```
+$('#message-form').submit(function(e) {
+    e.preventDefault()
+    const message = $('#message').val()
 
-		// join
-		socket.on('join', ({ username, room }) => {
-			socket.join(room)
-		})
+    socket.emit('sendMessage', message, (message) => {
+        console.log('The message was delivered', message)
+    })
+})
+```
 
-		io.to.emit -> emits event to everybody in a room 
-		socket.broadcast.to.emit -> emit to everyone except the sender in a room
+#### Server:
 
-		// join
-		socket.on('join', ({ username, room }) => {
-			// join the room
-			socket.join(room)
+```
+// listen to message
+socket.on('sendMessage', (message, callback) => {
+    io.emit('message', message)
+    callback('Delivered!')
+})
+```
 
-			// using functions and objects
-			socket.emit('message', generateMessage('Welcome!'))
+We can use a npm package to filter bad words.
 
-			// broadcast message
-			socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
+>npm i bad-words
 
-			// // broadcast message
-			// socket.broadcast.to(room).emit('message', generateMessage('A new user has joined!'))
-		})
+```
+$('#message-form').submit(function(e) {
+    e.preventDefault()
+    const message = $('#message').val()
 
-	Storing Users:
-		Users needs to be stored so that we can keep track of them.
+    socket.emit('sendMessage', message, (error) => {
+        if (error) {
+            return console.log('Error', error)
+        }
+        console.log('Message Delivered')
+    })
+})
 
-		const users = []
+// listen to message
+socket.on('sendMessage', (message, callback) => {
+    const filter = new BadWordsFilter()
 
-		// addUser
-		const addUser = ({ id, username, room }) => {
-			// clean the data
-			username = username.trim().toLowerCase()
-			room = room.trim().toLowerCase()
+    if (filter.isProfane(message)) {
+        return callback('Profanity is not allowed!')
+    }
 
-			// validate the data
-			if (!username || !room) {
-				return {
-					error: 'Username and room are required!'
-				}
-			}
+    io.emit('message', message)
+    callback()
+})
+```
 
-			// check for existing user
-			const existingUser = users.find(user => user.room === room && user.username === username)
+### Form and Button States:
 
-			// validate username
-			if (existingUser) {
-				return {
-					error: 'Username already taken!'
-				}
-			}
+We can change the form so that when an action is being performed we don't allow other stuff.
 
-			// store user
-			const user = { id, username, room }
-			users.push(user)
+```
+$('#message-form').submit(function(e) {
+    e.preventDefault()
+    const message = $('#message').val()
 
-			// return stored user
-			return { user }
-		}
+    // disable form while sending a message
+    $('#send-btn').attr('disabled', 'disabled')
 
-		// removeUser
-		const removeUser = (id) => {
-			// find index
-			const index = users.findIndex(user => user.id === id)
+    socket.emit('sendMessage', message, (error) => {
+        if (error) {
+            return console.log('Error', error)
+        }
+        console.log('Message Delivered')
 
-			// if index === -1 then no match
-			// return the user removed
-			if (index !== -1) {
-				return users.splice(index, 1)[0]
-			}
-		}
+        // enable form after message sent
+        $('#send-btn').removeAttr('disabled')
+        $('#message').val('')
+        $('#message').focus()
+    })
+})
+```
 
-		// getUser
-		const getUser = (id) => {
-			return users.find(user => user.id === id)
-		}
+### Rendering Messages:
 
-		// getUsersInroom
-		const getUsersInroom = (room) => {
-			room = room.trim().toLowerCase()
-			return users.filter(user => user.room === room)
-		}
+>Using mustache to render to browser.
+>moment.js to work with time.
 
-		module.exports = {
-			addUser,
-			removeUser,
-			getUser,
-			getUsersInroom
-		}
+We need to use mustache templating to render our messages in our ui.
 
-	Tracking Users joining and leaving:
-		Every socket connection comes with a socket connection.
+```
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
+```
 
-		socket.on('join', (options, callback) => {
-			// add user
-			// const { user, error } = addUser({ id: socket.id, username, room })
-			const { user, error } = addUser({ id: socket.id, ...options })
+```
+const messageTemplate = '<div><p>{{message}}</p></div>'
 
-			// error display if any
-			if (error) {
-				return callback(error)
-			}
+socket.on('message', (message) => {
+    console.log(message)
 
-			// join the room
-			socket.join(user.room)
+    // displaying messages using mustache template
+    // console.log($('#message-template').html())
+    // const messageHtml = Mustache.to_html($('#message-template').html(), {
+    //     message
+    // })
+    const messageHtml = Mustache.to_html(messageTemplate, { message })
+    $('#messages').append(messageHtml)
+})
+```
 
-			// using functions and objects
-			socket.emit('message', generateMessage('Welcome!'))
+### Rendering Location Messages:
 
-			// broadcast message
-			socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!`))
+We can make it such that we can render locations separately.
 
-			callback()
+```
+socket.on('locationMessage', (url) => {
+    console.log(url)
+    const locationMessageHtml = Mustache.to_html(locationMessageTemplate, { url })
+    $('#messages').append(locationMessageHtml)
+})
+```
 
-			// // broadcast message
-			// socket.broadcast.to(room).emit('message', generateMessage('A new user has joined!'))
-		})
+### Timestamps:
 
-		// when client disconnects
-		socket.on('disconnect', () => {
-			// remove user
-			const user = removeUser(socket.id)
+We can use momentjs for this.
 
-			if (user) {
-				io.to(user.room).emit('message', generateMessage(`${user.username} has left!`))
-			}
-		})
+>Usually getTime() returns the number of seconds passed since Jan 1, 1970. This date is the Unix epoch.
 
-		// joining room
-		socket.emit('join', { username, room }, (error) => {
-			if (error) {
-				alert(error)
-				location.href = '/'
-			}
-		})
+To get the timestamps its better to send objects back and forth between servers and clients.
 
-	Sending Messages to Rooms:
-		We can make autocomlete off by
-			<input id="message" type="text" placeholder="Message" required autocomplete="off">
+#### Utils:
 
-		// listen to message
-		socket.on('sendMessage', (message, callback) => {
-			// fetch user data
-			const user = getUser(socket.id)
+```
+// utils
+const generateMessage = (text) => {
+    return {
+        text,
+        createdAt: new Date().getTime()
+    }
+}
+```
 
-			const filter = new BadWordsFilter()
+#### Server:
 
-			if (filter.isProfane(message)) {
-				return callback('Profanity is not allowed!')
-			}
+```
+// server
+// using functions and objects
+socket.emit('message', generateMessage('Welcome!'))
+```
 
-			io.to(user.room).emit('message', generateMessage(user.username, message))
-			callback()
-		})
+#### Client:
 
-	Rendering User List:
+```
+// client
+const messageHtml = Mustache.to_html(messageTemplate, {
+    message: message.text
+})
+$('#messages').append(messageHtml)
 
-		// send list of users in room
-		io.to(user.room).emit('roomData', {
-			room: user.room,
-			users: getUsersInroom(user.room)
-		})
+// momentjs
+const messageHtml = Mustache.to_html(messageTemplate, {
+    message: message.text,
+    // createdAt: message.createdAt
+    createdAt: moment(message.createdAt).format('h:mm A')
+})
+```
 
-		socket.on('roomData', ({ users, room }) => {
-			const sidebarHtml = Mustache.to_html(sidebarTemplate, {
-				users,
-				room
-			})
-			$('#sidebar').html(sidebarHtml)
-		})
+### Styling the Chat App:
 
+Use the style sheet to customize the application.
 
-		const sidebarTemplate = '<h2 class="room-title">{{room}}</h2><h3 class="list-title">Users</h3><ul class="users">{{#users}}<li>{{username}}</li>{{/users}}</ul>'
+### Join Page:
 
-	Autoscrolling:
-		// autoscroll
-    const autoscroll = () => {
-        // new message
-        const $newMessage = $('#messages:last-child')
+We can add a join page.
 
-        // height of new message
-        const newMessageMargin = parseInt($newMessage.css('marginBottom'))
-        const newMessageHeight = $newMessage.outerheight() + newMessageMargin
+```
+<div class="centered-form">
+    <div class="centered-form__box">
+        <h1>Join</h1>
+        <form action="/chat">
+            <label>Display Name</label>
+            <input type="text" name="username" placeholder="Display Name" required>
+            <label>Room</label>
+            <input type="text" name="room" placeholder="Room" required>
+            <button>Join</button>
+        </form>
+    </div>
+</div>
+```
 
-        // visible height
-        const visibleHeight = $('#messages').outerheight()
+### Socket.io Rooms:
 
-        // height of messages container
-        const containerHeight = $('#messages').prop('scrollHeight')
+We can use the qs library for working with querystrings.
 
-        // how far have i scrolled
-        const scrollOffset = $('#messages').scrollTop() + visibleHeight
+```
+// Options in query
+const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
+```
 
-        if (containerHeight - newMessageHeight <= scrollOffset) {
-            $('#messages').animate({
-                scrollTop: containerHeight
-            }, 1000)
+Then we can set up a new event which emits for joining.
+
+```
+// joining room
+socket.emit('join', { username, room })
+```
+
+Socket has some room specific features.
+
+```
+// join
+socket.on('join', ({ username, room }) => {
+    socket.join(room)
+})
+```
+
+>io.to.emit -> emits event to everybody in a room 
+>socket.broadcast.to.emit -> emit to everyone except the sender in a room
+
+```
+// join
+socket.on('join', ({ username, room }) => {
+    // join the room
+    socket.join(room)
+
+    // using functions and objects
+    socket.emit('message', generateMessage('Welcome!'))
+
+    // broadcast message
+    socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
+
+    // // broadcast message
+    // socket.broadcast.to(room).emit('message', generateMessage('A new user has joined!'))
+})
+```
+
+### Storing Users:
+
+Users needs to be stored so that we can keep track of them.
+
+#### Utils/users.js:
+
+```
+const users = []
+
+// addUser
+const addUser = ({ id, username, room }) => {
+    // clean the data
+    username = username.trim().toLowerCase()
+    room = room.trim().toLowerCase()
+
+    // validate the data
+    if (!username || !room) {
+        return {
+            error: 'Username and room are required!'
         }
     }
 
-	// working solution
-	$('#messages').animate({
-		scrollTop: parseInt($('#messages').prop('scrollHeight'))
-	}, 500)
+    // check for existing user
+    const existingUser = users.find(user => user.room === room && user.username === username)
 
+    // validate username
+    if (existingUser) {
+        return {
+            error: 'Username already taken!'
+        }
+    }
+
+    // store user
+    const user = { id, username, room }
+    users.push(user)
+
+    // return stored user
+    return { user }
+}
+
+// removeUser
+const removeUser = (id) => {
+    // find index
+    const index = users.findIndex(user => user.id === id)
+
+    // if index === -1 then no match
+    // return the user removed
+    if (index !== -1) {
+        return users.splice(index, 1)[0]
+    }
+}
+
+// getUser
+const getUser = (id) => {
+    return users.find(user => user.id === id)
+}
+
+// getUsersInroom
+const getUsersInroom = (room) => {
+    room = room.trim().toLowerCase()
+    return users.filter(user => user.room === room)
+}
+
+module.exports = {
+    addUser,
+    removeUser,
+    getUser,
+    getUsersInroom
+}
+```
+
+### Tracking Users joining and leaving:
+
+Every socket connection comes with a socket connection.
+
+```
+socket.on('join', (options, callback) => {
+    // add user
+    // const { user, error } = addUser({ id: socket.id, username, room })
+    const { user, error } = addUser({ id: socket.id, ...options })
+
+    // error display if any
+    if (error) {
+        return callback(error)
+    }
+
+    // join the room
+    socket.join(user.room)
+
+    // using functions and objects
+    socket.emit('message', generateMessage('Welcome!'))
+
+    // broadcast message
+    socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!`))
+
+    callback()
+
+    // // broadcast message
+    // socket.broadcast.to(room).emit('message', generateMessage('A new user has joined!'))
+})
+
+// when client disconnects
+socket.on('disconnect', () => {
+    // remove user
+    const user = removeUser(socket.id)
+
+    if (user) {
+        io.to(user.room).emit('message', generateMessage(`${user.username} has left!`))
+    }
+})
+
+// joining room
+socket.emit('join', { username, room }, (error) => {
+    if (error) {
+        alert(error)
+        location.href = '/'
+    }
+})
+```
+
+### Sending Messages to Rooms:
+
+We can make autocomlete off by
+
+> \<input id="message" type="text" placeholder="Message" required autocomplete="off">
+
+```
+// listen to message
+socket.on('sendMessage', (message, callback) => {
+    // fetch user data
+    const user = getUser(socket.id)
+
+    const filter = new BadWordsFilter()
+
+    if (filter.isProfane(message)) {
+        return callback('Profanity is not allowed!')
+    }
+
+    io.to(user.room).emit('message', generateMessage(user.username, message))
+    callback()
+})
+```
+
+### Rendering User List:
+
+```
+// send list of users in room
+io.to(user.room).emit('roomData', {
+    room: user.room,
+    users: getUsersInroom(user.room)
+})
+
+socket.on('roomData', ({ users, room }) => {
+    const sidebarHtml = Mustache.to_html(sidebarTemplate, {
+        users,
+        room
+    })
+    $('#sidebar').html(sidebarHtml)
+})
+```
+
+```
+const sidebarTemplate = '<h2 class="room-title">{{room}}</h2><h3 class="list-title">Users</h3><ul class="users">{{#users}}<li>{{username}}</li>{{/users}}</ul>'
+```
+
+### Autoscrolling:
+
+```
+// autoscroll
+const autoscroll = () => {
+    // new message
+    const $newMessage = $('#messages:last-child')
+
+    // height of new message
+    const newMessageMargin = parseInt($newMessage.css('marginBottom'))
+    const newMessageHeight = $newMessage.outerheight() + newMessageMargin
+
+    // visible height
+    const visibleHeight = $('#messages').outerheight()
+
+    // height of messages container
+    const containerHeight = $('#messages').prop('scrollHeight')
+
+    // how far have i scrolled
+    const scrollOffset = $('#messages').scrollTop() + visibleHeight
+
+    if (containerHeight - newMessageHeight <= scrollOffset) {
+        $('#messages').animate({
+            scrollTop: containerHeight
+        }, 1000)
+    }
+}
+
+// working solution
+$('#messages').animate({
+    scrollTop: parseInt($('#messages').prop('scrollHeight'))
+}, 500)
+```
 
 ---
 
 ## Section 18 - Wrapping Up:
 
 ### New Feature Ideas:
-		
+
 #### Weather App:
 
 Allow user to use geolocation API to get weather for their location instead of tyoing in the address.
