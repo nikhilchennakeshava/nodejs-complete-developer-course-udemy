@@ -270,11 +270,11 @@ This generates an package.json file which is used for keeping config data.
 
 To install a dependency globally:
 
->npm i -g <dependency>
+>npm i -g \<dependency>
 
 To install it for the project:
 
->npm i --save <dependency>
+>npm i --save \<dependency>
 
 This creates a node-modules directory which is where the dependency code is present.
 
@@ -843,7 +843,7 @@ body {
 
 ### To add icons in tab:
 
-`<link rel="icon" href="/img/weather.png">`
+> \<link rel="icon" href="/img/weather.png">
 
 ---
 
@@ -855,7 +855,7 @@ It will be part of the url which will conatain the information.
 
 Query string syntax:
 
->url.com/<something>/users?key=value&key2=value2
+>url.com/\<something>/users?key=value&key2=value2
 
 The query string is available in the request object of the node server.
 
@@ -1084,7 +1084,7 @@ First add ssh  keys to heroku.
 
 Then we can create project using:
 
->git create <appname>
+>git create \<appname>
 
 We need to tell heroku it needs to run. 
 So we need to specify the script in package.json
@@ -1161,7 +1161,7 @@ Put the bin folder of mongo folder in the system path.
 
 Then run:
 
->mongod --dbpath=<path-to-mongodb-data>
+>mongod --dbpath=\<path-to-mongodb-data>
 
 This will run mongodb while setting up the folder where the data will stay.
 
@@ -1171,7 +1171,7 @@ Then we will get this message:
 
 This command needs to be running in order for mongodb to work:
 
->mongod --dbpath=<path-to-mongodb-data>
+>mongod --dbpath=\<path-to-mongodb-data>
 
 ### Robo 3T:
 
@@ -1564,7 +1564,7 @@ We can send data via Postman using Body of the request and selecting raw data wi
 
 We can create start scripts. and run them via:
 
->npm run <scriptname>
+>npm run \<scriptname>
 
 Put each mongoose model into separate files.
 Then use it in index.js.
@@ -2210,7 +2210,7 @@ This way they can be authenticated.
 The Headers will be of key/value pairs.
 
 >Key - Authorization  
->Value - Bearer <token>
+>Value - Bearer \<token>
 
 For basic authentication:
 ```
@@ -2777,7 +2777,7 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async(req, res) =
 
 We can see our binary data in the web by using:
 
-> <img src="data:image/jpg;base64,binary_data"/>
+> \<img src="data:image/jpg;base64,binary_data"/>
 
 ### Serving up files:
 
@@ -2912,7 +2912,7 @@ Do configurations as shown in video.
 
 #### Create a new heroku app:
 
->heroku create <appname>
+>heroku create \<appname>
 
 #### To view config variables in heroku,
 
@@ -2920,7 +2920,7 @@ Do configurations as shown in video.
 
 #### To set config variables in heroku,
 
->heroku config:set <key>=<value>
+>heroku config:set \<key>=\<value>
 
 #### Then push our code to heroku github:
 
@@ -3409,7 +3409,7 @@ The above code is the server side of socket.io. Next we need to configure the cl
 
 The client side version of the socket library.
 
-> <script src="/socket.io/socket.io.js"></script>
+> \<script src="/socket.io/socket.io.js">\</script>
 
 In public folder, create a new js file which is client side js.
 
