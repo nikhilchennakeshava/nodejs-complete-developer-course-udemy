@@ -3530,8 +3530,8 @@ socket.broadcast.emit('message', 'A new user has joined!')
 ```
 
 
->socket.emit - emit to that particular connection
->socket.broadcast.emit - emit to all other connections except the source connection
+>socket.emit - emit to that particular connection  
+>socket.broadcast.emit - emit to all other connections except the source connection  
 >io.emit - emit to all connections.
 
 When a client disconnects, we use socket.on()
@@ -3841,7 +3841,7 @@ socket.on('join', ({ username, room }) => {
 })
 ```
 
->io.to.emit -> emits event to everybody in a room 
+>io.to.emit -> emits event to everybody in a room  
 >socket.broadcast.to.emit -> emit to everyone except the sender in a room
 
 ```
