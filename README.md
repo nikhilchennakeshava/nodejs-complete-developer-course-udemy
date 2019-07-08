@@ -34,6 +34,6 @@
 * Jest
 * Many more tools
 
-## Notes:
+## Documentation and Notes:
 
-[Docs](/Docs/NOTES.md)
+[Notes](/Docs/NOTES.md)
