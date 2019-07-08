@@ -200,9 +200,11 @@
 
 Node is a way to run javascript outside of the browser.
 
->Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. 
+>Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.
+
 >Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.
-> Node.js' package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
+
+>Node.js' package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
 
 JavaScript engine converts javascript code to machine code. V8 engine is written in C++.
 Node is also written in C++.
@@ -212,9 +214,11 @@ Nodejs is just a runtime, its not a language.
 REPL - Read evaluate Print Loop
 
 >In browser - 'window' object, 'document' object
+
 >In node - 'global' object, 'process' object
 
 >'window' of browser == 'global' of node.
+
 >'document' of browser == 'process' of node.
 
 non-blocking I/O - asynchronous - so that browser is not frozen. Similarly in node we can do other stuff while we are waiting.
