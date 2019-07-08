@@ -213,7 +213,7 @@ Nodejs is just a runtime, its not a language.
 
 REPL - Read evaluate Print Loop
 
->In browser - 'window' object, 'document' object
+>In browser - 'window' object, 'document' object  
 In node - 'global' object, 'process' object
 
 >'window' of browser == 'global' of node.
