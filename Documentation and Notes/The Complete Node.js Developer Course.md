@@ -1745,523 +1745,619 @@ module.exports = {
 
 ## Section 12 - API Authentication and Security(Task app):
 
-	Securely Storing Passwords:
-		Passwords should never be stored in plaintext.
-		Hashed passwords needs to be stored.
+### Securely Storing Passwords:
 
-		Hashing algorithm - bcrypt.
+Passwords should never be stored in plaintext.
 
-		npm package:
-			npm i bcryptjs
+Hashed passwords needs to be stored.
 
-		Hashing algorithms are different than Encrypting algorithms.
-		In Encrypting algorithms, we can get the plaintext back. 
-		But in Hashing algorithms, we can never get the plaintext back.
+>Hashing algorithm - bcrypt.
 
-		const bcrypt = require('bcryptjs')
+npm package:
 
-		const myFunction = async() => {
-			const password = 'Red12345!'
-			const hashedPassword = await bcrypt.hash(password, 8)
+>npm i bcryptjs
 
-			console.log(password)
-			console.log(hashedPassword)
+Hashing algorithms are different than Encrypting algorithms.
 
-			const isMatch = await bcrypt.compare(password, hashedPassword)
-			console.log(isMatch)
-		}
+>In Encrypting algorithms, we can get the plaintext back. 
+>But in Hashing algorithms, we can never get the plaintext back.
 
-		myFunction()
+```
+const bcrypt = require('bcryptjs')
 
-		We need to use the Middleware provided by mongoose to hash user's passwords before saving.
-		We need to use the save middleware.
-		First we need to define the schema of the Mongoose model first before creating the model.
+const myFunction = async() => {
+    const password = 'Red12345!'
+    const hashedPassword = await bcrypt.hash(password, 8)
 
-		We can use the life cycle hooks:
-			userSchema.pre('save', async function(next) {
-				const user = this
+    console.log(password)
+    console.log(hashedPassword)
 
-				console.log('just before saving')
-				next()
-			})
+    const isMatch = await bcrypt.compare(password, hashedPassword)
+    console.log(isMatch)
+}
 
-		For updating, the current method will not work, so we need to change the methods.
-		Some of the mongoose methods will not work well with middleware. So we need to be careful.
+myFunction()
+```
 
-		// To make the middleware work
-        const user = await User.findById(req.params.id)
+We need to use the Middleware provided by mongoose to hash user's passwords before saving.
 
-        // No user to update
+We need to use the save middleware.
+
+First we need to define the schema of the Mongoose model first before creating the model.
+
+We can use the life cycle hooks:
+
+```
+userSchema.pre('save', async function(next) {
+    const user = this
+
+    console.log('just before saving')
+    next()
+})
+```
+
+For updating, the current method will not work, so we need to change the methods.
+
+Some of the mongoose methods will not work well with middleware. So we need to be careful.
+
+```
+// To make the middleware work
+const user = await User.findById(req.params.id)
+
+// No user to update
+if (!user) {
+    return res.status(404).send()
+}
+
+// Using bracket notation as we want to use dynamically
+updates.forEach(update => user[update] = req.body[update])
+const updatedUser = await user.save()
+```
+
+Now the 'pre' hook is run on 'save' so password will get hashed.
+
+
+### Logging in Users:
+
+We need to log in users by making them enter credentials. We will create a new route for this.
+
+```
+// User login
+router.post('/users/login', async(req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body)
+        res.send(user)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+```
+
+We can define new custom functions on the Mongoose model.
+
+```
+// Validating the credentials
+userSchema.statics.findByCredentials = async({ email, password } = {}) => {
+    const user = await User.findOne({ email })
+    if (!user) {
+        throw new Error('Incorrect Email')
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) {
+        throw new Error('Incorrect Password')
+    }
+
+    return user
+}
+```
+
+We need the email to be unique across all users:
+```
+email: {
+    type: String,
+    required: true,
+    unique: true,
+    ...
+```
+
+We need to drop database so that proper indexing will happen.
+
+### JWT - JSON Web Token:
+
+Except for signup and login, all other routes will be authenticated.
+
+>npm i jsonwebtoken
+
+```
+// Testing jwt
+const jwt = require('jsonwebtoken')
+
+const myFunction = async() => {
+    const token = jwt.sign({ _id: '12345' }, 'thisismycourse')
+    console.log(token)
+}
+
+myFunction()
+```
+
+We need to pass a cryptoKey ie the secret using which user can authenticate.
+
+Each JWT has 3 parts:
+>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxMjM0NSIsImlhdCI6MTU2MDk3NDM1MH0.g93BsIeKuJIctfNEtgDYgST60TgmvlDsCZKS4-MvXPo
+
+The parts are separated by periods.
+
+>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+* The first part is a base64 encoded JSON string - Header - conatins meta information like what kinda token and what algorithm was used.
+
+>eyJfaWQiOiIxMjM0NSIsImlhdCI6MTU2MDk3NDM1MH0
+* The second part is a base64 encoded JSON string - Payload - conatins the data provided by user.
+
+>g93BsIeKuJIctfNEtgDYgST60TgmvlDsCZKS4-MvXPo
+* The last part is a base64 encoded JSON string - Signature - used to verify the token.
+
+```
+// Testing jwt
+const jwt = require('jsonwebtoken')
+
+const myFunction = async() => {
+    // Generate token with expiry date
+    const token = jwt.sign({ _id: '12345' }, 'thisismycourse', { expiresIn: '1 day' })
+    console.log(token)
+
+    // Verify token using token and the secret
+    const data = jwt.verify(token, 'thisismycourse')
+    console.log(data)
+}
+```
+
+### Generating Authentication Tokens - JWT:
+
+>schema.stattics.foo - foo is a model method - Model methods.
+
+>schema.methods.foo - foo is an instance method - Instance methods.
+
+We need normal function for this as we need to bind the this. Cannot use arrow functions.
+This will be similar to middleware.
+
+```
+// Instance method
+// Generate Auth tokens
+userSchema.methods.generateAuthToken = async function() {
+    const user = this
+
+    // generate token
+    const token = jwt.sign({ _id: user._id.toString() }, 'thisismycourse', { expiresIn: '1 day' })
+
+    // add token to user
+    user.tokens = user.tokens.concat({ token })
+    await user.save()
+
+    return token
+}
+```
+
+Next the server needs to keep track of the user so that the user can login via multiple devices.
+
+Adding to User schema:
+
+```
+....
+            age: {
+        type: Number,
+        default: 0,
+        validate(value) {
+            if (value < 0) {
+                throw new Error('Age must be a positive number')
+            }
+        }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
+})
+```
+
+Here tokens is an array of tokens.
+
+In Mongo, this will be a sub-document. So each token object will have its ObjectID.
+
+### Express Middleware:
+
+We can use some middleware so that we can authenticate users before they can perform any actions.
+
+To do this we need to run the custome middleware in our code. 
+
+>For this, we need to use app.use().
+
+This needs to be at the top of the declarations before any other middleware.
+
+We can create a new hook using express.
+
+```
+app.use((req, res, next) => {
+    console.log(req.method, req.path)
+    next()
+})
+```
+
+>We need to call the next() function so that the execution will continue.
+
+We can use this for multiple purposes like maintenance mode ...
+
+```
+// Maintainence mode
+app.use((req, res, next) => {
+    res.status(503).send('Site is currently down for maintenance. Check back soon!')
+})
+```
+
+### Accepting Authentication Tokens:
+
+It's better to organize all middleware in a separate folder.
+
+>The middleware in index.js will be associated with every single route in our app.
+
+For auth middleware, we dont want this.
+
+>We can add our middleware to a particular route by - adding the function as the second parameter while setting up the route.
+
+```
+// Get all Users
+router.get('/users', auth, async(req, res) => {
+    try {
+        const users = await User.find({})
+        res.send(users)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+```
+
+The client needs to put their Authentication jwt and send it as headers along with all their requests.
+This way they can be authenticated.
+
+The Headers will be of key/value pairs.
+
+>Key - Authorization
+>Value - Bearer <token>
+
+For basic authentication:
+```
+Key - Authorization
+Value - Basic <token>
+```
+
+We can get the token sent by client on Authorization header. Then use it to authenticate.
+
+```
+const auth = async(req, res, next) => {
+    try {
+        const token = req.header('Authorization').replace('Bearer ', '')
+        const decoded_token = jwt.verify(token, 'thisismycourse')
+
+        // check user
+        const user = await User.findOne({ _id: decoded_token._id, 'tokens.token': token })
+
         if (!user) {
-            return res.status(404).send()
+            throw new Error()
         }
 
+        // send the user back in request for further use
+        req.user = user
+
+        // resume execution
+        next()
+    } catch (error) {
+        return res.status(401).send({ error: 'User not authorized. Please send valid JWT' })
+    }
+}
+```
+
+Now as authentication is present a user should not be able to see other users' details.
+So /users will now be useless.
+
+So we can repurpose it to see profile of the user.
+
+```
+// Will not be correct after auth 
+// repurposing as user profile view
+// Get own profile
+router.get('/users/me', auth, async(req, res) => {
+    res.send(req.user)
+})
+```
+
+### Advanced Postman:
+
+#### Environments:
+    
+Multiple environments can be configured.
+    
+We can setup the environments and then use them as 
+
+>{{env_variable}}
+
+#### Authorization:
+
+We can generalize Authorization by not putting in header directly but rather putting in Authorization tab under Bearer token.
+
+Or we can put Authorization in the Collection lever itself and then Inherit from Parent for all other requests.
+
+#### Environment Variable:
+
+We can use an environment variable to store the token so that it is stored and updated automatically and no manual steps are needed.
+
+We can do this by writing JavaScript code under Tests tab of the request.
+
+```
+if(pm.response.code === 200) {
+    pm.environment.set("auth_token", pm.response.json().token);
+}
+```
+
+### Logging Out:
+
+The User needs to have the ability to log out of the application.
+
+If a user has different sessions on different devices then we will only need to logout of the particular device only.
+So proper token needs to be matched.
+
+```
+// User logout
+router.post('/users/logout', auth, async(req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter(token => token.token !== req.token)
+        await req.user.save()
+        res.send('Logged out succesfully')
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+```
+
+We can also logout of all the sessions - gmail, netflix etc.
+
+```
+// User logout all
+router.post('/users/logoutAll', auth, async(req, res) => {
+    try {
+        req.user.tokens = []
+        await req.user.save()
+        res.send('Logged out succesfully in all devices')
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+```
+
+### Hiding Private Data:
+
+We shouldn't send tokens or password back to user.
+It needs to be hidden from the user.
+
+So we need to use a method to restrict the data.
+
+```
+// Instance method
+// Generate Public profile
+userSchema.methods.getPublicProfile = async function() {
+    const user = this
+
+    // generate userObject
+    const userObject = user.toObject()
+
+    // deleting sensitive information
+    delete userObject.password
+    delete userObject.tokens
+
+    return userObject
+}
+```
+
+This is the manual way as we need to call the function everytime.
+This is not feasible and needs to be automated.
+
+To do this we need to change the method name to 'toJSON'.
+No other change will be required.
+
+```
+userSchema.methods.toJSON = function() {
+    const user = this
+    ...
+}
+```
+
+Now all user will have data modified.
+
+#### toJSON:
+
+We can use this to modify what the object will be.
+
+This is a default method which will be called whenever JSON.stringify(obj) is called.
+
+### Authenticating User Endpoints:
+
+Now we know that since a user can only see his details, we don't need the fetch user by id call anymore.
+
+Similarly a user can only delete his own profile.
+
+```
+// Delete User
+router.delete('/users/me', auth, async(req, res) => {
+    try {
+        await req.user.remove()
+        res.send(req.user)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+```
+
+Next our update will also need to change.
+
+```
+// Update User
+router.patch('/users/me', auth, async(req, res) => {
+    // check if user tries to update non-updatable fields.
+    const allowedUpdates = ['name', 'email', 'password', 'age']
+    const updates = Object.keys(req.body)
+
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    if (!isValidOperation) {
+        res.status(400).send({ error: 'Invalid update!' })
+    }
+
+    try {
         // Using bracket notation as we want to use dynamically
-        updates.forEach(update => user[update] = req.body[update])
-        const updatedUser = await user.save()
-
-		Now the 'pre' hook is run on 'save' so password will get hashed.
-
-
-	Logging in Users:
-		We need to log in users by making them enter credentials. We will create a new route for this.
-
-		// User login
-		router.post('/users/login', async(req, res) => {
-			try {
-				const user = await User.findByCredentials(req.body)
-				res.send(user)
-			} catch (error) {
-				res.status(400).send(error)
-			}
-		})
-
-		We can define new custom functions on the Mongoose model.
-
-		// Validating the credentials
-		userSchema.statics.findByCredentials = async({ email, password } = {}) => {
-			const user = await User.findOne({ email })
-			if (!user) {
-				throw new Error('Incorrect Email')
-			}
-
-			const isMatch = await bcrypt.compare(password, user.password)
-			if (!isMatch) {
-				throw new Error('Incorrect Password')
-			}
-
-			return user
-		}
-
-		We need the email to be unique across all users:
-			email: {
-				type: String,
-				required: true,
-				unique: true,
-				...
-
-		We need to drop database so that proper indexing will happen.
-
-	
-	JWT - JSON Web Token:
-		Except for signup and login, all other routes will be authenticated.
-
-			npm i jsonwebtoken
-
-		// Testing jwt
-		const jwt = require('jsonwebtoken')
-
-		const myFunction = async() => {
-			const token = jwt.sign({ _id: '12345' }, 'thisismycourse')
-			console.log(token)
-		}
-
-		myFunction()
-
-		We need to pass a cryptoKey ie the secret using which user can authenticate.
-
-		Each JWT has 3 parts:
-		eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxMjM0NSIsImlhdCI6MTU2MDk3NDM1MH0.g93BsIeKuJIctfNEtgDYgST60TgmvlDsCZKS4-MvXPo
-
-		The parts are separated by periods.
-			
-			eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-			The first part is a base64 encoded JSON string - Header - conatins meta information like what kinda token and what algorithm was used.
-			
-			eyJfaWQiOiIxMjM0NSIsImlhdCI6MTU2MDk3NDM1MH0
-			The second part is a base64 encoded JSON string - Payload - conatins the data provided by user. 
-			
-			g93BsIeKuJIctfNEtgDYgST60TgmvlDsCZKS4-MvXPo
-			The last part is a base64 encoded JSON string - Signature - used to verify the token. 
-
-		// Testing jwt
-		const jwt = require('jsonwebtoken')
-
-		const myFunction = async() => {
-			// Generate token with expiry date
-			const token = jwt.sign({ _id: '12345' }, 'thisismycourse', { expiresIn: '1 day' })
-			console.log(token)
-
-			// Verify token using token and the secret
-			const data = jwt.verify(token, 'thisismycourse')
-			console.log(data)
-		}
-
-	Generating Authentication Tokens - JWT:
-		schema.stattics.foo - foo is a model method - Model methods.
-		schema.methods.foo - foo is an instance method - Instance methods.
-
-		We need normal function for this as we need to bind the this. Cannot use arrow functions.
-		This will be similar to middleware.
-
-		// Instance method
-		// Generate Auth tokens
-		userSchema.methods.generateAuthToken = async function() {
-			const user = this
-
-			// generate token
-			const token = jwt.sign({ _id: user._id.toString() }, 'thisismycourse', { expiresIn: '1 day' })
-
-			// add token to user
-			user.tokens = user.tokens.concat({ token })
-			await user.save()
-
-			return token
-		}
-
-		Next the server needs to keep track of the user so that the user can login via multiple devices.
-
-		Adding to User schema:
-			
-			....
-						age: {
-					type: Number,
-					default: 0,
-					validate(value) {
-						if (value < 0) {
-							throw new Error('Age must be a positive number')
-						}
-					}
-				},
-				tokens: [{
-					token: {
-						type: String,
-						required: true
-					}
-				}]
-			})
-		
-		Here tokens is an array of tokens.
-		In Mongo, this will be a sub-document. So each token object will have its ObjectID.
-
-
-	Express Middleware:
-		We can use some middleware so that we can authenticate users before they can perform any actions.
-
-		To do this we need to run the custome middleware in our code. 
-		For this, we need to use app.use().
-		This needs to be at the top of the declarations before any other middleware.
-
-		We can create a new hook using express.
-
-		app.use((req, res, next) => {
-			console.log(req.method, req.path)
-			next()
-		})
-
-		We need to call the next() function so that the execution will continue.
-
-		We can use this for multiple purposes like maintenance mode ...
-
-		// Maintainence mode
-		app.use((req, res, next) => {
-			res.status(503).send('Site is currently down for maintenance. Check back soon!')
-		})
-
-	Accepting Authentication Tokens:
-		It's better to organize all middleware in a separate folder.
-
-		The middleware in index.js will be associated with every single route in our app.
-		For auth middleware, we dont want this.
-
-		We can add our middleware to a particular route by - adding the function as the second parameter while setting up the route.
-
-			// Get all Users
-			router.get('/users', auth, async(req, res) => {
-				try {
-					const users = await User.find({})
-					res.send(users)
-				} catch (error) {
-					res.status(500).send(error)
-				}
-			})
-
-		The client needs to put their Authentication jwt and send it as headers along with all their requests.
-		This way they can be authenticated.
-
-		The Headers will be of key/value pairs.
-
-		Key - Authorization
-		Value - Bearer <token>
-
-		For basic authentication:
-			Key - Authorization
-			Value - Basic <token>
-		
-		We can get the token sent by client on Authorization header. Then use it to authenticate.
-		
-		const auth = async(req, res, next) => {
-			try {
-				const token = req.header('Authorization').replace('Bearer ', '')
-				const decoded_token = jwt.verify(token, 'thisismycourse')
-
-				// check user
-				const user = await User.findOne({ _id: decoded_token._id, 'tokens.token': token })
-
-				if (!user) {
-					throw new Error()
-				}
-
-				// send the user back in request for further use
-				req.user = user
-
-				// resume execution
-				next()
-			} catch (error) {
-				return res.status(401).send({ error: 'User not authorized. Please send valid JWT' })
-			}
-		}
-
-		Now as authentication is present a user should not be able to see other users' details.
-		So /users will now be useless.
-
-		So we can repurpose it to see profile of the user.
-
-		// Will not be correct after auth 
-		// repurposing as user profile view
-		// Get own profile
-		router.get('/users/me', auth, async(req, res) => {
-			res.send(req.user)
-		})
-
-	Advanced Postman:
-		Environments:
-			Multiple environments can be configured.
-			We can setup the environments and then use them as 
-				{{env_variable}}
-
-		Authorization:
-			We can generalize Authorization by not putting in header directly but rather putting in Authorization tab under Bearer token.
-
-			Or we can put Authorization in the Collection lever itself and then Inherit from Parent for all other requests.
-
-		Environment Variable:
-			We can use an environment variable to store the token so that it is stored and updated automatically and no manual steps are needed.
-			We can do this by writing JavaScript code under Tests tab of the request.
-
-			if(pm.response.code === 200) {
-				pm.environment.set("auth_token", pm.response.json().token);
-			}
-
-	Logging Out:
-		The User needs to have the ability to log out of the application. 
-		If a user has different seessions on different devices then we will only need to logout of the particular device only.
-		So proper token needs to be matched.
-
-		// User logout
-		router.post('/users/logout', auth, async(req, res) => {
-			try {
-				req.user.tokens = req.user.tokens.filter(token => token.token !== req.token)
-				await req.user.save()
-				res.send('Logged out succesfully')
-			} catch (error) {
-				res.status(500).send(error)
-			}
-		})
-
-		We can also logout of all the sessions - gmail, netflix etc.
-
-		// User logout all
-		router.post('/users/logoutAll', auth, async(req, res) => {
-			try {
-				req.user.tokens = []
-				await req.user.save()
-				res.send('Logged out succesfully in all devices')
-			} catch (error) {
-				res.status(500).send(error)
-			}
-		})
-
-	Hiding Private Data:
-		We shouldn't send tokens or password back to user.
-		It needs to be hidden from the user.
-
-		So we need to use a method to restrict the data.
-
-		// Instance method
-		// Generate Public profile
-		userSchema.methods.getPublicProfile = async function() {
-			const user = this
-
-			// generate userObject
-			const userObject = user.toObject()
-
-			// deleting sensitive information
-			delete userObject.password
-			delete userObject.tokens
-
-			return userObject
-		}
-
-		This is the manual way as we need to call the function everytime.
-		This is not feasible and needs to be automated.
-
-		To do this we need to change the method name to 'toJSON'
-		No other change will be required.
-
-		userSchema.methods.toJSON = function() {
-			const user = this
-			...
-		}
-
-		Now all user will have data modified.
-
-		toJSON:
-			We can use this to modify what the object will be.
-			This is a default method which will be called whenever JSON.stringify(obj) is called.
-
-		
-	Authenticating User Endpoints:
-		Now we know that since a user can only see his details, we don't need the fetch user by id call anymore.
-		Similarly a user can only delete his own profile.
-
-		// Delete User
-		router.delete('/users/me', auth, async(req, res) => {
-			try {
-				await req.user.remove()
-				res.send(req.user)
-			} catch (error) {
-				res.status(500).send(error)
-			}
-		})
-
-		Next our update will also need to change.
-
-		// Update User
-		router.patch('/users/me', auth, async(req, res) => {
-			// check if user tries to update non-updatable fields.
-			const allowedUpdates = ['name', 'email', 'password', 'age']
-			const updates = Object.keys(req.body)
-
-			const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-			if (!isValidOperation) {
-				res.status(400).send({ error: 'Invalid update!' })
-			}
-
-			try {
-				// Using bracket notation as we want to use dynamically
-				updates.forEach(update => req.user[update] = req.body[update])
-				await req.user.save()
-
-				// Updated successfully
-				res.send(req.user)
-			} catch (error) {
-				res.status(400).send(error)
-			}
-		})
-
-	User/Task Relationship:
-		First, the task needs to contain the id of the user who created it.
-
-		const Task = mongoose.model('Task', {
-			description: {
-				type: String,
-				required: true,
-				trim: true
-			},
-			completed: {
-				type: Boolean,
-				default: false
-			},
-			owner: {
-				type: mongoose.Schema.Types.ObjectId,
-				required: true
-			}
-		})
-
-		Then we need to update the post method
-			// Create Task
-			router.post('/tasks', auth, async(req, res) => {
-				const task = new Task({
-					...req.body,
-					owner: req.user._id
-				})
-
-				try {
-					const result = await task.save()
-					res.status(201).send(result)
-				} catch (error) {
-					res.status(400).send(error)
-				}
-			})
-
-		While creating the Task model, for the owner parameter we can create a ref to the User model so that we can connect the two more easily.
-
-		owner: {
-			type: mongoose.Schema.Types.ObjectId,
-			required: true,
-			ref: 'User'
-		}
-
-		Then we can populate the ref using the actual referred object.
-
-		Now finding user of a given task:
-
-			const main = async() => {
-				const task = await Task.findById('5d0cc00f6929993480b9c13f')
-				await task.populate('owner').execPopulate()
-				console.log(task.owner)
-			}
-
-		Next finding all tasks of a given user:
-
-			For this, we need to create a virtual property. This will be the relationship between the two entities.
-			It is not actual data which is stored in a database.
-
-			// virtual property
-			userSchema.virtual('tasks', {
-				ref: 'Task',
-				localField: '_id',
-				foreignField: 'owner'
-			})
-
-		In file:
-
-			const main = async() => {
-				// // finding user of a given task
-				// const task = await Task.findById('5d0cc00f6929993480b9c13f')
-				// await task.populate('owner').execPopulate()
-				// console.log(task.owner)
-
-				// finding all tasks of a given user
-				const user = await User.findById('5d0cbedcb44d384ca8f20d3c')
-				await user.populate('tasks').execPopulate()
-				console.log(user.tasks)
-			}
-
-	Authenticating Task Enpoints:
-		We need to ensure that the auth and relationship is maintained.
-
-		For getting the task by id, we can just do:
-			const task = await Task.findOne({ _id, owner: req.user._id })
-		
-		Next for updating a task:
-			// get task
-        	const task = await Task.findByOne({ _id: req.params.id, owner: req.user._id })
-
-		For deleting:
-			const task = await Task.findByOneAndDelete({ _id: req.params.id, owner: req.user._id })
-
-	Cascade Delete Tasks:
-		If a user is deleted, then all his tasks also needs to be deleted.
-		We can again use express middleware for this. 
-		Create new hook for this.
-
-		// Hook to delete all the tasks of users when user is deleted
-		userSchema.pre('remove', async function(next) {
-			const user = this
-
-			// deleting all taks for the user
-			await Task.deleteMany({ owner: user._id })
-
-			// telling the middleware we are done and to proceed with normal execution.
-			next()
-		})
+        updates.forEach(update => req.user[update] = req.body[update])
+        await req.user.save()
+
+        // Updated successfully
+        res.send(req.user)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+```
+
+### User/Task Relationship:
+
+First, the task needs to contain the id of the user who created it.
+
+```
+const Task = mongoose.model('Task', {
+    description: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    completed: {
+        type: Boolean,
+        default: false
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    }
+})
+```
+
+Then we need to update the post method
+
+```
+// Create Task
+router.post('/tasks', auth, async(req, res) => {
+    const task = new Task({
+        ...req.body,
+        owner: req.user._id
+    })
+
+    try {
+        const result = await task.save()
+        res.status(201).send(result)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+```
+
+While creating the Task model, for the owner parameter we can create a ref to the User model so that we can connect the two more easily.
+
+```
+owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
+}
+```
+
+Then we can populate the ref using the actual referred object.
+
+#### Now finding user of a given task:
+
+```
+const main = async() => {
+    const task = await Task.findById('5d0cc00f6929993480b9c13f')
+    await task.populate('owner').execPopulate()
+    console.log(task.owner)
+}
+```
+
+#### Next finding all tasks of a given user:
+
+>For this, we need to create a virtual property. This will be the relationship between the two entities.
+
+It is not actual data which is stored in a database.
+
+```
+// virtual property
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+})
+```
+
+#### In file:
+
+```
+const main = async() => {
+    // // finding user of a given task
+    // const task = await Task.findById('5d0cc00f6929993480b9c13f')
+    // await task.populate('owner').execPopulate()
+    // console.log(task.owner)
+
+    // finding all tasks of a given user
+    const user = await User.findById('5d0cbedcb44d384ca8f20d3c')
+    await user.populate('tasks').execPopulate()
+    console.log(user.tasks)
+}
+```
 
+### Authenticating Task Enpoints:
+
+We need to ensure that the auth and relationship is maintained.
+
+For getting the task by id, we can just do:
+
+>const task = await Task.findOne({ _id, owner: req.user._id })
+
+Next for updating a task:
+
+>// get task
+>const task = await Task.findByOne({ _id: req.params.id, owner: req.user._id })
+
+For deleting:
+
+>const task = await Task.findByOneAndDelete({ _id: req.params.id, owner: req.user._id })
+
+### Cascade Delete Tasks:
+
+If a user is deleted, then all his tasks also needs to be deleted.
+We can again use express middleware for this. 
+Create new hook for this.
+
+```
+// Hook to delete all the tasks of users when user is deleted
+userSchema.pre('remove', async function(next) {
+    const user = this
+
+    // deleting all taks for the user
+    await Task.deleteMany({ owner: user._id })
+
+    // telling the middleware we are done and to proceed with normal execution.
+    next()
+})
+```
 
 ---
 
-Section 13 - Sorting, Pagination and Filtering(Task app):
+## Section 13 - Sorting, Pagination and Filtering(Task app):
 
 	Timestamps:
 		We can have Mongoose/Mongo provide timestamps for us. We can do this by anabling Schema options.
@@ -3572,22 +3668,25 @@ Section 17 - Real-Time Web Applications with Socket.io (Chat App)
 
 ---
 
-Section 18 - Wrapping Up:
+## Section 18 - Wrapping Up:
 
-	New Feature Ideas:
-		Weather App:
-			Allow user to use geolocation API to get weather for their location instead of tyoing in the address.
-
-		Todo App:
-			Allow users to upload images for individual todos.
-
-		Chat App:
-			Let users pick from list of active rooms or type in custom room name instead of typing the name.
-
-	What to do next?:
-		GraphQL
-		React
+### New Feature Ideas:
 		
-		
+#### Weather App:
+
+Allow user to use geolocation API to get weather for their location instead of tyoing in the address.
+
+#### Todo App:
+
+Allow users to upload images for individual todos.
+
+#### Chat App:
+
+Let users pick from list of active rooms or type in custom room name instead of typing the name.
+
+### What to do next?
+
+* GraphQL
+* React
+
 ---
----		
