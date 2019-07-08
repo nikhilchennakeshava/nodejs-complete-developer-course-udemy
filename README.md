@@ -1,13 +1,12 @@
-# nodejs-complete-developer-course-udemy
+### nodejs-complete-developer-course-udemy
 
-The Complete Node.js Developer Course (3rd Edition) 
+# The Complete Node.js Developer Course (3rd Edition) 
+## By: Andrew Mead and Rob Percival
 
-By: Andrew Mead and Rob Percival
-
-The Complete Node.js Developer Course covers the fundamentals of Node before diving deep into great tools like Express, Mongoose, and MongoDB.
+### The Complete Node.js Developer Course covers the fundamentals of Node before diving deep into great tools like Express, Mongoose, and MongoDB.
 
 
-Four projects:
+## Four projects:
 
 1. A note-taking app to get your feet wet
 
@@ -17,7 +16,7 @@ Four projects:
 
 4. A real-time chat app with a client-side companion
 
-Topics:
+## Topics:
 
 1. Node.js
 
@@ -57,3 +56,6 @@ Topics:
 
 19. Many more tools
 
+## Notes:
+
+[Documentation and Notes](/Documentation and Notes/The Complete Node.js Developer Course.md)
