@@ -1,0 +1,169 @@
+# Angular commands
+
+## Create project
+
+>express create project - express myapp
+
+>angular create project - ng new myapp
+
+>npm i -g typescript
+
+>IIFE - Immediately Invoked Function Expression
+
+>Strictmode - "use strict";
+
+always better
+
+2 default arguments for every function - argument and this
+
+## Four types of functions
+
+1. Calling standalone functions - this - the global object
+2. Calling functions as property of an object reference - this - the object reference
+3. Calling standalone functions using new keyword - this - the newly created object
+4. Calling functions using .call() method by passing an object as a parameter to bind - this refers to the passed object
+
+## Prototype
+
+```
+Function - prototype  
+Object - __proto__  (called as 'dunder proto')
+```
+
+Double underscore - "dunder"
+
+## Forms
+
+>template driven forms - good for simple forms, simple validation, easier to create, less code  
+>reactive forms - more validation, complex forms, unit testable
+
+## Angular Material: material.angular.io
+
+>angular material - new, less components, safer and easier  
+>bootstrap - older, more components, 3rd party dependencies
+
+## Animations
+
+>css - transition, animation (animate.css) - limited control, simple animations  
+>javascript - jquery, gsap, zepto, web animations api (recommended) (caniuse.com)  
+>angular - @angular/animations
+
+## angular - states
+
+>void(not yet in dom), default(*), custom
+
+### Normal syntax
+```
+animations: [
+	trigger('fade', [
+	
+		state('void', style({opacity: 0}));
+		
+		transition('void => *', [
+			//style({opacity: 0}),
+			animate(2000)
+		]),
+		
+		transition('* => void', [
+			animate(2000)
+			//animate(2000, style({opacity: 0}))
+		])
+	])
+]
+```
+
+### Shorter syntax
+
+```
+animations: [
+	trigger('fade', [
+	
+		state('void', style({opacity: 0}));
+		
+		transition('void => *, * => void', [
+			animate(2000)
+		])
+	])
+]
+```
+
+### Optimized syntax
+
+```
+animations: [
+	trigger('fade', [
+	
+		state('void', style({opacity: 0}));
+		
+		transition('void <=> *', [
+			animate(2000)
+		])
+	])
+]
+```
+
+trigger can be made a separate file and exported and imported for reusability
+
+### Alternative syntax
+
+```
+animations: [
+	trigger('fade', [
+	
+		state('void', style({opacity: 0}));
+		
+		transition(':enter, :leave', [
+			animate(2000)
+		])
+	])
+]
+```
+
+## Routing
+
+* Configure the routes
+* Add a router outlet
+* Add links
+
+## Optimization techniques
+
+- Minification
+- Uglification
+- Bundling
+- Dead code elimination
+- Ahead of time(aot) optimization
+
+## To build prod code - dist folder
+
+>ng build -prod
+
+## Angular compiler
+
+JIT vs AOT
+
+>JIT - inefficient for production, slower for more components, we have to ship angular compiler  
+>AOT - faster startup, smaller bundle size, catch template error earlier, better security
+
+>node_modules/.bin/ngc
+
+## Build
+
+>to create new angular project: ng new \<app_name>
+
+>to create new component in angular: ng g c \<component_name>  
+>g->generate  
+>c->component
+
+>to create new service in angular: ng g s \<service_name>
+
+## zen commands
+
+```
+label+input[type="text"].form-control
+(li>a)*2
+div.form-group>label[for='comment']+textarea[id='comment'].form-control
+```
+
+## Angular Material
+
+>npm i -g @angular/core @angular/cdk @angular/material @angular/animations hammerjs
